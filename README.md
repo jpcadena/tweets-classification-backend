@@ -62,7 +62,8 @@
 IN PROGRESS...
 [![Project][project-screenshot]](https://example.com)
 
-This project is about tweets-classification-backend...
+This project is the Python backend for the Tweets Classification ML project
+developed using FastAPI, PostgreSQL and Redis...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
