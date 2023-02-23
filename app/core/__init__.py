@@ -1,0 +1,3 @@
+"""
+Core initialization package
+"""

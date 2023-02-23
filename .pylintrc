@@ -1,0 +1,8 @@
+[BASIC]
+extension-pkg-whitelist=pydantic
+
+[MESSAGE CONTROL]
+disable = too-few-public-methods,
+          no-name-in-module,
+[DESIGN]
+max-parents=10
