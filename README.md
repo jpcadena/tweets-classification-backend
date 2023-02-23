@@ -14,7 +14,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="assets/images/logo.png" alt="Logo" width="80" height="80">
+    <img src="app/assets/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">tweets-classification-backend</h3>
@@ -185,7 +185,7 @@ E-mail: [Juan Pablo Cadena Aguilar](mailto:jpcadena@espol.edu.ec?subject=[GitHub
 
 [linkedin-url]: https://linkedin.com/in/juanpablocadenaaguilar
 
-[project-screenshot]: assets/images/project.png
+[project-screenshot]: app/assets/images/project.png
 
 [Python.org]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
 
