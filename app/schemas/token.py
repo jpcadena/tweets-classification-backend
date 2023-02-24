@@ -2,7 +2,9 @@
 Message schema
 """
 from uuid import UUID, uuid4
+
 from pydantic import BaseModel, Field, EmailStr, AnyUrl
+
 from app.core import config
 from app.schemas.scope import Scope
 from app.utils import password_regex, sub_regex, audience
@@ -111,21 +113,9 @@ class TokenResponse(BaseModel):
         """
         schema_extra: dict[str, dict[str, str]] = {
             "example": {
-                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-                                "eyJleHAiOjE2NzA4MTg0NDUsImlzcyI6Imh0dHBzOi8v"
-                                "d3d3Lmluc3RhZ3JhbWNsb25lLmNvbSIsInN1YiI6MSwi"
-                                "ZW1haWwiOiJqcGNhZGVuYUBlc3BvbC5lZHUuZWMiLCJp"
-                                "YXQiOjE2NzA4MTQ1NDUsInByZWZlcnJlZF91c2VybmFt"
-                                "ZSI6ImpwY2FkZW5hIiwidXBkYXRlZF9hdCI6bnVsbH0."
-                                "STF4EOTtyO81lKNR4H36G7l2uRuUBfFvfuKUd4CMqJM",
+                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
                 "token_type": "bearer",
-                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-                                 "eyJleHAiOjE2NzA4MTg0NDUsImlzcyI6Imh0dHBzOi8v"
-                                 "d3d3Lmluc3RhZ3JhbWNsb25lLmNvbSIsInN1YiI6MSwi"
-                                 "ZW1haWwiOiJqcGNhZGVuYUBlc3BvbC5lZHUuZWMiLCJp"
-                                 "YXQiOjE2NzA4MTQ1NDUsInByZWZlcnJlZF91c2VybmFt"
-                                 "ZSI6ImpwY2FkZW5hIiwidXBkYXRlZF9hdCI6bnVsbH0."
-                                 "STF4EOTtyO81lKNR4H36G7l2uRuUBfFvfuKUd4CMqJM",
+                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
             }
         }
 
@@ -146,10 +136,7 @@ class TokenResetPassword(BaseModel):
         """
         schema_extra: dict[str, dict[str, str]] = {
             "example": {
-                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-                         "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gR"
-                         "G9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2"
-                         "QT4fwpMeJf36POk6yJV_adQssw5c",
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
                 "password": "Hk7pH9*35Fu&3U"
             }
         }
