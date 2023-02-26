@@ -2,16 +2,16 @@
 Tweet model script
 """
 from datetime import datetime
-from typing import TYPE_CHECKING
+
+from pydantic import PositiveInt
 from sqlalchemy import Column, ForeignKey, Integer, String, BIGINT, Boolean, \
     text, CheckConstraint
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import mapped_column, Mapped
-from app.db.base_class import Base
-from ..core.config import settings
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-if TYPE_CHECKING:
-    from .user import User
+from app.db.base_class import Base
+from .model import Model
+from ..core.config import settings
 
 
 class Analysis(Base):
@@ -20,10 +20,11 @@ class Analysis(Base):
     """
     __tablename__ = 'analysis'
 
-    id: int = Column(
+    id: PositiveInt = Column(
         Integer, index=True, unique=True, nullable=False, primary_key=True,
         comment='ID of the Analysis')
-    tweet_id: int = Column(BIGINT, nullable=False, comment='ID of the Tweet')
+    tweet_id: PositiveInt = Column(BIGINT, nullable=False,
+                                   comment='ID of the Tweet')
     content: str = Column(String(280), nullable=False,
                           comment='The actual UTF-8 text of the status update')
     tweet_username: str = Column(
@@ -37,9 +38,10 @@ class Analysis(Base):
         default=datetime.now(), nullable=False,
         server_default=text("now()"),
         comment='Time the Analysis was performed')
-    user_id: Mapped[int] = mapped_column(
+    user_id: Mapped[PositiveInt] = mapped_column(
         Integer, ForeignKey("users.id"),
         nullable=False, comment='ID of the User who performed the Analysis')
+    models: Mapped[list[Model]] = relationship(lazy="selectin")
 
     __table_args__ = (
         CheckConstraint(

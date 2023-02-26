@@ -1,6 +1,6 @@
 """
 Models initialization package
 """
-# from .tweet import Tweet
+from .analysis import Analysis
+from .model import Model
 from .user import User
-# from .model import Model

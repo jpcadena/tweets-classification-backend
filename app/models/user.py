@@ -3,11 +3,13 @@ User model script
 """
 from datetime import datetime, date
 from typing import Optional
-from pydantic import EmailStr
+
+from pydantic import EmailStr, PositiveInt
 from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, Date, \
     text, Enum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship, Mapped
+
 from app.db.base_class import Base
 from .analysis import Analysis
 from ..core.config import settings
@@ -20,7 +22,7 @@ class User(Base):
     """
     __tablename__ = "users"
 
-    id: int = Column(
+    id: PositiveInt = Column(
         Integer, index=True, unique=True, nullable=False, primary_key=True,
         comment='ID of the User')
     username: str = Column(

@@ -1,22 +1,38 @@
 """
 User Service to handle business logic
 """
-from typing import Optional, Union
-from pydantic import EmailStr, PositiveInt, NonNegativeInt, BaseModel
+from typing import Optional, Union, TypeVar
+
+from pydantic import EmailStr, PositiveInt, NonNegativeInt
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.crud.user import read_user_by_id, read_user_by_username, \
     read_user_by_email, create_user, read_users, update_user, delete_user
-from app.db.base_class import Base
 from app.models import User
-from app.schemas import UserCreate, UserUpdate
 from app.schemas.user import UserSuperCreate, UserCreateResponse, UserResponse, \
-    UserUpdateResponse
+    UserUpdateResponse, UserCreate, UserUpdate
+
+T = TypeVar('T', UserResponse, UserCreateResponse, UserUpdateResponse)
+
+
+async def model_to_response(model: User, response_model: T) -> T:
+    """
+    Converts a User object to a Pydantic response model
+    :param model: Object from Pydantic Base Model class
+    :type model: User
+    :param response_model: Response model
+    :type response_model: T
+    :return: Model inherited from SQLAlchemy Declarative Base
+    :rtype: T
+    """
+    return response_model.from_orm(model)
 
 
 class UserService:
     """
     User service class
     """
+
     def __init__(self, session: AsyncSession):
         self.session: AsyncSession = session
 
@@ -28,9 +44,8 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: UserResponse = UserResponse.from_orm(
-            await read_user_by_id(user_id, self.session))
-        return user
+        user: User = await read_user_by_id(user_id, self.session)
+        return await model_to_response(user, UserResponse)
 
     async def get_user_by_username(self, username: str) -> UserResponse:
         """
@@ -40,9 +55,8 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: UserResponse = UserResponse.from_orm(
-            await read_user_by_username(username, self.session))
-        return user
+        user: User = await read_user_by_username(username, self.session)
+        return await model_to_response(user, UserResponse)
 
     async def get_user_by_email(
             self, email: EmailStr) -> Optional[UserResponse]:
@@ -58,8 +72,7 @@ class UserService:
         db_user: User = await read_user_by_email(email, self.session)
         if not db_user:
             return None
-        user: UserResponse = UserResponse.from_orm(db_user)
-        return user
+        return await model_to_response(db_user, UserResponse)
 
     async def create_user(
             self, user: Union[UserCreate, UserSuperCreate]
@@ -72,9 +85,10 @@ class UserService:
          database
         :rtype: UserCreateResponse or exception
         """
-        user: Union[UserCreateResponse, str] = UserResponse.from_orm(
-            await create_user(user, self.session))
-        return user
+        created_user = await create_user(user, self.session)
+        if isinstance(created_user, str):
+            return created_user
+        return await model_to_response(created_user, UserCreateResponse)
 
     async def get_users(
             self, offset: NonNegativeInt, limit: PositiveInt
@@ -92,7 +106,7 @@ class UserService:
         """
         users: list[User] = await read_users(offset, limit, self.session)
         found_users: list[UserResponse] = [
-            UserResponse.from_orm(user) for user in users]
+            await model_to_response(user, UserResponse) for user in users]
         return found_users
 
     async def update_user(
@@ -109,9 +123,8 @@ class UserService:
         :return: User information
         :rtype: UserUpdateResponse
         """
-        user: UserUpdateResponse = UserUpdateResponse.from_orm(
-            await update_user(user_id, user, self.session))
-        return user
+        updated_user: User = await update_user(user_id, user, self.session)
+        return await model_to_response(updated_user, UserUpdateResponse)
 
     async def delete_user(self, user_id: int) -> bool:
         """
@@ -123,23 +136,3 @@ class UserService:
         """
         deleted: bool = await delete_user(user_id, self.session)
         return deleted
-
-
-async def model_to_schema(model: Base) -> BaseModel:
-    schema: BaseModel = BaseModel.from_orm(model)
-    return schema
-
-
-async def user_to_response(user: User) -> UserResponse:
-    user_response: UserResponse = await model_to_schema(user)
-    return user_response
-
-
-async def user_to_create_response(user: User) -> UserCreateResponse:
-    user_response: UserCreateResponse = await model_to_schema(user)
-    return user_response
-
-
-async def user_to_update_response(user: User) -> UserUpdateResponse:
-    user_response: UserUpdateResponse = await model_to_schema(user)
-    return user_response

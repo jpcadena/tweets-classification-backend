@@ -5,11 +5,12 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field, PastDate
-from .analysis import Tweet, TweetCreate, TweetInDB, TweetUpdate
+
+from .analysis import Analysis, AnalysisCreate, AnalysisBase
 from .gender import Gender
+from .model import Model, ModelCreate, ModelBase
 from .msg import Msg
 from .user import User, UserCreate, UserInDB, UserUpdate
-from .model import Model, ModelCreate, ModelInDB, ModelUpdate
 from ..utils import telephone_regex
 
 

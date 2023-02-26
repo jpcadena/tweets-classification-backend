@@ -2,14 +2,15 @@
 User CRUD script
 """
 from typing import Optional, Union
+
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
 from sqlalchemy import select, Select, ScalarResult
-from sqlalchemy.exc import NoResultFound, IntegrityError
+from sqlalchemy.exc import NoResultFound, IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.security.password import get_password_hash
 from app.models import User
-from app.schemas import UserCreate, UserUpdate
-from app.schemas.user import UserSuperCreate
+from app.schemas.user import UserSuperCreate, UserCreate, UserUpdate
 
 
 async def read_user_by_id(
@@ -161,7 +162,7 @@ async def delete_user(user_id: int, session: AsyncSession) -> bool:
         await session.delete(found_user)
         await session.commit()
         deleted = True
-    except Exception as exc:
+    except SQLAlchemyError as exc:
         print(exc, user_id)
         await session.rollback()
     return deleted

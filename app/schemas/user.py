@@ -3,7 +3,9 @@ User schema
 """
 from datetime import date, datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+
+from pydantic import BaseModel, EmailStr, Field, PositiveInt
+
 from app.schemas.analysis import Analysis
 from app.schemas.gender import Gender
 from app.utils import telephone_regex, password_regex
@@ -13,7 +15,7 @@ class UserID(BaseModel):
     """
     Core class for User based on Pydantic Base Model.
     """
-    id: int = Field(..., title='ID', description='ID of the User')
+    id: PositiveInt = Field(..., title='ID', description='ID of the User')
 
 
 class UserRelationship(BaseModel):
