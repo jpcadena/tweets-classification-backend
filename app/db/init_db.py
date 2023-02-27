@@ -5,6 +5,7 @@ from sqlalchemy.exc import CompileError, DataError, DatabaseError, \
     DisconnectionError, IntegrityError, InternalError, InvalidatePoolError, \
     PendingRollbackError, TimeoutError as SATimeoutError
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncTransaction
+
 from app.core.config import settings
 from app.db.base_class import Base
 from app.db.session import async_engine
@@ -68,6 +69,6 @@ async def init_db(async_session: AsyncSession) -> None:
             last_name=settings.SUPERUSER_EMAIL.split("@")[0].capitalize(),
             password=settings.SUPERUSER_PASSWORD,
         )
-        superuser: User = await user_service.create_user(user_in)
+        superuser: User = await user_service.register_user(user_in)
         email: str = await hide_email(superuser.email)
         print('Superuser created with email', email)

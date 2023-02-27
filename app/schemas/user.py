@@ -48,6 +48,12 @@ class UserBaseAuth(BaseModel):
         ..., title='Email', description='Preferred e-mail address of the User')
 
 
+class UserFilter(UserBaseAuth, UserID):
+    """
+    User Filter class that inherits from UserBaseAuth and UserID.
+    """
+
+
 class UserName(BaseModel):
     """
     User class for names attributes based on Pydantic Base Model.
@@ -256,7 +262,7 @@ class UserInDB(UserUpdatedAt, BaseModel):
         ..., title='Is super user?',
         description='True if the user is super user; otherwise false')
     created_at: datetime = Field(
-        ..., title='Created at',
+        default_factory=datetime.now(), title='Created at',
         description='Time the User was created')
 
 

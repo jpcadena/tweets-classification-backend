@@ -5,10 +5,11 @@ from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.deps import redis_dependency
 from app.core import config
 from app.core.security.password import verify_password
-from app.db.session import database_session
+from app.db.session import get_user_service
 from app.models import User
 from app.models.token import Token
 from app.services.auth import AuthService
@@ -21,7 +22,7 @@ router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/login")
 async def login(
         user: OAuth2PasswordRequestForm = Depends(),
-        session: AsyncSession = Depends(database_session),
+        session: AsyncSession = Depends(get_user_service),
         setting: config.Settings = Depends(config.get_setting),
         redis: Redis = Depends(redis_dependency)
 ) -> dict[str, str]:

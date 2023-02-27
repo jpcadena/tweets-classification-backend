@@ -1,18 +1,18 @@
 """
 User API Router
 """
-import re
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, \
     status
 from fastapi.params import Query, Path
 from pydantic import NonNegativeInt, PositiveInt
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.deps import get_current_user
 from app.core import config
-from app.db.session import database_session
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserAuth, UserUpdate, UserUpdateResponse
-from app.services.user import UserService
+from app.services.user import UserService, get_user_service
 from app.utils import send_new_account_email
 
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
@@ -24,35 +24,39 @@ async def get_users(
             0, title='Skip', description='Skip users', example=0),
         limit: PositiveInt = Query(
             100, title='Limit', description='Limit pagination', example=100),
-        session: AsyncSession = Depends(database_session),
+        user_service: UserService = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> list[UserResponse]:
     """
-    Get all Users basic information from the system.
+    Get all Users basic information from the system using pagination.
+    - :param skip: Offset from where to start returning users
+    - :type skip: NonNegativeInt
+    - :param limit: Limit the number of results from query
+    - :type limit: PositiveInt
     - :return: List of Users retrieved from database with username and email
     - :rtype: list[UserDisplay]
     \f
-    :param session: Dependency method for async Postgres connection
-    :type session: AsyncSession
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    user_service: UserService = UserService(session)
-    found_users: list[UserResponse] = await user_service.get_users(
-        skip, limit)
-    if not found_users:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Users not found in the system.')
+    try:
+        found_users: list[UserResponse] = await user_service.get_users(
+            skip, limit)
+    except SQLAlchemyError as sa_exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND, detail=str(sa_exc)) from sa_exc
     return found_users
 
 
 @router.post('', response_model=UserCreateResponse,
              status_code=status.HTTP_201_CREATED)
-async def register_user(
+async def create_user(
         background_tasks: BackgroundTasks,
         user: UserCreate = Body(..., title='New user',
                                 description='New user to register'),
-        session: AsyncSession = Depends(database_session),
+        user_service: UserService = Depends(get_user_service),
         setting: config.Settings = Depends(config.get_setting)
 ) -> UserCreateResponse:
     """
@@ -67,23 +71,18 @@ async def register_user(
     \f
     :param background_tasks: Send email to confirm registration
     :type background_tasks: BackgroundTasks
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
     :param setting: Dependency method for cached setting object
     :type setting: Settings
+
     """
-    user_service: UserService = UserService(session)
-    new_user = await user_service.create_user(user)
-    if isinstance(new_user, str):
-        if "duplicate key value violates unique constraint" in new_user:
-            match = re.search(r'Key \((\w+)\)=\((.*)\)', new_user)
-            if match:
-                field: str = match.group(1)
-                value: str = match.group(2)
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f'User with {field}: {value} already exists in the'
-                           f' system.')
-        raise HTTPException(status.HTTP_400_BAD_REQUEST,
-                            detail=f'User with invalid data: {new_user}')
+    try:
+        new_user = await user_service.register_user(user)
+    except SQLAlchemyError as sa_exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            detail=str(sa_exc)) from sa_exc
     if new_user:
         if setting.EMAILS_ENABLED and user.email:
             background_tasks.add_task(send_new_account_email, user.email,
@@ -117,7 +116,7 @@ async def register_user(
 
 @router.get("/me", response_model=UserResponse)
 async def get_user_me(
-        session: AsyncSession = Depends(database_session),
+        session: AsyncSession = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserResponse:
     """
@@ -131,7 +130,7 @@ async def get_user_me(
 @router.get("/user_id", response_model=UserResponse)
 async def get_user_by_id(
         user_id: int = Path(...),
-        session: AsyncSession = Depends(database_session),
+        user_service: UserService = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserResponse:
     """
@@ -141,12 +140,11 @@ async def get_user_by_id(
     :return:
     :rtype:
     \f
-    :param session: Dependency method for async Postgres connection
-    :type session: AsyncSession
+    :param user_service: Dependency method for async Postgres connection
+    :type user_service: AsyncSession
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    user_service: UserService = UserService(session)
     user: UserResponse = await user_service.get_user_by_id(user_id)
     if not user:
         raise HTTPException(
@@ -159,7 +157,7 @@ async def get_user_by_id(
 async def update_user(
         user_id: int = Path(...),
         user_in: UserUpdate = Body(...),
-        session: AsyncSession = Depends(database_session),
+        session: AsyncSession = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserUpdateResponse:
     """

@@ -1,11 +1,13 @@
 """
 Model router module for API endpoints.
 """
-from fastapi import APIRouter, Depends, status, Path, Body
+from fastapi import APIRouter, Depends, status, Path, Body, Query
 from fastapi.exceptions import HTTPException
-from pydantic import PositiveInt
+from pydantic import PositiveInt, NonNegativeInt
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
+from app.db.session import get_user_service
 from app.schemas.model import Model, ModelCreate
 from app.schemas.user import UserAuth
 from app.services.model import ModelService
@@ -22,10 +24,13 @@ async def create_model(
 ) -> Model:
     """
     Create a new model into the system.
-    - :param model: Body Object with image_url and caption to be created
+    - :param model: Body Object with tweet_id, model_name, accuracy,
+     precision, recall, f1_score, roc_auc, computing_time and
+      relationship with Analysis: analysis_id (OPTIONAL)
     - :type model: ModelCreate
-    - :return: Model created with id, image_url, caption,
-    timestamp for creation, user ID
+    - :return: Model created with id, tweet_id, model_name, accuracy,
+     precision, recall, f1_score, roc_auc, computing_time, relationship
+      with Analysis: analysis_id and its creation timestamp
     - :rtype: Model
     \f
     :param current_user: Dependency method for authorization by current user
@@ -47,7 +52,9 @@ async def get_model(model_id: PositiveInt = Path(
     Search for specific Model by ID from the system.
     - :param model_id: Path Parameter of Model ID to search
     - :type model_id: PydanticObjectId
-    - :return: Found Model from logged-in user
+    - :return: Found Model from logged-in user with id, tweet_id,
+     model_name, accuracy, precision, recall, f1_score, roc_auc,
+      computing_time, analysis_id and its creation timestamp
     - :rtype: Model
     \f
     :param current_user: Dependency method for authorization by current user
@@ -64,16 +71,30 @@ async def get_model(model_id: PositiveInt = Path(
 
 @router.get('', response_model=list[Model])
 async def get_models(
+        skip: NonNegativeInt = Query(
+            0, title='Skip', description='Skip users', example=0),
+        limit: PositiveInt = Query(
+            100, title='Limit', description='Limit pagination', example=100),
+        session: AsyncSession = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user)) -> list[Model]:
     """
     Retrieve all models from the system.
-    - :return: All models from logged-in user
+    - :param skip: Offset from where to start returning models
+    - :type skip: NonNegativeInt
+    - :param limit: Limit the number of results from query
+    - :type limit: PositiveInt
+    - :return: All models from logged-in user with id, tweet_id,
+     model_name, accuracy, precision, recall, f1_score, roc_auc,
+      computing_time, analysis_id and its creation timestamp
     - :rtype: list[Model]
     \f
+    :param session: Dependency method for async Postgres connection
+    :type session: AsyncSession
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    models: list[Model] = await ModelService.read_all_models()
+    model_service: ModelService = ModelService(session)
+    models: list[Model] = await model_service.get_models(skip, limit)
     if not models:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='This user has no models in the system.')

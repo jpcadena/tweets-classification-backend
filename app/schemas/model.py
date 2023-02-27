@@ -2,6 +2,7 @@
 Model schema
 """
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field, PositiveInt, NonNegativeFloat, \
     PositiveFloat
@@ -54,8 +55,8 @@ class ModelCreate(ModelBase):
     """
     Class for creating Model that inherits from ModelBase.
     """
-    analysis_id: PositiveInt = Field(
-        ..., title='Analysis ID',
+    analysis_id: Optional[PositiveInt] = Field(
+        default=None, title='Analysis ID',
         description='ID of the Analysis where the model was executed')
 
 
@@ -66,7 +67,8 @@ class Model(ModelCreate):
     id: PositiveInt = Field(
         ..., title='Model ID', description='ID of the Model')
     created_at: datetime = Field(
-        ..., title='Created At', description='Time the Model was executed')
+        default_factory=datetime.now(), title='Created At',
+        description='Time the Model was executed')
 
     class Config:
         """

@@ -2,11 +2,11 @@
 DB Session script
 """
 from typing import Any, AsyncGenerator
-from fastapi import Depends
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, \
     AsyncEngine
-from app.core.config import settings
 
+from app.core.config import settings
 
 async_engine: AsyncEngine = create_async_engine(
     settings.SQLALCHEMY_DATABASE_URI, pool_pre_ping=True, future=True,
@@ -34,14 +34,3 @@ async def get_session() -> AsyncSession:
     """
     async for session in get_db():
         return session
-
-
-async def database_session(session: AsyncSession = Depends(get_session)):
-    """
-    Database session for connection as Dependency Injection
-    :param session:
-    :type session:
-    :return:
-    :rtype:
-    """
-    return session

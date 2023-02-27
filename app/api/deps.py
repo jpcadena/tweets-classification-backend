@@ -4,14 +4,16 @@ API v1 Dependencies script
 from abc import ABC
 from datetime import datetime
 from typing import Optional
+
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core import config
-from app.db.session import database_session
+from app.db.session import get_user_service
 from app.models import User
 from app.schemas.token import TokenPayload
 from app.schemas.user import UserAuth
@@ -25,7 +27,7 @@ oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
         setting: config.Settings = Depends(config.get_setting),
-        session: AsyncSession = Depends(database_session)
+        session: AsyncSession = Depends(get_user_service)
 ) -> UserAuth:
     """
     Function to get current user

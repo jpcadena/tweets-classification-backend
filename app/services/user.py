@@ -1,31 +1,18 @@
 """
 User Service to handle business logic
 """
-from typing import Optional, Union, TypeVar
+from typing import Optional, Union
 
+from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
 
-from app.crud.user import read_user_by_id, read_user_by_username, \
-    read_user_by_email, create_user, read_users, update_user, delete_user
+from app.crud import IdSpecification, UsernameSpecification, EmailSpecification
+from app.crud.user import UserRepository, get_user_repository
 from app.models import User
-from app.schemas.user import UserSuperCreate, UserCreateResponse, UserResponse, \
-    UserUpdateResponse, UserCreate, UserUpdate
-
-T = TypeVar('T', UserResponse, UserCreateResponse, UserUpdateResponse)
-
-
-async def model_to_response(model: User, response_model: T) -> T:
-    """
-    Converts a User object to a Pydantic response model
-    :param model: Object from Pydantic Base Model class
-    :type model: User
-    :param response_model: Response model
-    :type response_model: T
-    :return: Model inherited from SQLAlchemy Declarative Base
-    :rtype: T
-    """
-    return response_model.from_orm(model)
+from app.schemas.user import UserSuperCreate, UserCreateResponse, \
+    UserResponse, UserUpdateResponse, UserCreate, UserUpdate
+from app.services import model_to_response
 
 
 class UserService:
@@ -33,8 +20,8 @@ class UserService:
     User service class
     """
 
-    def __init__(self, session: AsyncSession):
-        self.session: AsyncSession = session
+    def __init__(self, user_repo: UserRepository):
+        self.user_repo: UserRepository = user_repo
 
     async def get_user_by_id(self, user_id: int) -> UserResponse:
         """
@@ -44,7 +31,7 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: User = await read_user_by_id(user_id, self.session)
+        user: User = await self.user_repo.read_by_id(IdSpecification(user_id))
         return await model_to_response(user, UserResponse)
 
     async def get_user_by_username(self, username: str) -> UserResponse:
@@ -55,28 +42,26 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: User = await read_user_by_username(username, self.session)
+        user: User = await self.user_repo.read_by_username(
+            UsernameSpecification(username))
         return await model_to_response(user, UserResponse)
 
     async def get_user_by_email(
             self, email: EmailStr) -> Optional[UserResponse]:
         """
         Read the user from the database with unique email
-        :param self.session: Async Session for Database
-        :type self.session: AsyncSession
         :param email: Email to retrieve User from
         :type email: EmailStr
         :return: User found in database
         :rtype: UserResponse
         """
-        db_user: User = await read_user_by_email(email, self.session)
-        if not db_user:
-            return None
-        return await model_to_response(db_user, UserResponse)
+        user: User = await self.user_repo.read_by_email(
+            EmailSpecification(email))
+        return await model_to_response(user, UserResponse)
 
-    async def create_user(
+    async def register_user(
             self, user: Union[UserCreate, UserSuperCreate]
-    ) -> Union[UserCreateResponse, str]:
+    ) -> UserCreateResponse:
         """
         Create user into the database
         :param user: Request object representing the user
@@ -85,9 +70,10 @@ class UserService:
          database
         :rtype: UserCreateResponse or exception
         """
-        created_user = await create_user(user, self.session)
-        if isinstance(created_user, str):
-            return created_user
+        try:
+            created_user = await self.user_repo.create_user(user)
+        except SQLAlchemyError as sa_exc:
+            raise sa_exc
         return await model_to_response(created_user, UserCreateResponse)
 
     async def get_users(
@@ -95,8 +81,6 @@ class UserService:
     ) -> Optional[list[UserResponse]]:
         """
         Read users information from table
-        :param self.session: Async Session for Database
-        :type self.session: AsyncSession
         :param offset: Offset from where to start returning users
         :type offset: NonNegativeInt
         :param limit: Limit the number of results from query
@@ -104,7 +88,10 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        users: list[User] = await read_users(offset, limit, self.session)
+        try:
+            users: list[User] = await self.user_repo.read_users(offset, limit)
+        except SQLAlchemyError as nrf_exc:
+            raise nrf_exc
         found_users: list[UserResponse] = [
             await model_to_response(user, UserResponse) for user in users]
         return found_users
@@ -118,12 +105,11 @@ class UserService:
         :type user_id: int
         :param user: Requested user information to update
         :type user: UserUpdate
-        :param self.session: Async Session for Database
-        :type self.session: AsyncSession
         :return: User information
         :rtype: UserUpdateResponse
         """
-        updated_user: User = await update_user(user_id, user, self.session)
+        updated_user: User = await self.user_repo.update_user(
+            IdSpecification(user_id), user)
         return await model_to_response(updated_user, UserUpdateResponse)
 
     async def delete_user(self, user_id: int) -> bool:
@@ -134,5 +120,19 @@ class UserService:
         :return: True if the user is deleted; otherwise False
         :rtype: bool
         """
-        deleted: bool = await delete_user(user_id, self.session)
+        deleted: bool = await self.user_repo.delete_user(
+            IdSpecification(user_id))
         return deleted
+
+
+async def get_user_service(
+        user_repo: UserRepository = Depends(
+            get_user_repository)) -> UserService:
+    """
+    Get an instance of the user service with the given repository.
+    :param user_repo: User repository object for database connection
+    :type user_repo: UserRepository
+    :return: UserService instance with repository associated
+    :rtype: UserService
+    """
+    return UserService(user_repo)
