@@ -9,6 +9,14 @@ from pydantic import BaseModel, Field, PositiveInt
 from app.schemas.model import Model
 
 
+class AnalysisId(BaseModel):
+    """
+    Analysis ID class that inherits from Pydantic Base Model.
+    """
+    id: PositiveInt = Field(
+        ..., title='Analysis ID', description='ID of the Analysis')
+
+
 class AnalysisBase(BaseModel):
     """
     Base Analysis class that inherits from Pydantic Base Model.
@@ -57,12 +65,10 @@ class AnalysisCreate(AnalysisBase):
     """
 
 
-class Analysis(AnalysisBase):
+class Analysis(AnalysisBase, AnalysisId):
     """
     Analysis class that inherits from AnalysisBase class.
     """
-    id: PositiveInt = Field(
-        ..., title='Analysis ID', description='ID of the Analysis')
 
     class Config:
         """

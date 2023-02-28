@@ -1,13 +1,16 @@
 """
 User Service to handle business logic
 """
+from datetime import datetime
 from typing import Optional, Union
 
 from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.crud import IdSpecification, UsernameSpecification, EmailSpecification
+from app.core.security.exceptions import DatabaseException, ServiceException
+from app.crud.specification import IdSpecification, UsernameSpecification, \
+    EmailSpecification
 from app.crud.user import UserRepository, get_user_repository
 from app.models import User
 from app.schemas.user import UserSuperCreate, UserCreateResponse, \
@@ -23,18 +26,35 @@ class UserService:
     def __init__(self, user_repo: UserRepository):
         self.user_repo: UserRepository = user_repo
 
-    async def get_user_by_id(self, user_id: int) -> UserResponse:
+    async def get_user_by_id(self, user_id: PositiveInt) -> UserResponse:
         """
         Get user information with the correct schema for response
         :param user_id: Unique identifier of the user
-        :type user_id: int
+        :type user_id: PositiveInt
         :return: User information
         :rtype: UserResponse
         """
         user: User = await self.user_repo.read_by_id(IdSpecification(user_id))
         return await model_to_response(user, UserResponse)
 
-    async def get_user_by_username(self, username: str) -> UserResponse:
+    # async def get_login_user(
+    #         self, username: str) -> Union[UserResponse, User]:
+    #     """
+    #     Get user information with the correct schema for response
+    #     :param username: username to retrieve User from
+    #     :type username: str
+    #     :return: User information
+    #     :rtype: UserResponse
+    #     """
+    #     try:
+    #         user: User = await self.user_repo.read_by_username(
+    #             UsernameSpecification(username))
+    #     except DatabaseException as db_exc:
+    #         raise ServiceException(db_exc) from db_exc
+    #     return user
+
+    async def get_user_by_username(
+            self, username: str) -> Union[UserResponse, User]:
         """
         Get user information with the correct schema for response
         :param username: username to retrieve User from
@@ -42,14 +62,17 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: User = await self.user_repo.read_by_username(
-            UsernameSpecification(username))
+        try:
+            user: User = await self.user_repo.read_by_username(
+                UsernameSpecification(username))
+        except DatabaseException as db_exc:
+            raise ServiceException(db_exc) from db_exc
         return await model_to_response(user, UserResponse)
 
     async def get_user_by_email(
             self, email: EmailStr) -> Optional[UserResponse]:
         """
-        Read the user from the database with unique email
+        Read the user from the database with unique email.
         :param email: Email to retrieve User from
         :type email: EmailStr
         :return: User found in database
@@ -97,12 +120,12 @@ class UserService:
         return found_users
 
     async def update_user(
-            self, user_id: int, user: UserUpdate
+            self, user_id: PositiveInt, user: UserUpdate
     ) -> Optional[UserUpdateResponse]:
         """
         Update user information from table
         :param user_id: Unique identifier of the user
-        :type user_id: int
+        :type user_id: PositiveInt
         :param user: Requested user information to update
         :type user: UserUpdate
         :return: User information
@@ -112,17 +135,20 @@ class UserService:
             IdSpecification(user_id), user)
         return await model_to_response(updated_user, UserUpdateResponse)
 
-    async def delete_user(self, user_id: int) -> bool:
+    async def delete_user(self, user_id: PositiveInt) -> dict:
         """
         Deletes a user by its id
         :param user_id: Unique identifier of the user
-        :type user_id: int
-        :return: True if the user is deleted; otherwise False
-        :rtype: bool
+        :type user_id: PositiveInt
+        :return: Data to confirmation info about the delete process
+        :rtype: dict
         """
-        deleted: bool = await self.user_repo.delete_user(
-            IdSpecification(user_id))
-        return deleted
+        try:
+            deleted: bool = await self.user_repo.delete_user(
+                IdSpecification(user_id))
+        except SQLAlchemyError as sa_exc:
+            raise sa_exc
+        return {"ok": deleted, 'deleted_at': datetime.now()}
 
 
 async def get_user_service(

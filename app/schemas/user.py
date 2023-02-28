@@ -64,7 +64,7 @@ class UserName(BaseModel):
         ..., title='Last name', description='Last name(s) of the User')
 
 
-class UserBase(UserBaseAuth, UserName):
+class UserBase(UserName, UserBaseAuth):
     """
     Base class for User that inherits from UserAuth.
     """
@@ -266,14 +266,21 @@ class UserInDB(UserUpdatedAt, BaseModel):
         description='Time the User was created')
 
 
-class UserUpdateResponse(UserInDB, UserOptional, UserAuth, UserName):
+class UserPassword(BaseModel):
     """
-    Response class for updating User that inherits from UserInDB,
-     UserOptional and UserBase.
+    User Password class that inherits from Pydantic Base Model.
     """
     password: str = Field(
         ..., title='Hashed Password', min_length=40,
         description='Hashed Password of the User')
+
+
+class UserUpdateResponse(
+    UserInDB, UserOptional, UserPassword, UserName, UserAuth):
+    """
+    Response class for updating User that inherits from UserInDB,
+     UserOptional, UserPassword, UserName and UserAuth.
+    """
 
     class Config:
         """
@@ -348,7 +355,7 @@ class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
         }
 
 
-class UserResponse(UserInDB, UserRelationship, UserOptional, UserBase, UserID):
+class UserResponse(UserRelationship, UserInDB, UserOptional, UserBase, UserID):
     """
     Response for User class that inherits from UserRelationship,
      UserInDB, UserOptional, UserCreateResponse.

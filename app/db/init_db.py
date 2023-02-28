@@ -1,17 +1,18 @@
 """
 Init DB script
 """
+from fastapi import Depends
 from sqlalchemy.exc import CompileError, DataError, DatabaseError, \
     DisconnectionError, IntegrityError, InternalError, InvalidatePoolError, \
     PendingRollbackError, TimeoutError as SATimeoutError
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncTransaction
+from sqlalchemy.ext.asyncio import AsyncTransaction
 
 from app.core.config import settings
+from app.crud.user import UserRepository, get_user_repository
 from app.db.base_class import Base
 from app.db.session import async_engine
 from app.models import User
 from app.schemas.user import UserSuperCreate
-from app.services.user import UserService
 from app.utils import hide_email
 
 
@@ -49,26 +50,26 @@ async def create_db_and_tables() -> None:
             print(t_exc)
 
 
-async def init_db(async_session: AsyncSession) -> None:
+async def init_db(
+        user_repo: UserRepository = Depends(get_user_repository)) -> None:
     """
     Initialization of the database connection
-    :param async_session:
-    :type async_session:
+    :param user_repo: Dependency injection for user repository
+    :type user_repo: UserRepository
     :return: None
     :rtype: NoneType
     """
     await create_db_and_tables()
-    print("init_db")
-    user_service: UserService = UserService(async_session)
-    user = await user_service.get_user_by_email(settings.SUPERUSER_EMAIL)
-    if not user:
-        user_in: UserSuperCreate = UserSuperCreate(
-            username=settings.SUPERUSER_EMAIL.split("@")[0],
-            email=settings.SUPERUSER_EMAIL,
-            first_name=settings.SUPERUSER_FIRST_NAME,
-            last_name=settings.SUPERUSER_EMAIL.split("@")[0].capitalize(),
-            password=settings.SUPERUSER_PASSWORD,
-        )
-        superuser: User = await user_service.register_user(user_in)
-        email: str = await hide_email(superuser.email)
-        print('Superuser created with email', email)
+    # user: UserResponse = await user_repo.read_by_email(
+    #     EmailSpecification(settings.SUPERUSER_EMAIL))
+    # if not user:
+    user: UserSuperCreate = UserSuperCreate(
+        username=settings.SUPERUSER_EMAIL.split("@")[0],
+        email=settings.SUPERUSER_EMAIL,
+        first_name=settings.SUPERUSER_FIRST_NAME,
+        last_name=settings.SUPERUSER_EMAIL.split("@")[0].capitalize(),
+        password=settings.SUPERUSER_PASSWORD,
+    )
+    superuser: User = await user_repo.create_user(user)
+    email: str = await hide_email(superuser.email)
+    print('Superuser created with email', email)

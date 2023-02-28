@@ -10,14 +10,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import config
-from app.db.session import get_user_service
 from app.models import User
 from app.schemas.token import TokenPayload
 from app.schemas.user import UserAuth
-from app.services.user import UserService
+from app.services.user import UserService, get_user_service
 from app.utils import audience
 
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
@@ -27,7 +25,7 @@ oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
         setting: config.Settings = Depends(config.get_setting),
-        session: AsyncSession = Depends(get_user_service)
+        user_service: UserService = Depends(get_user_service)
 ) -> UserAuth:
     """
     Function to get current user
@@ -70,7 +68,6 @@ async def get_current_user(
                    ' audience and issuer') from c_exc
     except (JWTError, ValidationError) as exc:
         raise credentials_exception from exc
-    user_service: UserService = UserService(session)
     user: User = await user_service.get_user_by_username(username)
     if not user:
         raise credentials_exception

@@ -4,7 +4,8 @@ Core config script
 from functools import lru_cache
 from typing import Any, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, validator, \
+from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
+    validator, \
     RedisDsn
 
 
@@ -77,6 +78,8 @@ class Settings(BaseSettings):
     SMTP_HOST: Optional[str] = None
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
+    MAIL_SUBJECT: str
+    MAIL_TIMEOUT: float
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
@@ -86,7 +89,7 @@ class Settings(BaseSettings):
     SUPERUSER_FIRST_NAME: str
     SUPERUSER_PASSWORD: str
     ENCODING: str = "UTF-8"
-    OPENAPI_FILE_PATH: str = "openapi.json"
+    OPENAPI_FILE_PATH: str = "/openapi.json"
 
     REDIS_HOST: str
     REDIS_USERNAME: str

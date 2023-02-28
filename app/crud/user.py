@@ -10,10 +10,12 @@ from sqlalchemy import select, Select, ScalarResult
 from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security.exceptions import DatabaseException
 from app.core.security.password import get_password_hash
-from app.crud import IdSpecification, UsernameSpecification, \
+from app.crud.filter import UniqueFilter, IndexFilter, \
+    get_index_filter, get_unique_filter
+from app.crud.specification import IdSpecification, UsernameSpecification, \
     EmailSpecification
-from app.crud.filter import Filter, get_filter
 from app.db.session import get_session
 from app.models import User
 from app.schemas.user import UserSuperCreate, UserCreate, UserUpdate
@@ -24,9 +26,12 @@ class UserRepository:
     Repository class for User.
     """
 
-    def __init__(self, session: AsyncSession, user_filter: Filter):
+    def __init__(self, session: AsyncSession, index_filter: IndexFilter,
+                 unique_filter: UniqueFilter):
         self.session: AsyncSession = session
-        self.user_filter: Filter = user_filter
+        self.index_filter: IndexFilter = index_filter
+        self.unique_filter: UniqueFilter = unique_filter
+        self.model: User = User
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[User]:
         """
@@ -36,7 +41,7 @@ class UserRepository:
         :return:
         :rtype: User
         """
-        return await self.user_filter.filter(_id, self.session)
+        return await self.index_filter.filter(_id, self.session, self.model)
 
     async def read_by_username(
             self, username: UsernameSpecification) -> Optional[User]:
@@ -47,7 +52,12 @@ class UserRepository:
         :return:
         :rtype: User
         """
-        return await self.user_filter.filter(username, self.session)
+        try:
+            user: User = await self.unique_filter.filter(
+                username, self.session, self.model)
+        except SQLAlchemyError as sa_exc:
+            raise DatabaseException(sa_exc) from sa_exc
+        return user
 
     async def read_by_email(self, email: EmailSpecification) -> Optional[User]:
         """
@@ -57,7 +67,7 @@ class UserRepository:
         :return:
         :rtype: User
         """
-        return await self.user_filter.filter(email, self.session)
+        return await self.unique_filter.filter(email, self.session, self.model)
 
     async def read_users(
             self, offset: NonNegativeInt, limit: PositiveInt,
@@ -102,8 +112,8 @@ class UserRepository:
                 "Database Error for user with id: %s and username: %s\n%s",
                 user_create.id, user_create.username, sa_exc)
             raise sa_exc
-        created_user: User = await self.read_by_username(
-            user_create.username)
+        created_user: User = await self.read_by_id(IdSpecification(
+            user_create.id))
         return created_user
 
     async def update_user(
@@ -156,16 +166,14 @@ class UserRepository:
 
 
 async def get_user_repository(
-        filter_type: str, session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session)
 ) -> UserRepository:
     """
     Get an instance of the user repository with the given session.
-    :param filter_type: Filter for the database
-    :type filter_type: str
     :param session: Session object for database connectio n
     :type session: AsyncSession
     :return: UserRepository instance with session associated
     :rtype: UserRepository
     """
-    filter_instance: Filter = await get_filter(filter_type)
-    return UserRepository(session, filter_instance)
+    return UserRepository(session, await get_index_filter(),
+                          await get_unique_filter())

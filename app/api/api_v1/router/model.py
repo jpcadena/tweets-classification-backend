@@ -4,13 +4,11 @@ Model router module for API endpoints.
 from fastapi import APIRouter, Depends, status, Path, Body, Query
 from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
-from app.db.session import get_user_service
 from app.schemas.model import Model, ModelCreate
 from app.schemas.user import UserAuth
-from app.services.model import ModelService
+from app.services.model import ModelService, get_model_service
 
 router: APIRouter = APIRouter(prefix='/models', tags=['models'])
 
@@ -20,6 +18,7 @@ router: APIRouter = APIRouter(prefix='/models', tags=['models'])
 async def create_model(
         model: ModelCreate = Body(
             ..., title='New model', description='New model to create'),
+        model_service: ModelService = Depends(get_model_service),
         current_user: UserAuth = Depends(get_current_user)
 ) -> Model:
     """
@@ -36,9 +35,7 @@ async def create_model(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    auth_user_id: PositiveInt = current_user.id
-    created_model: Model = await ModelService.create_model(
-        model, auth_user_id)
+    created_model: Model = await model_service.register_model(model)
     return created_model
 
 
@@ -46,7 +43,8 @@ async def create_model(
 async def get_model(model_id: PositiveInt = Path(
     ..., title='ModelCreate ID',
     description='ID of the ModelCreate to searched',
-    example=1), current_user: UserAuth = Depends(get_current_user)
+    example=1), model_service: ModelService = Depends(get_model_service),
+        current_user: UserAuth = Depends(get_current_user)
 ) -> Model:
     """
     Search for specific Model by ID from the system.
@@ -60,7 +58,7 @@ async def get_model(model_id: PositiveInt = Path(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    found_model: ModelCreate = await ModelService.read_model_by_id(model_id)
+    found_model: ModelCreate = await model_service.read_model_by_id(model_id)
     if not found_model:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'ModelCreate with ID {model_id} '
@@ -75,7 +73,7 @@ async def get_models(
             0, title='Skip', description='Skip users', example=0),
         limit: PositiveInt = Query(
             100, title='Limit', description='Limit pagination', example=100),
-        session: AsyncSession = Depends(get_user_service),
+        model_service: ModelService = Depends(get_model_service),
         current_user: UserAuth = Depends(get_current_user)) -> list[Model]:
     """
     Retrieve all models from the system.
@@ -88,12 +86,11 @@ async def get_models(
       computing_time, analysis_id and its creation timestamp
     - :rtype: list[Model]
     \f
-    :param session: Dependency method for async Postgres connection
-    :type session: AsyncSession
+    :param model_service: Dependency method for Model Service
+    :type model_service: ModelService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    model_service: ModelService = ModelService(session)
     models: list[Model] = await model_service.get_models(skip, limit)
     if not models:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

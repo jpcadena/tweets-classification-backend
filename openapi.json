@@ -1,0 +1,1690 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "tweets-classification-backend",
+        "description": "**FastAPI**, **SQLAlchemy** and **Redis** helps you do\n awesome stuff. \ud83d\ude80\n\n ![Twitter](https://rb.gy/iu4yij)",
+        "contact": {
+            "name": "Juan Pablo Cadena Aguilar",
+            "url": "https://www.github.com/jpcadena",
+            "email": "jpcadena@espol.edu.ec"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "description": "Login with OAuth2 authentication using request form.\n- :param user: Object from request body with username and password\n as DI\n- :type user: OAuth2PasswordRequestForm\n- :return: Token information with access token, its type and\n refresh token\n- :rtype: TokenResponse",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_auth-login"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get Users",
+                "description": "Get all Users basic information from the system using pagination.\n- :param skip: Offset from where to start returning users\n- :type skip: NonNegativeInt\n- :param limit: Limit the number of results from query\n- :type limit: PositiveInt\n- :return: List of Users retrieved from database with id, username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.\n- :rtype: list[UserResponse]",
+                "operationId": "get_users",
+                "parameters": [
+                    {
+                        "description": "Skip users",
+                        "required": false,
+                        "schema": {
+                            "title": "Skip",
+                            "minimum": 0.0,
+                            "type": "integer",
+                            "description": "Skip users",
+                            "default": 0
+                        },
+                        "example": 0,
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Limit pagination",
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "Limit pagination",
+                            "default": 100
+                        },
+                        "example": 100,
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Users-Get Users",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/UserResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create User",
+                "description": "Register new user into the system.\n- :param user: Body Object with username, email, first name,\nmiddle name [OPTIONAL], last name, password, gender [OPTIONAL],\nbirthdate [OPTIONAL], phone_number [OPTIONAL], address [OPTIONAL],\ncity [OPTIONAL], state [OPTIONAL] and country [OPTIONAL].\n- :type user: UserCreate\n- :return: User created with its id, username, email, first name\n and middle name.\n- :rtype: UserCreateResponse",
+                "operationId": "create_user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "New user",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/UserCreate"
+                                    }
+                                ],
+                                "description": "New user to register"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/me": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User Me",
+                "description": "Get current user.\n- :return: Response object for current user with id, username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.\n- :rtype: UserResponse",
+                "operationId": "get_user_me",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/users/user_id": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get User By Id",
+                "description": "Get an existing user from the system given an ID.\n- :param user_id: Unique identifier of the user\n- :type user_id: PositiveInt\n- :return: Found user with the given ID including its username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.\n- :rtype: UserResponse",
+                "operationId": "get_user_by_id",
+                "parameters": [
+                    {
+                        "description": "ID of the User to searched",
+                        "required": true,
+                        "schema": {
+                            "title": "User ID",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "ID of the User to searched"
+                        },
+                        "example": 1,
+                        "name": "user_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/users/{user_id}": {
+            "put": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update User",
+                "description": "Update an existing user from the system given an ID and new info.\n- :param user_id: Unique identifier of the user\n- :type user_id: PositiveInt\n- :param user_in: New user data to update that can include:\n username, email, first_name, middle_name, last_name, password,\n  gender, birthdate, phone_number, city and country.\n- :type user_in: UserUpdate\n- :return: Updated user with the given ID and its username, email,\n first_name, last_name, middle_name, hashed password, gender,\n  birthdate, phone_number, city, country, is_active, is_superuser,\n   created_at and updated_at.\n- :rtype: UserUpdateResponse",
+                "operationId": "update_user",
+                "parameters": [
+                    {
+                        "description": "ID of the User to searched",
+                        "required": true,
+                        "schema": {
+                            "title": "User ID",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "ID of the User to searched"
+                        },
+                        "example": 1,
+                        "name": "user_id",
+                        "in": "path"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "User data",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/UserUpdate"
+                                    }
+                                ],
+                                "description": "New user data to update"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserUpdateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete User",
+                "description": "Delete an existing user from the system given an ID and new info.\n- :param user_id: Unique identifier of the user\n- :type user_id: PositiveInt\n- :return: Json Response object with the deleted information\n- :rtype: Response",
+                "operationId": "delete_user",
+                "parameters": [
+                    {
+                        "description": "ID of the User to searched",
+                        "required": true,
+                        "schema": {
+                            "title": "User ID",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "ID of the User to searched"
+                        },
+                        "example": 1,
+                        "name": "user_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful Response"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/models": {
+            "get": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get Models",
+                "description": "Retrieve all models from the system.\n- :param skip: Offset from where to start returning models\n- :type skip: NonNegativeInt\n- :param limit: Limit the number of results from query\n- :type limit: PositiveInt\n- :return: All models from logged-in user with id, tweet_id,\n model_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp\n- :rtype: list[Model]",
+                "operationId": "get_models",
+                "parameters": [
+                    {
+                        "description": "Skip users",
+                        "required": false,
+                        "schema": {
+                            "title": "Skip",
+                            "minimum": 0.0,
+                            "type": "integer",
+                            "description": "Skip users",
+                            "default": 0
+                        },
+                        "example": 0,
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Limit pagination",
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "Limit pagination",
+                            "default": 100
+                        },
+                        "example": 100,
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Models-Get Models",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Model"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Create Model",
+                "description": "Create a new model into the system.\n- :param model: Body Object with tweet_id, model_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time and\n  relationship with Analysis: analysis_id (OPTIONAL)\n- :type model: ModelCreate\n- :return: Model created with id, tweet_id, model_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time, relationship\n  with Analysis: analysis_id and its creation timestamp\n- :rtype: Model",
+                "operationId": "create_model",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "New model",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ModelCreate"
+                                    }
+                                ],
+                                "description": "New model to create"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Model"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/models/{model_id}": {
+            "get": {
+                "tags": [
+                    "models"
+                ],
+                "summary": "Get Model",
+                "description": "Search for specific Model by ID from the system.\n- :param model_id: Path Parameter of Model ID to search\n- :type model_id: PydanticObjectId\n- :return: Found Model from logged-in user with id, tweet_id,\n model_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp\n- :rtype: Model",
+                "operationId": "get_model",
+                "parameters": [
+                    {
+                        "description": "ID of the ModelCreate to searched",
+                        "required": true,
+                        "schema": {
+                            "title": "ModelCreate ID",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "ID of the ModelCreate to searched"
+                        },
+                        "example": 1,
+                        "name": "model_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Model"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/analyses": {
+            "get": {
+                "tags": [
+                    "analyses"
+                ],
+                "summary": "Get Analyses",
+                "description": "Retrieve all analyses from the system.\n- :param skip: Offset from where to start returning analyses\n- :type skip: NonNegativeInt\n- :param limit: Limit the number of results from query\n- :type limit: PositiveInt\n- :return: All analyses from logged-in user with id, tweet_id,\n analysis_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp\n- :rtype: list[Analysis]",
+                "operationId": "get_analyses",
+                "parameters": [
+                    {
+                        "description": "Skip users",
+                        "required": false,
+                        "schema": {
+                            "title": "Skip",
+                            "minimum": 0.0,
+                            "type": "integer",
+                            "description": "Skip users",
+                            "default": 0
+                        },
+                        "example": 0,
+                        "name": "skip",
+                        "in": "query"
+                    },
+                    {
+                        "description": "Limit pagination",
+                        "required": false,
+                        "schema": {
+                            "title": "Limit",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "Limit pagination",
+                            "default": 100
+                        },
+                        "example": 100,
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "title": "Response Analyses-Get Analyses",
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Analysis"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "analyses"
+                ],
+                "summary": "Create Analysis",
+                "description": "Create a new analysis into the system.\n- :param analysis: Body Object with tweet_id, analysis_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time and\n  relationship with Analysis: analysis_id (OPTIONAL)\n- :type analysis: AnalysisCreate\n- :return: Analysis created with id, tweet_id, analysis_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time, relationship\n  with Analysis: analysis_id and its creation timestamp\n- :rtype: Analysis",
+                "operationId": "create_analysis",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "New analysis",
+                                "allOf": [
+                                    {
+                                        "$ref": "#/components/schemas/AnalysisCreate"
+                                    }
+                                ],
+                                "description": "New analysis to create"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Analysis"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/analyses/{analysis_id}": {
+            "get": {
+                "tags": [
+                    "analyses"
+                ],
+                "summary": "Get Analysis",
+                "description": "Search for specific Analysis by ID from the system.\n- :param analysis_id: Path Parameter of Analysis ID to search\n- :type analysis_id: PydanticObjectId\n- :return: Found Analysis from logged-in user with id, tweet_id,\n analysis_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp\n- :rtype: Analysis",
+                "operationId": "get_analysis",
+                "parameters": [
+                    {
+                        "description": "ID of the AnalysisCreate to searched",
+                        "required": true,
+                        "schema": {
+                            "title": "AnalysisCreate ID",
+                            "exclusiveMinimum": 0.0,
+                            "type": "integer",
+                            "description": "ID of the AnalysisCreate to searched"
+                        },
+                        "example": 1,
+                        "name": "analysis_id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Analysis"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Analysis": {
+                "title": "Analysis",
+                "required": [
+                    "id",
+                    "tweet_id",
+                    "content",
+                    "tweet_username",
+                    "target",
+                    "created_at",
+                    "user_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Analysis ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Analysis"
+                    },
+                    "tweet_id": {
+                        "title": "Tweet ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Tweet"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "maxLength": 280,
+                        "type": "string",
+                        "description": "The actual UTF-8 text of the status update"
+                    },
+                    "tweet_username": {
+                        "title": "Tweet Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "target": {
+                        "title": "Target (Insecurity)",
+                        "type": "boolean",
+                        "description": "True if the user is active; otherwise false"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "description": "Time the Analysis was performed",
+                        "format": "date-time"
+                    },
+                    "user_id": {
+                        "title": "User ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the User who performed the Analysis"
+                    },
+                    "models": {
+                        "title": "Models",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Model"
+                        },
+                        "description": "List of performed model",
+                        "default": []
+                    }
+                },
+                "description": "Analysis class that inherits from AnalysisBase class.",
+                "example": {
+                    "id": 2,
+                    "tweet_id": 242312391,
+                    "content": "Hello, world #Ecuador #insecurity",
+                    "tweet_username": "my_username",
+                    "target": false,
+                    "created_at": "2023-02-28T01:13:44.042500",
+                    "user_id": 5
+                }
+            },
+            "AnalysisCreate": {
+                "title": "AnalysisCreate",
+                "required": [
+                    "tweet_id",
+                    "content",
+                    "tweet_username",
+                    "target",
+                    "created_at",
+                    "user_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "tweet_id": {
+                        "title": "Tweet ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Tweet"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "maxLength": 280,
+                        "type": "string",
+                        "description": "The actual UTF-8 text of the status update"
+                    },
+                    "tweet_username": {
+                        "title": "Tweet Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "target": {
+                        "title": "Target (Insecurity)",
+                        "type": "boolean",
+                        "description": "True if the user is active; otherwise false"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "description": "Time the Analysis was performed",
+                        "format": "date-time"
+                    },
+                    "user_id": {
+                        "title": "User ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the User who performed the Analysis"
+                    },
+                    "models": {
+                        "title": "Models",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Model"
+                        },
+                        "description": "List of performed model",
+                        "default": []
+                    }
+                },
+                "description": "Class for created Analysis that inherits from AnalysisBase",
+                "example": {
+                    "tweet_id": 1,
+                    "content": "Hello, world",
+                    "tweet_username": "username",
+                    "target": true,
+                    "created_at": "2023-02-28T01:13:44.041000",
+                    "user_id": 2
+                }
+            },
+            "Body_auth-login": {
+                "title": "Body_auth-login",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "grant_type": {
+                        "title": "Grant Type",
+                        "pattern": "password",
+                        "type": "string"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "type": "string"
+                    },
+                    "scope": {
+                        "title": "Scope",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "client_id": {
+                        "title": "Client Id",
+                        "type": "string"
+                    },
+                    "client_secret": {
+                        "title": "Client Secret",
+                        "type": "string"
+                    }
+                }
+            },
+            "Gender": {
+                "title": "Gender",
+                "enum": [
+                    "male",
+                    "female",
+                    "other"
+                ],
+                "type": "string",
+                "description": "Gender class that inherits from built-in Enum"
+            },
+            "HTTPValidationError": {
+                "title": "HTTPValidationError",
+                "type": "object",
+                "properties": {
+                    "detail": {
+                        "title": "Detail",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        }
+                    }
+                }
+            },
+            "Model": {
+                "title": "Model",
+                "required": [
+                    "id",
+                    "tweet_id",
+                    "model_name",
+                    "accuracy",
+                    "precision",
+                    "recall",
+                    "f1_score",
+                    "roc_auc",
+                    "computing_time"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Model ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Model"
+                    },
+                    "tweet_id": {
+                        "title": "Tweet ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Tweet"
+                    },
+                    "model_name": {
+                        "title": "Model Name",
+                        "type": "string",
+                        "description": "Name of the model"
+                    },
+                    "accuracy": {
+                        "title": "Accuracy",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Accuracy score of the model"
+                    },
+                    "precision": {
+                        "title": "Precision",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Precision score of the model"
+                    },
+                    "recall": {
+                        "title": "Recall",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Recall score of the model"
+                    },
+                    "f1_score": {
+                        "title": "F1 Score",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "F1 score of the model"
+                    },
+                    "roc_auc": {
+                        "title": "ROC AUC",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Area Under the Receiver Operating Characteristic Curve for the model"
+                    },
+                    "computing_time": {
+                        "title": "Computing Time",
+                        "exclusiveMinimum": 0.0,
+                        "type": "number",
+                        "description": "The time it took to classify the tweet"
+                    },
+                    "analysis_id": {
+                        "title": "Analysis ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Analysis where the model was executed"
+                    },
+                    "created_at": {
+                        "title": "Created At",
+                        "type": "string",
+                        "description": "Time the Model was executed",
+                        "format": "date-time"
+                    }
+                },
+                "description": "Model class that inherits from ModelCreatedAt, ModelCreate and\n ModelID.",
+                "example": {
+                    "id": 5,
+                    "tweet_id": 24578931,
+                    "model_name": "Logistic Regression",
+                    "accuracy": 0.84,
+                    "precision": 0.94,
+                    "recall": 0.85,
+                    "f1_score": 0.89,
+                    "roc_auc": 0.99,
+                    "computing_time": 0.03,
+                    "created_at": "2023-02-28T01:13:44.040000",
+                    "analysis_id": 2
+                }
+            },
+            "ModelCreate": {
+                "title": "ModelCreate",
+                "required": [
+                    "tweet_id",
+                    "model_name",
+                    "accuracy",
+                    "precision",
+                    "recall",
+                    "f1_score",
+                    "roc_auc",
+                    "computing_time"
+                ],
+                "type": "object",
+                "properties": {
+                    "tweet_id": {
+                        "title": "Tweet ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Tweet"
+                    },
+                    "model_name": {
+                        "title": "Model Name",
+                        "type": "string",
+                        "description": "Name of the model"
+                    },
+                    "accuracy": {
+                        "title": "Accuracy",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Accuracy score of the model"
+                    },
+                    "precision": {
+                        "title": "Precision",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Precision score of the model"
+                    },
+                    "recall": {
+                        "title": "Recall",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Recall score of the model"
+                    },
+                    "f1_score": {
+                        "title": "F1 Score",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "F1 score of the model"
+                    },
+                    "roc_auc": {
+                        "title": "ROC AUC",
+                        "minimum": 0.0,
+                        "type": "number",
+                        "description": "Area Under the Receiver Operating Characteristic Curve for the model"
+                    },
+                    "computing_time": {
+                        "title": "Computing Time",
+                        "exclusiveMinimum": 0.0,
+                        "type": "number",
+                        "description": "The time it took to classify the tweet"
+                    },
+                    "analysis_id": {
+                        "title": "Analysis ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the Analysis where the model was executed"
+                    }
+                },
+                "description": "Class for creating Model that inherits from ModelBase.",
+                "example": {
+                    "tweet_id": 112317014,
+                    "model_name": "Logistic Regression",
+                    "accuracy": 0.85,
+                    "precision": 0.9,
+                    "recall": 0.8,
+                    "f1_score": 0.84,
+                    "roc_auc": 0.91,
+                    "computing_time": 2.5
+                }
+            },
+            "TokenResponse": {
+                "title": "TokenResponse",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "refresh_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "access_token": {
+                        "title": "Token",
+                        "type": "string",
+                        "description": "Access token"
+                    },
+                    "token_type": {
+                        "title": "Token type",
+                        "type": "string",
+                        "description": "Type of the token"
+                    },
+                    "refresh_token": {
+                        "title": "Refresh Token",
+                        "type": "string",
+                        "description": "Refresh token"
+                    }
+                },
+                "description": "Token for Response based on Pydantic Base Model.",
+                "example": {
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+                    "token_type": "bearer",
+                    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+            },
+            "UserCreate": {
+                "title": "UserCreate",
+                "required": [
+                    "username",
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "password"
+                ],
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string",
+                        "description": "Preferred e-mail address of the User",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "title": "First name",
+                        "type": "string",
+                        "description": "First name(s) of the User"
+                    },
+                    "last_name": {
+                        "title": "Last name",
+                        "type": "string",
+                        "description": "Last name(s) of the User"
+                    },
+                    "middle_name": {
+                        "title": "Middle Name",
+                        "type": "string",
+                        "description": "Middle name(s) of the User"
+                    },
+                    "gender": {
+                        "title": "Gender",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Gender"
+                            }
+                        ],
+                        "description": "Gender of the User"
+                    },
+                    "birthdate": {
+                        "title": "Birthdate",
+                        "type": "string",
+                        "description": "Birthday of the User",
+                        "format": "date"
+                    },
+                    "phone_number": {
+                        "title": "Phone number",
+                        "pattern": "\\(?\\+[0-9]{1,3}\\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?[0-9]{4}( ?-?[0-9]{3})? ?(\\w{1,10}\\s?\\d{1,6})?",
+                        "type": "string",
+                        "description": "Preferred telephone number of the User"
+                    },
+                    "city": {
+                        "title": "City",
+                        "type": "string",
+                        "description": "City for address of the User",
+                        "default": "Guayaquil"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "type": "string",
+                        "description": "Country for address of the User",
+                        "default": "Ecuador"
+                    },
+                    "password": {
+                        "title": "Password",
+                        "maxLength": 14,
+                        "minLength": 8,
+                        "pattern": "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,14}$",
+                        "type": "string",
+                        "description": "Password of the User"
+                    }
+                },
+                "description": "Request class for creating User that inherits from UserOptional\n and UserBase.",
+                "example": {
+                    "username": "username",
+                    "email": "example@mail.com",
+                    "first_name": "Some",
+                    "last_name": "Example",
+                    "middle_name": "One",
+                    "password": "Hk7pH9*35Fu&3U",
+                    "gender": "male",
+                    "birthdate": "2004-01-01",
+                    "phone_number": "+593987654321",
+                    "city": "Austin",
+                    "country": "United States"
+                }
+            },
+            "UserCreateResponse": {
+                "title": "UserCreateResponse",
+                "required": [
+                    "id",
+                    "username",
+                    "email",
+                    "first_name",
+                    "last_name"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the User"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string",
+                        "description": "Preferred e-mail address of the User",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "title": "First name",
+                        "type": "string",
+                        "description": "First name(s) of the User"
+                    },
+                    "last_name": {
+                        "title": "Last name",
+                        "type": "string",
+                        "description": "Last name(s) of the User"
+                    }
+                },
+                "description": "Response class for creating User that inherits from UserID and\n UserBase.",
+                "example": {
+                    "id": 1,
+                    "username": "username",
+                    "email": "example@mail.com",
+                    "first_name": "Some",
+                    "last_name": "Example"
+                }
+            },
+            "UserResponse": {
+                "title": "UserResponse",
+                "required": [
+                    "id",
+                    "username",
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "is_active",
+                    "is_superuser"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the User"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string",
+                        "description": "Preferred e-mail address of the User",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "title": "First name",
+                        "type": "string",
+                        "description": "First name(s) of the User"
+                    },
+                    "last_name": {
+                        "title": "Last name",
+                        "type": "string",
+                        "description": "Last name(s) of the User"
+                    },
+                    "middle_name": {
+                        "title": "Middle Name",
+                        "type": "string",
+                        "description": "Middle name(s) of the User"
+                    },
+                    "gender": {
+                        "title": "Gender",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Gender"
+                            }
+                        ],
+                        "description": "Gender of the User"
+                    },
+                    "birthdate": {
+                        "title": "Birthdate",
+                        "type": "string",
+                        "description": "Birthday of the User",
+                        "format": "date"
+                    },
+                    "phone_number": {
+                        "title": "Phone number",
+                        "pattern": "\\(?\\+[0-9]{1,3}\\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?[0-9]{4}( ?-?[0-9]{3})? ?(\\w{1,10}\\s?\\d{1,6})?",
+                        "type": "string",
+                        "description": "Preferred telephone number of the User"
+                    },
+                    "city": {
+                        "title": "City",
+                        "type": "string",
+                        "description": "City for address of the User",
+                        "default": "Guayaquil"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "type": "string",
+                        "description": "Country for address of the User",
+                        "default": "Ecuador"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "type": "string",
+                        "description": "Time the User was updated",
+                        "format": "date-time"
+                    },
+                    "is_active": {
+                        "title": "Is active?",
+                        "type": "boolean",
+                        "description": "True if the user is active; otherwise false"
+                    },
+                    "is_superuser": {
+                        "title": "Is super user?",
+                        "type": "boolean",
+                        "description": "True if the user is super user; otherwise false"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "type": "string",
+                        "description": "Time the User was created",
+                        "format": "date-time"
+                    },
+                    "analyses": {
+                        "title": "Analyses",
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Analysis"
+                        },
+                        "description": "List of related analyses",
+                        "default": []
+                    }
+                },
+                "description": "Response for User class that inherits from UserRelationship,\n UserInDB, UserOptional, UserCreateResponse.",
+                "example": {
+                    "id": 1,
+                    "username": "username",
+                    "email": "example@mail.com",
+                    "first_name": "Some",
+                    "last_name": "Example",
+                    "middle_name": "One",
+                    "gender": "male",
+                    "birthdate": "2004-01-01",
+                    "phone_number": "+593987654321",
+                    "city": "Austin",
+                    "country": "United States",
+                    "is_active": true,
+                    "is_superuser": false,
+                    "created_at": "2023-02-28T01:13:44.082002",
+                    "updated_at": "2023-02-28T01:13:44.082002"
+                }
+            },
+            "UserUpdate": {
+                "title": "UserUpdate",
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string",
+                        "description": "Preferred e-mail address of the User",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "title": "First name",
+                        "type": "string",
+                        "description": "First name(s) of the User"
+                    },
+                    "middle_name": {
+                        "title": "Middle Name",
+                        "type": "string",
+                        "description": "Middle name(s) of the User"
+                    },
+                    "last_name": {
+                        "title": "Last name",
+                        "type": "string",
+                        "description": "Last name(s) of the User"
+                    },
+                    "password": {
+                        "title": "New Password",
+                        "maxLength": 14,
+                        "minLength": 8,
+                        "pattern": "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,14}$",
+                        "type": "string",
+                        "description": "New Password of the User"
+                    },
+                    "gender": {
+                        "title": "Gender",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Gender"
+                            }
+                        ],
+                        "description": "Gender of the User"
+                    },
+                    "birthdate": {
+                        "title": "Birthdate",
+                        "type": "string",
+                        "description": "Birthday of the User",
+                        "format": "date"
+                    },
+                    "phone_number": {
+                        "title": "Phone number",
+                        "pattern": "\\(?\\+[0-9]{1,3}\\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?[0-9]{4}( ?-?[0-9]{3})? ?(\\w{1,10}\\s?\\d{1,6})?",
+                        "type": "string",
+                        "description": "Preferred telephone number of the User"
+                    },
+                    "city": {
+                        "title": "City",
+                        "type": "string",
+                        "description": "City for address of the User"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "type": "string",
+                        "description": "Country for address of the User"
+                    }
+                },
+                "description": "Request class for updating User based on Pydantic Base Model.",
+                "example": {
+                    "username": "username",
+                    "email": "example@mail.com",
+                    "first_name": "Some",
+                    "middle_name": "One",
+                    "last_name": "Example",
+                    "password": "Hk7pH9*35Fu&3U",
+                    "gender": "male",
+                    "birthdate": "2004-01-01",
+                    "phone_number": "+593987654321",
+                    "city": "Austin",
+                    "country": "United States"
+                }
+            },
+            "UserUpdateResponse": {
+                "title": "UserUpdateResponse",
+                "required": [
+                    "id",
+                    "username",
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "password",
+                    "is_active",
+                    "is_superuser"
+                ],
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "exclusiveMinimum": 0.0,
+                        "type": "integer",
+                        "description": "ID of the User"
+                    },
+                    "username": {
+                        "title": "Username",
+                        "maxLength": 15,
+                        "minLength": 4,
+                        "type": "string",
+                        "description": "Username to identify the user"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "type": "string",
+                        "description": "Preferred e-mail address of the User",
+                        "format": "email"
+                    },
+                    "first_name": {
+                        "title": "First name",
+                        "type": "string",
+                        "description": "First name(s) of the User"
+                    },
+                    "last_name": {
+                        "title": "Last name",
+                        "type": "string",
+                        "description": "Last name(s) of the User"
+                    },
+                    "password": {
+                        "title": "Hashed Password",
+                        "minLength": 40,
+                        "type": "string",
+                        "description": "Hashed Password of the User"
+                    },
+                    "middle_name": {
+                        "title": "Middle Name",
+                        "type": "string",
+                        "description": "Middle name(s) of the User"
+                    },
+                    "gender": {
+                        "title": "Gender",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Gender"
+                            }
+                        ],
+                        "description": "Gender of the User"
+                    },
+                    "birthdate": {
+                        "title": "Birthdate",
+                        "type": "string",
+                        "description": "Birthday of the User",
+                        "format": "date"
+                    },
+                    "phone_number": {
+                        "title": "Phone number",
+                        "pattern": "\\(?\\+[0-9]{1,3}\\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?[0-9]{4}( ?-?[0-9]{3})? ?(\\w{1,10}\\s?\\d{1,6})?",
+                        "type": "string",
+                        "description": "Preferred telephone number of the User"
+                    },
+                    "city": {
+                        "title": "City",
+                        "type": "string",
+                        "description": "City for address of the User",
+                        "default": "Guayaquil"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "type": "string",
+                        "description": "Country for address of the User",
+                        "default": "Ecuador"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "type": "string",
+                        "description": "Time the User was updated",
+                        "format": "date-time"
+                    },
+                    "is_active": {
+                        "title": "Is active?",
+                        "type": "boolean",
+                        "description": "True if the user is active; otherwise false"
+                    },
+                    "is_superuser": {
+                        "title": "Is super user?",
+                        "type": "boolean",
+                        "description": "True if the user is super user; otherwise false"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "type": "string",
+                        "description": "Time the User was created",
+                        "format": "date-time"
+                    }
+                },
+                "description": "Response class for updating User that inherits from UserInDB,\n UserOptional, UserPassword, UserName and UserAuth.",
+                "example": {
+                    "id": 1,
+                    "username": "username",
+                    "email": "example@mail.com",
+                    "first_name": "Some",
+                    "last_name": "Example",
+                    "middle_name": "One",
+                    "password": "Hk7pH9*Hk7pH9*35Fu&3UHk7pH9*35Fu&3U35Fu&3U",
+                    "gender": "male",
+                    "birthdate": "2004-01-01",
+                    "phone_number": "+593987654321",
+                    "city": "Austin",
+                    "country": "United States",
+                    "is_active": true,
+                    "is_superuser": false,
+                    "created_at": "2023-02-28T01:13:44.079503",
+                    "updated_at": "2023-02-28T01:13:44.079503"
+                }
+            },
+            "ValidationError": {
+                "title": "ValidationError",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "loc": {
+                        "title": "Location",
+                        "type": "array",
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        }
+                    },
+                    "msg": {
+                        "title": "Message",
+                        "type": "string"
+                    },
+                    "type": {
+                        "title": "Error Type",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "JWT": {
+                "type": "oauth2",
+                "flows": {
+                    "password": {
+                        "scopes": {},
+                        "tokenUrl": "api/v1/auth/login"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "users",
+            "description": "Operations with users, such as register, get, update and delete."
+        },
+        {
+            "name": "analyses",
+            "description": "Manage analyses with creation and get a specific analysis on a single or multiple tweets from an specific username."
+        },
+        {
+            "name": "models",
+            "description": "Manage Machine Learning model with creation and get a specific model performance information."
+        },
+        {
+            "name": "auth",
+            "description": "The authentication logic is here as well as password recovery and reset."
+        }
+    ]
+}

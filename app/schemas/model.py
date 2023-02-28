@@ -8,6 +8,14 @@ from pydantic import BaseModel, Field, PositiveInt, NonNegativeFloat, \
     PositiveFloat
 
 
+class ModelID(BaseModel):
+    """
+    Model ID class that inherits from Pydantic Base Model.
+    """
+    id: PositiveInt = Field(
+        ..., title='Model ID', description='ID of the Model')
+
+
 class ModelBase(BaseModel):
     """
     Base Model class that inherits from Pydantic Base Model.
@@ -51,6 +59,15 @@ class ModelBase(BaseModel):
         }
 
 
+class ModelCreatedAt(BaseModel):
+    """
+    Model Created At class that inherits from Pydantic Base Model.
+    """
+    created_at: datetime = Field(
+        default_factory=datetime.now(), title='Created At',
+        description='Time the Model was executed')
+
+
 class ModelCreate(ModelBase):
     """
     Class for creating Model that inherits from ModelBase.
@@ -60,15 +77,11 @@ class ModelCreate(ModelBase):
         description='ID of the Analysis where the model was executed')
 
 
-class Model(ModelCreate):
+class Model(ModelCreatedAt, ModelCreate, ModelID):
     """
-    Model class that inherits from ModelCreate.
+    Model class that inherits from ModelCreatedAt, ModelCreate and
+     ModelID.
     """
-    id: PositiveInt = Field(
-        ..., title='Model ID', description='ID of the Model')
-    created_at: datetime = Field(
-        default_factory=datetime.now(), title='Created At',
-        description='Time the Model was executed')
 
     class Config:
         """

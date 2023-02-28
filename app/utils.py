@@ -1,6 +1,7 @@
 """
 App utils script
 """
+import json
 import logging
 import math
 import smtplib
@@ -261,3 +262,31 @@ async def hide_email(email: EmailStr) -> str:
         domain_sections[1:])
     hidden_email: str = f'{replaced_title}@{replaced_domain}'
     return hidden_email
+
+
+async def update_json() -> None:
+    """
+    Update JSON file for client
+    :return: None
+    :rtype: NoneType
+    """
+    file_path: str = '.' + settings.OPENAPI_FILE_PATH
+    async with aiofiles.open(
+            file_path, mode='r', encoding=settings.ENCODING) as file:
+        content: str = await file.read()
+    data: dict = json.loads(content)
+    for key, path_data in data["paths"].items():
+        if key == '/':
+            continue
+        for operation in path_data.values():
+            tag: str = operation["tags"][0]
+            operation_id: str = operation["operationId"]
+            to_remove: str = f"{tag}-"
+            # new_operation_id = operation_id[len(to_remove):]
+            new_operation_id = operation_id.removeprefix(to_remove)
+            operation["operationId"] = new_operation_id
+    # print(json.dumps(data, indent=4))
+    async with aiofiles.open(
+            file_path, mode='w', encoding=settings.ENCODING) as out_file:
+        await out_file.write(json.dumps(data, indent=4))
+    print("Updated OpenAPI JSON file")

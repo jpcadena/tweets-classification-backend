@@ -52,4 +52,4 @@ ujson==5.7.0
 uvicorn==0.20.0
 watchfiles==0.18.1
 websockets==10.4
-wrapt==1.14.1
+wrapt==1.15.0

@@ -2,11 +2,10 @@
 User API Router
 """
 from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, \
-    status
+    status, Response
 from fastapi.params import Query, Path
 from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.core import config
@@ -33,8 +32,11 @@ async def get_users(
     - :type skip: NonNegativeInt
     - :param limit: Limit the number of results from query
     - :type limit: PositiveInt
-    - :return: List of Users retrieved from database with username and email
-    - :rtype: list[UserDisplay]
+    - :return: List of Users retrieved from database with id, username,
+     email, first_name, last_name, middle_name, gender, birthdate,
+      phone_number, city, country, is_active, is_superuser, created_at,
+       updated_at and analyses relationship.
+    - :rtype: list[UserResponse]
     \f
     :param user_service: Dependency method for user service layer
     :type user_service: UserService
@@ -66,8 +68,9 @@ async def create_user(
     birthdate [OPTIONAL], phone_number [OPTIONAL], address [OPTIONAL],
     city [OPTIONAL], state [OPTIONAL] and country [OPTIONAL].
     - :type user: UserCreate
-    - :return: User created with its name and email
-    - :rtype: UserDisplay
+    - :return: User created with its id, username, email, first name
+     and middle name.
+    - :rtype: UserCreateResponse
     \f
     :param background_tasks: Send email to confirm registration
     :type background_tasks: BackgroundTasks
@@ -116,32 +119,46 @@ async def create_user(
 
 @router.get("/me", response_model=UserResponse)
 async def get_user_me(
-        session: AsyncSession = Depends(get_user_service),
+        user_service: UserService = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserResponse:
     """
     Get current user.
+    - :return: Response object for current user with id, username,
+     email, first_name, last_name, middle_name, gender, birthdate,
+      phone_number, city, country, is_active, is_superuser, created_at,
+       updated_at and analyses relationship.
+    - :rtype: UserResponse
+    \f
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
+    :param current_user: Dependency method for authorization by current user
+    :type current_user: UserAuth
     """
-    user_service: UserService = UserService(session)
     user: UserResponse = await user_service.get_user_by_id(current_user.id)
     return user
 
 
 @router.get("/user_id", response_model=UserResponse)
 async def get_user_by_id(
-        user_id: int = Path(...),
+        user_id: PositiveInt = Path(
+            ..., title='User ID', description='ID of the User to searched',
+            example=1),
         user_service: UserService = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserResponse:
     """
-    Get
-    :param user_id:
-    :type user_id:
-    :return:
-    :rtype:
+    Get an existing user from the system given an ID.
+    - :param user_id: Unique identifier of the user
+    - :type user_id: PositiveInt
+    - :return: Found user with the given ID including its username,
+     email, first_name, last_name, middle_name, gender, birthdate,
+      phone_number, city, country, is_active, is_superuser, created_at,
+       updated_at and analyses relationship.
+    - :rtype: UserResponse
     \f
-    :param user_service: Dependency method for async Postgres connection
-    :type user_service: AsyncSession
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
@@ -155,15 +172,33 @@ async def get_user_by_id(
 
 @router.put("/{user_id}", response_model=UserUpdateResponse)
 async def update_user(
-        user_id: int = Path(...),
-        user_in: UserUpdate = Body(...),
-        session: AsyncSession = Depends(get_user_service),
+        user_id: PositiveInt = Path(
+            ..., title='User ID', description='ID of the User to searched',
+            example=1),
+        user_in: UserUpdate = Body(
+            ..., title='User data', description='New user data to update'),
+        user_service: UserService = Depends(get_user_service),
         current_user: UserAuth = Depends(get_current_user),
 ) -> UserUpdateResponse:
     """
-    Update a user.
+    Update an existing user from the system given an ID and new info.
+    - :param user_id: Unique identifier of the user
+    - :type user_id: PositiveInt
+    - :param user_in: New user data to update that can include:
+     username, email, first_name, middle_name, last_name, password,
+      gender, birthdate, phone_number, city and country.
+    - :type user_in: UserUpdate
+    - :return: Updated user with the given ID and its username, email,
+     first_name, last_name, middle_name, hashed password, gender,
+      birthdate, phone_number, city, country, is_active, is_superuser,
+       created_at and updated_at.
+    - :rtype: UserUpdateResponse
+    \f
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
+    :param current_user: Dependency method for authorization by current user
+    :type current_user: UserAuth
     """
-    user_service: UserService = UserService(session)
     user: UserUpdateResponse = await user_service.update_user(user_id, user_in)
     if not user:
         raise HTTPException(
@@ -171,3 +206,38 @@ async def update_user(
             detail="The user with this username does not exist in the system",
         )
     return user
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+        user_id: PositiveInt = Path(
+            ..., title='User ID', description='ID of the User to searched',
+            example=1), user_service: UserService = Depends(get_user_service),
+        current_user: UserAuth = Depends(get_current_user),
+) -> Response:
+    """
+    Delete an existing user from the system given an ID and new info.
+    - :param user_id: Unique identifier of the user
+    - :type user_id: PositiveInt
+    - :return: Json Response object with the deleted information
+    - :rtype: Response
+    \f
+    :param user_service: Dependency method for user service layer
+    :type user_service: UserService
+    :param current_user: Dependency method for authorization by current user
+    :type current_user: UserAuth
+    """
+    try:
+        data: dict = await user_service.delete_user(user_id)
+    except SQLAlchemyError as sa_err:
+        raise HTTPException(
+            status_code=404,
+            detail=f"The user with this username does not exist in the system"
+                   f"\n{str(sa_err)}",
+        ) from sa_err
+    response: Response = Response(
+        status_code=status.HTTP_204_NO_CONTENT,
+        media_type='application/json')
+    response.headers['deleted'] = str(data['ok']).lower()
+    response.headers['deleted_at'] = str(data['deleted_at'])
+    return response

@@ -1,16 +1,17 @@
 """
-Main script
+Filter script
 """
 from abc import ABC, abstractmethod
-from typing import Optional, Union, Callable
+from typing import Optional, Union
 
-from pydantic import EmailStr, PositiveInt
+from pydantic import PositiveInt
 from sqlalchemy import select, Select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud import Specification, IdSpecification, UsernameSpecification, \
-    EmailSpecification
-from app.models import User
+from app.crud.specification import Specification, IdSpecification, \
+    UsernameSpecification, EmailSpecification
+from app.models import User, Model, Analysis
 
 
 class Filter(ABC):
@@ -20,16 +21,19 @@ class Filter(ABC):
 
     @abstractmethod
     async def filter(
-            self, spec: Specification, session: AsyncSession
-    ) -> Optional[User]:
+            self, spec: Specification, session: AsyncSession,
+            model: Union[User, Model, Analysis]
+    ) -> Optional[Union[User, Model, Analysis]]:
         """
         Filter method
         :param spec: specification to filter by
         :type spec: Specification
         :param self.session: Async Session for Database
         :type self.session: AsyncSession
-        :return: User instance from database
-        :rtype: User
+        :param model: Datatable model
+        :type model: User, Model or Analysis
+        :return: Datatable model instance
+        :rtype: User, Model or Analysis
         """
 
 
@@ -39,10 +43,11 @@ class IndexFilter(Filter):
     """
 
     async def filter(
-            self, spec: IdSpecification, session: AsyncSession
-    ) -> Optional[User]:
+            self, spec: IdSpecification, session: AsyncSession,
+            model: Union[User, Model, Analysis]
+    ) -> Optional[Union[User, Model, Analysis]]:
         _id: PositiveInt = spec.value
-        return await session.get(User, _id)
+        return await session.get(model, _id)
 
 
 class UniqueFilter(Filter):
@@ -52,12 +57,14 @@ class UniqueFilter(Filter):
 
     async def filter(
             self, spec: Union[UsernameSpecification, EmailSpecification],
-            session: AsyncSession
-    ) -> Optional[User]:
-        unique_field: Union[str, EmailStr] = spec.value
-        stmt: Select = select(User).where(User.username == unique_field)
-        user: User = (await session.scalars(stmt)).one()
-        return user
+            session: AsyncSession, model: User
+    ) -> Optional[Union[User, Model, Analysis]]:
+        stmt: Select = select(model).where(model.username == spec.value)
+        try:
+            db_obj = (await session.scalars(stmt)).one()
+        except SQLAlchemyError as exc:
+            raise exc
+        return db_obj
 
 
 async def get_index_filter() -> IndexFilter:
@@ -76,17 +83,3 @@ async def get_unique_filter() -> UniqueFilter:
     :rtype: UniqueFilter
     """
     return UniqueFilter()
-
-
-async def get_filter(filter_type: str) -> Filter:
-    """
-
-    :param filter_type:
-    :type filter_type: str
-    :return: Filter instance
-    :rtype: Filter
-    """
-    filter_factories: dict[str, Callable[[], Filter]] = {
-        'index': get_index_filter, 'unique': get_unique_filter}
-    factory_function = filter_factories[filter_type]
-    return factory_function()
