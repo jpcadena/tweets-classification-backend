@@ -5,12 +5,12 @@ from typing import Optional
 
 from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
-from sqlalchemy.exc import SQLAlchemyError
 
+from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.analysis import AnalysisRepository, get_analysis_repository
 from app.crud.specification import IdSpecification
-from app.models.analysis import Analysis
-from app.schemas.analysis import AnalysisCreate, Analysis as AnalysisResponse
+from app.models.analysis import Analysis as AnalysisDB
+from app.schemas.analysis import AnalysisCreate, Analysis
 from app.services import model_to_response
 
 
@@ -23,20 +23,23 @@ class AnalysisService:
         self.analysis_repo: AnalysisRepository = analysis_repo
 
     async def get_analysis_by_id(
-            self, analysis_id: PositiveInt) -> AnalysisResponse:
+            self, analysis_id: PositiveInt) -> Analysis:
         """
         Get analysis information with the correct schema for response
         :param analysis_id: Unique identifier of the analysis
         :type analysis_id: PositiveInt
         :return: Analysis information
-        :rtype: AnalysisResponse
+        :rtype: Analysis
         """
-        analysis: Analysis = await self.analysis_repo.read_by_id(
-            IdSpecification(analysis_id))
-        return await model_to_response(analysis, AnalysisResponse)
+        try:
+            analysis: AnalysisDB = await self.analysis_repo.read_by_id(
+                IdSpecification(analysis_id))
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
+        return await model_to_response(analysis, Analysis)
 
     async def register_analysis(
-            self, analysis: AnalysisCreate) -> AnalysisResponse:
+            self, analysis: AnalysisCreate) -> Analysis:
         """
         Create analysis into the database
         :param analysis: Request object representing the analysis
@@ -46,15 +49,15 @@ class AnalysisService:
         :rtype: AnalysisCreateResponse or exception
         """
         try:
-            created_analysis: Analysis = await self.analysis_repo. \
+            created_analysis: AnalysisDB = await self.analysis_repo. \
                 create_analysis(analysis)
-        except SQLAlchemyError as sa_exc:
-            raise sa_exc
-        return await model_to_response(created_analysis, AnalysisResponse)
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
+        return await model_to_response(created_analysis, Analysis)
 
     async def get_analyses(
             self, offset: NonNegativeInt, limit: PositiveInt
-    ) -> Optional[list[AnalysisResponse]]:
+    ) -> Optional[list[Analysis]]:
         """
         Read analyses information from table
         :param offset: Offset from where to start returning analyses
@@ -65,12 +68,13 @@ class AnalysisService:
         :rtype: AnalysisResponse
         """
         try:
-            analyses: list[Analysis] = await self.analysis_repo.read_analyses(
+            analyses: list[
+                AnalysisDB] = await self.analysis_repo.read_analyses(
                 offset, limit)
-        except SQLAlchemyError as nrf_exc:
-            raise nrf_exc
-        found_analyses: list[AnalysisResponse] = [
-            await model_to_response(analysis, AnalysisResponse)
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
+        found_analyses: list[Analysis] = [
+            await model_to_response(analysis, Analysis)
             for analysis in analyses]
         return found_analyses
 

@@ -38,48 +38,57 @@ class UserRepository:
         self.unique_filter: UniqueFilter = unique_filter
         self.model: User = User
 
-    async def read_by_id(self, _id: IdSpecification) -> Optional[User]:
+    async def read_by_id(self, _id: IdSpecification) -> User:
         """
-
+        Reads the user by its id
         :param _id:
         :type _id: IdSpecification
-        :return:
+        :return: User instance
         :rtype: User
         """
-        return await self.index_filter.filter(_id, self.session, self.model)
+        try:
+            user: User = await self.index_filter.filter(
+                _id, self.session, self.model)
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
+        return user
 
     async def read_by_username(
             self, username: UsernameSpecification) -> Optional[User]:
         """
-
-        :param username:
+        Read the user by its username
+        :param username: The username to search
         :type username: UsernameSpecification
-        :return:
+        :return: User instance
         :rtype: User
         """
         try:
             user: User = await self.unique_filter.filter(
                 username, self.session, self.model)
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(str(sa_exc)) from sa_exc
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         return user
 
     async def read_by_email(self, email: EmailSpecification) -> Optional[User]:
         """
-
-        :param email:
+        Read the user by its email
+        :param email: The email to search
         :type email: EmailSpecification
-        :return:
+        :return: User instance
         :rtype: User
         """
-        return await self.unique_filter.filter(email, self.session, self.model)
+        try:
+            user: User = self.unique_filter.filter(
+                email, self.session, self.model)
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
+        return user
 
     @with_logging
     @benchmark
     async def read_users(
             self, offset: NonNegativeInt, limit: PositiveInt,
-    ) -> Optional[list[User]]:
+    ) -> list[User]:
         """
         Read users information from table
         :param offset: Offset from where to start returning users
@@ -119,9 +128,12 @@ class UserRepository:
             await self.session.commit()
         except SQLAlchemyError as sa_exc:
             logger.error(sa_exc)
-            raise DatabaseException(sa_exc) from sa_exc
-        created_user: User = await self.read_by_id(IdSpecification(
-            user_create.id))
+            raise DatabaseException(str(sa_exc)) from sa_exc
+        try:
+            created_user: User = await self.read_by_id(IdSpecification(
+                user_create.id))
+        except DatabaseException as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         return created_user
 
     @with_logging
@@ -138,19 +150,24 @@ class UserRepository:
         :return: User information
         :rtype: User
         """
-        found_user: User = await self.read_by_id(user_id)
+        try:
+            found_user: User = await self.read_by_id(user_id)
+        except DatabaseException as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         user_data: dict = user.dict(exclude_unset=True)
         if user_data.get('password'):
             hashed_password = await get_password_hash(user_data["password"])
             user_data["password"] = hashed_password
-        # user_data["updated_at"] = datetime.now()
         for key, value in user_data.items():
             setattr(found_user, key, value)
         user_update: UserUpdate = UserUpdate(**found_user.dict())
         async with self.session.begin():
             self.session.add(user_update)
             await self.session.commit()
-        updated_user: User = await self.read_by_id(user_id)
+        try:
+            updated_user: User = await self.read_by_id(user_id)
+        except DatabaseException as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         return updated_user
 
     @with_logging
@@ -163,7 +180,10 @@ class UserRepository:
         :return: True if the user is deleted; otherwise False
         :rtype: bool
         """
-        found_user: User = await self.read_by_id(user_id)
+        try:
+            found_user: User = await self.read_by_id(user_id)
+        except DatabaseException as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         try:
             await self.session.delete(found_user)
             await self.session.commit()

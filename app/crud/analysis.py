@@ -7,14 +7,19 @@ from typing import Optional
 from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
 from sqlalchemy import select, Select, ScalarResult
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import logging_config
+from app.core.security.exceptions import DatabaseException
 from app.crud.filter import IndexFilter, get_index_filter
 from app.crud.specification import IdSpecification
 from app.db.session import get_session
 from app.models.analysis import Analysis
 from app.schemas.analysis import AnalysisCreate
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class AnalysisRepository:
@@ -35,7 +40,14 @@ class AnalysisRepository:
         :return:
         :rtype: Analysis
         """
-        return await self.index_filter.filter(_id, self.session, self.model)
+        try:
+            analysis: Analysis = await self.index_filter.filter(
+                _id, self.session, self.model)
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(
+                f'Error at reading analysis with id: {_id.value}.'
+                f'\n{str(db_exc)}') from db_exc
+        return analysis
 
     async def read_analyses(
             self, offset: NonNegativeInt, limit: PositiveInt,
@@ -53,9 +65,10 @@ class AnalysisRepository:
         try:
             results: ScalarResult = await self.session.scalars(stmt)
             analyses: list[Analysis] = results.all()
-        except NoResultFound as nrf_exc:
-            logging.error(nrf_exc)
-            raise nrf_exc
+        except SQLAlchemyError as sa_exc:
+            logger.error(sa_exc)
+            raise DatabaseException(
+                f'Error at reading analyses.\n{str(sa_exc)}') from sa_exc
         return analyses
 
     async def create_analysis(
@@ -73,12 +86,15 @@ class AnalysisRepository:
             self.session.add(analysis_create)
             await self.session.commit()
         except SQLAlchemyError as sa_exc:
-            logging.error(
-                "Database Error for analysis with id: %s.\n%s",
-                analysis_create.id, sa_exc)
-            raise sa_exc
-        created_analysis: Analysis = await self.read_by_id(IdSpecification(
-            analysis_create.id))
+            logger.error(sa_exc)
+            raise DatabaseException(
+                f"Error at creating analysis with {analysis_create.id}"
+            ) from sa_exc
+        try:
+            created_analysis: Analysis = await self.read_by_id(IdSpecification(
+                analysis_create.id))
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         return created_analysis
 
 

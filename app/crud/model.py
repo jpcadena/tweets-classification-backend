@@ -7,14 +7,19 @@ from typing import Optional
 from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
 from sqlalchemy import select, Select, ScalarResult
-from sqlalchemy.exc import NoResultFound, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import logging_config
+from app.core.security.exceptions import DatabaseException
 from app.crud.filter import IndexFilter, get_index_filter
 from app.crud.specification import IdSpecification
 from app.db.session import get_session
 from app.models.model import Model
 from app.schemas.model import ModelCreate
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class ModelRepository:
@@ -35,7 +40,13 @@ class ModelRepository:
         :return:
         :rtype: Model
         """
-        return await self.index_filter.filter(_id, self.session, self.model)
+        try:
+            model: Model = self.index_filter.filter(
+                _id, self.session, self.model)
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(
+                f'Error at reading model with id: {_id.value}') from db_exc
+        return model
 
     async def read_models(
             self, offset: NonNegativeInt, limit: PositiveInt,
@@ -53,9 +64,10 @@ class ModelRepository:
         try:
             results: ScalarResult = await self.session.scalars(stmt)
             models: list[Model] = results.all()
-        except NoResultFound as nrf_exc:
-            logging.error(nrf_exc)
-            raise nrf_exc
+        except SQLAlchemyError as sa_exc:
+            logger.error(sa_exc)
+            raise DatabaseException(
+                f'Error at reading models.\n{str(sa_exc)}') from sa_exc
         return models
 
     async def create_model(self, model: ModelCreate) -> Optional[Model]:
@@ -72,10 +84,9 @@ class ModelRepository:
             self.session.add(model_create)
             await self.session.commit()
         except SQLAlchemyError as sa_exc:
-            logging.error(
-                "Database Error for model with id: %s.\n%s",
-                model_create.id, sa_exc)
-            raise sa_exc
+            logger.error(sa_exc)
+            raise DatabaseException(
+                f"Error at creating model with {model_create.id}") from sa_exc
         created_model: Model = await self.read_by_id(IdSpecification(
             model_create.id))
         return created_model

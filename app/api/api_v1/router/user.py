@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.deps import get_current_user
 from app.core import config
+from app.core.security.exceptions import ServiceException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserAuth, UserUpdate, UserUpdateResponse
 from app.services.user import UserService, get_user_service
@@ -46,9 +47,9 @@ async def get_users(
     try:
         found_users: list[UserResponse] = await user_service.get_users(
             skip, limit)
-    except SQLAlchemyError as sa_exc:
+    except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail=str(sa_exc)) from sa_exc
+            status.HTTP_404_NOT_FOUND, detail=str(serv_exc)) from serv_exc
     return found_users
 
 
@@ -82,10 +83,10 @@ async def create_user(
     """
     try:
         new_user = await user_service.register_user(user)
-    except SQLAlchemyError as sa_exc:
+    except ServiceException as serv_exc:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            detail=str(sa_exc)) from sa_exc
+            detail=f'Error at creating user.\n{str(serv_exc)}') from serv_exc
     if new_user:
         if setting.EMAILS_ENABLED and user.email:
             background_tasks.add_task(send_new_account_email, user.email,
@@ -136,7 +137,14 @@ async def get_user_me(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    user: UserResponse = await user_service.get_user_by_id(current_user.id)
+    try:
+        user: UserResponse = await user_service.get_user_by_id(
+            current_user.id)
+    except ServiceException as serv_exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Can't not found user information.\n{str(serv_exc)}"
+        ) from serv_exc
     return user
 
 
@@ -163,11 +171,13 @@ async def get_user_by_id(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    user: UserResponse = await user_service.get_user_by_id(user_id)
-    if not user:
+    try:
+        user: UserResponse = await user_service.get_user_by_id(user_id)
+    except ServiceException as serv_exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'User with id {user_id} not found in the system.')
+            status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found in the system."
+                   f"\n{str(serv_exc)}") from serv_exc
     return user
 
 
@@ -200,12 +210,15 @@ async def update_user(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    user: UserUpdateResponse = await user_service.update_user(user_id, user_in)
-    if not user:
+    try:
+        user: UserUpdateResponse = await user_service.update_user(
+            user_id, user_in)
+    except ServiceException as serv_exc:
         raise HTTPException(
-            status_code=404,
-            detail="The user with this username does not exist in the system",
-        )
+            status.HTTP_400_BAD_REQUEST,
+            detail=f"User with id {user_id} not found in the system."
+                   f"\n{str(serv_exc)}") from serv_exc
+
     return user
 
 
@@ -232,7 +245,7 @@ async def delete_user(
         data: dict = await user_service.delete_user(user_id)
     except SQLAlchemyError as sa_err:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"The user with this username does not exist in the system"
                    f"\n{str(sa_err)}",
         ) from sa_err

@@ -55,9 +55,15 @@ class IndexFilter(Filter):
     async def filter(
             self, spec: IdSpecification, session: AsyncSession,
             model: Union[User, Model, Analysis]
-    ) -> Optional[Union[User, Model, Analysis]]:
+    ) -> Union[User, Model, Analysis]:
         _id: PositiveInt = spec.value
-        return await session.get(model, _id)
+        try:
+            db_obj = await session.get(model, _id)
+        except SQLAlchemyError as sa_exc:
+            logger.error(sa_exc)
+            raise sa_exc
+        logger.info('Row retrieved with id: %s', _id)
+        return db_obj
 
 
 class UniqueFilter(Filter):
@@ -70,13 +76,13 @@ class UniqueFilter(Filter):
     async def filter(
             self, spec: Union[UsernameSpecification, EmailSpecification],
             session: AsyncSession, model: User
-    ) -> Optional[Union[User, Model, Analysis]]:
+    ) -> Union[User, Model, Analysis]:
         stmt: Select = select(model).where(model.username == spec.value)
         try:
             db_obj = (await session.scalars(stmt)).one()
-        except SQLAlchemyError as exc:
-            logger.error(exc)
-            raise exc
+        except SQLAlchemyError as sa_exc:
+            logger.error(sa_exc)
+            raise sa_exc
         logger.info('Row retrieved with filter: %s', spec.value)
         return db_obj
 

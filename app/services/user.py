@@ -6,7 +6,6 @@ from typing import Optional, Union
 
 from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.specification import IdSpecification, UsernameSpecification, \
@@ -34,7 +33,11 @@ class UserService:
         :return: User information
         :rtype: UserResponse
         """
-        user: User = await self.user_repo.read_by_id(IdSpecification(user_id))
+        try:
+            user: User = await self.user_repo.read_by_id(
+                IdSpecification(user_id))
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
     # async def get_login_user(
@@ -78,8 +81,11 @@ class UserService:
         :return: User found in database
         :rtype: UserResponse
         """
-        user: User = await self.user_repo.read_by_email(
-            EmailSpecification(email))
+        try:
+            user: User = await self.user_repo.read_by_email(
+                EmailSpecification(email))
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
     async def register_user(
@@ -95,13 +101,13 @@ class UserService:
         """
         try:
             created_user = await self.user_repo.create_user(user)
-        except SQLAlchemyError as sa_exc:
-            raise sa_exc
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(created_user, UserCreateResponse)
 
     async def get_users(
             self, offset: NonNegativeInt, limit: PositiveInt
-    ) -> Optional[list[UserResponse]]:
+    ) -> list[UserResponse]:
         """
         Read users information from table
         :param offset: Offset from where to start returning users
@@ -113,8 +119,8 @@ class UserService:
         """
         try:
             users: list[User] = await self.user_repo.read_users(offset, limit)
-        except SQLAlchemyError as nrf_exc:
-            raise nrf_exc
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         found_users: list[UserResponse] = [
             await model_to_response(user, UserResponse) for user in users]
         return found_users
@@ -131,8 +137,11 @@ class UserService:
         :return: User information
         :rtype: UserUpdateResponse
         """
-        updated_user: User = await self.user_repo.update_user(
-            IdSpecification(user_id), user)
+        try:
+            updated_user: User = await self.user_repo.update_user(
+                IdSpecification(user_id), user)
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(updated_user, UserUpdateResponse)
 
     async def delete_user(self, user_id: PositiveInt) -> dict:
@@ -146,8 +155,8 @@ class UserService:
         try:
             deleted: bool = await self.user_repo.delete_user(
                 IdSpecification(user_id))
-        except SQLAlchemyError as sa_exc:
-            raise sa_exc
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
         return {"ok": deleted, 'deleted_at': datetime.now()}
 
 

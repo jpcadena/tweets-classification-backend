@@ -6,6 +6,7 @@ from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
 
 from app.api.deps import get_current_user
+from app.core.security.exceptions import ServiceException
 from app.schemas.analysis import Analysis, AnalysisCreate
 from app.schemas.user import UserAuth
 from app.services.analysis import AnalysisService, get_analysis_service
@@ -37,8 +38,14 @@ async def create_analysis(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    created_analysis: Analysis = await analysis_service.register_analysis(
-        analysis)
+    try:
+        created_analysis: Analysis = await analysis_service.register_analysis(
+            analysis)
+    except ServiceException as serv_exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            detail=f'Error at creating analysis.\n{str(serv_exc)}'
+        ) from serv_exc
     return created_analysis
 
 
