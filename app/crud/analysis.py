@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.filter import IndexFilter, get_index_filter
 from app.crud.specification import IdSpecification
 from app.db.session import get_session
-from app.models import Analysis
+from app.models.analysis import Analysis
 from app.schemas.analysis import AnalysisCreate
 
 
@@ -29,7 +29,7 @@ class AnalysisRepository:
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[Analysis]:
         """
-
+        Read the analysis by given id
         :param _id:
         :type _id: IdSpecification
         :return:

@@ -11,8 +11,8 @@ from app.core.security.exceptions import ServiceException
 from app.core.security.password import verify_password
 from app.crud.specification import UsernameSpecification
 from app.crud.user import UserRepository, get_user_repository
-from app.models import User
 from app.models.token import Token
+from app.models.user import User
 from app.schemas.token import TokenResponse
 from app.services.auth import AuthService
 from app.services.token import TokenService
@@ -77,7 +77,8 @@ async def login(
 #
 # @router.post("/password-recovery/{email}", response_model=schemas.Msg)
 # async def recover_password(
-#         email: str, user_service: AsyncSession = Depends(get_user_service)) -> Any:
+#         email: str, user_service: AsyncSession = Depends(get_user_service)
+# ) -> Any:
 #     """
 #     Password Recovery
 #     """
@@ -86,7 +87,8 @@ async def login(
 #     if not user:
 #         raise HTTPException(
 #             status_code=404,
-#             detail="The user with this username does not exist in the system.",
+#             detail="The user with this username does not exist in the"
+#                    " system.",
 #         )
 #     password_reset_token = generate_password_reset_token(email=email)
 #     send_reset_password_email(
@@ -112,7 +114,8 @@ async def login(
 #     if not user:
 #         raise HTTPException(
 #             status_code=404,
-#             detail="The user with this username does not exist in the system.",
+#             detail="The user with this username does not exist in the"
+#                    " system.",
 #         )
 #     # elif not crud.user.is_active(user):
 #     #     raise HTTPException(status_code=400, detail="Inactive user")

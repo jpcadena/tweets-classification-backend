@@ -1,6 +1,7 @@
 """
 Filter script
 """
+import logging
 from abc import ABC, abstractmethod
 from typing import Optional, Union
 
@@ -9,9 +10,16 @@ from sqlalchemy import select, Select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import logging_config
+from app.core.decorators import with_logging, benchmark
 from app.crud.specification import Specification, IdSpecification, \
     UsernameSpecification, EmailSpecification
-from app.models import User, Model, Analysis
+from app.models.analysis import Analysis
+from app.models.model import Model
+from app.models.user import User
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class Filter(ABC):
@@ -28,8 +36,8 @@ class Filter(ABC):
         Filter method
         :param spec: specification to filter by
         :type spec: Specification
-        :param self.session: Async Session for Database
-        :type self.session: AsyncSession
+        :param session: Async Session for Database
+        :type session: AsyncSession
         :param model: Datatable model
         :type model: User, Model or Analysis
         :return: Datatable model instance
@@ -42,6 +50,8 @@ class IndexFilter(Filter):
     User Filter class based on Filter for ID.
     """
 
+    @with_logging
+    @benchmark
     async def filter(
             self, spec: IdSpecification, session: AsyncSession,
             model: Union[User, Model, Analysis]
@@ -55,6 +65,8 @@ class UniqueFilter(Filter):
     Unique Filter class based on Filter for Username and Email.
     """
 
+    @with_logging
+    @benchmark
     async def filter(
             self, spec: Union[UsernameSpecification, EmailSpecification],
             session: AsyncSession, model: User
@@ -63,7 +75,9 @@ class UniqueFilter(Filter):
         try:
             db_obj = (await session.scalars(stmt)).one()
         except SQLAlchemyError as exc:
+            logger.error(exc)
             raise exc
+        logger.info('Row retrieved with filter: %s', spec.value)
         return db_obj
 
 

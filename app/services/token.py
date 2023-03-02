@@ -1,8 +1,11 @@
 """
 Token Service
 """
+from typing import Optional
+
 from aioredis import RedisError, Redis
 from fastapi import Depends
+
 from app.api.deps import redis_dependency
 from app.core import config
 from app.db.authorization import handle_redis_exceptions
@@ -24,6 +27,10 @@ class TokenService:
         Create token in authorization database
         :param token: Token object with key and value
         :type token: Token
+        :param setting: Dependency method for cached setting object
+        :type setting: config.Settings
+        :param redis: Dependency method for async Redis connection
+        :type redis: Redis
         :return: True if the token was inserted; otherwise false
         :rtype: bool
         """
@@ -39,18 +46,19 @@ class TokenService:
     @handle_redis_exceptions
     async def get_token(
             key: str,
-            redis: Redis = Depends(redis_dependency)) -> str:
+            redis: Redis = Depends(redis_dependency)) -> Optional[str]:
         """
         Read token from authorization database
         :param key: key to search for
         :type key: str
+        :param redis: Dependency method for async Redis connection
+        :type redis: Redis
         :return: Refresh token
         :rtype: str
         """
-        value: str
+        value: Optional[str] = None
         try:
             value = await redis.get(key)
         except RedisError as r_exc:
             print(r_exc)
-            value = None
         return value

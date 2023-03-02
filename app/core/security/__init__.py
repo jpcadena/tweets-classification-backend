@@ -1,3 +1,3 @@
 """
-Main script
+Core security initialization package
 """

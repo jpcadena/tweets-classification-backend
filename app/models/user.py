@@ -5,8 +5,8 @@ from datetime import datetime, date
 from typing import Optional
 
 from pydantic import EmailStr, PositiveInt
-from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, Date, \
-    text, Enum
+from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, \
+    Date, text, Enum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship, Mapped
 
@@ -41,7 +41,7 @@ class User(Base):
     password: str = Column(
         String(100), nullable=False, comment='Hashed password of the User')
     gender: Optional[Gender] = Column(
-        Enum(Gender), nullable=True,comment='Gender of the User')
+        Enum(Gender), nullable=True, comment='Gender of the User')
     birthdate: Optional[date] = Column(
         Date, nullable=True, comment='Birthday of the User')
     phone_number: Optional[str] = Column(

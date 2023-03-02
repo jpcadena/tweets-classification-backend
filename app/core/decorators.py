@@ -1,5 +1,5 @@
 """
-Main script
+Decorators script for Core module
 """
 import functools
 import logging
@@ -8,7 +8,6 @@ from typing import Callable, Any
 
 from app.core import logging_config
 
-# TODO: Add logging to the project just like next two lines
 logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 

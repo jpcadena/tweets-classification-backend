@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.filter import IndexFilter, get_index_filter
 from app.crud.specification import IdSpecification
 from app.db.session import get_session
-from app.models import Model
+from app.models.model import Model
 from app.schemas.model import ModelCreate
 
 
@@ -29,7 +29,7 @@ class ModelRepository:
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[Model]:
         """
-
+        Read a model by its id
         :param _id:
         :type _id: IdSpecification
         :return:

@@ -1,7 +1,6 @@
 """
 Token Model for the Redis database
 """
-
 from pydantic import BaseModel, Field
 
 
@@ -21,6 +20,4 @@ class Token(BaseModel):
         schema_extra: dict[str, dict[str, str]] = {
             "example": {
                 'key': "63aefa38afda3a176c1e3562:ce0f27c1-c559-45b1-b016",
-                'token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-            }
-        }
+                'token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"}}

@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.crud.model import ModelRepository, get_model_repository
 from app.crud.specification import IdSpecification
-from app.models import Model
+from app.models.model import Model
 from app.schemas.model import ModelCreate, Model as ModelResponse
 from app.services import model_to_response
 

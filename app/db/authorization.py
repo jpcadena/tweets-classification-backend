@@ -1,13 +1,22 @@
 """
 Authorization database script
 """
+import logging
+
 import aioredis
 from aioredis.exceptions import DataError, AuthenticationError, \
     NoPermissionError, TimeoutError as RedisTimeoutError, \
     ConnectionError as RedisConnectionError
-from app.core import config
+
+from app.core import config, logging_config
+from app.core.decorators import benchmark, with_logging
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
+@with_logging
+@benchmark
 async def init_auth_db() -> None:
     """
     Init connection to Redis Database
@@ -17,6 +26,7 @@ async def init_auth_db() -> None:
     setting: config.Settings = config.get_setting()
     url: str = setting.AIOREDIS_DATABASE_URI
     await aioredis.from_url(url, decode_responses=True)
+    logger.info('Redis Database initialized')
 
 
 def handle_redis_exceptions(func: callable) -> callable:
@@ -29,21 +39,15 @@ def handle_redis_exceptions(func: callable) -> callable:
     async def inner(*args, **kwargs) -> callable:
         try:
             return await func(*args, **kwargs)
-            # raise et_err
         except AuthenticationError as a_exc:
-            print(a_exc)
-            # raise io_exc
+            logger.error(a_exc)
         except RedisConnectionError as c_exc:
-            print(c_exc)
-            # raise dk_exc
+            logger.error(c_exc)
         except DataError as d_exc:
-            print(d_exc)
-            # raise in_exc
+            logger.error(d_exc)
         except NoPermissionError as np_exc:
-            print(np_exc)
-            # raise nt_exc
+            logger.error(np_exc)
         except RedisTimeoutError as t_exc:
-            print(t_exc)
-            # raise wt_exc
+            logger.error(t_exc)
 
     return inner

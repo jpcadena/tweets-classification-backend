@@ -54,9 +54,7 @@ class ModelBase(BaseModel):
                 "recall": 0.8,
                 "f1_score": 0.84,
                 "roc_auc": 0.91,
-                "computing_time": 2.5
-            }
-        }
+                "computing_time": 2.5}}
 
 
 class ModelCreatedAt(BaseModel):
@@ -100,6 +98,4 @@ class Model(ModelCreatedAt, ModelCreate, ModelID):
                 "roc_auc": 0.99,
                 "computing_time": 0.03,
                 "created_at": datetime.utcnow(),
-                "analysis_id": 2
-            }
-        }
+                "analysis_id": 2}}

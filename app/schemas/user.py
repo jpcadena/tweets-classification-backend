@@ -83,9 +83,7 @@ class UserAuth(UserBaseAuth, UserID):
             "example": {
                 "id": 1,
                 "username": "username",
-                "email": "example@mail.com",
-            }
-        }
+                "email": "example@mail.com"}}
 
 
 class UserOptional(BaseModel):
@@ -136,9 +134,7 @@ class UserCreate(UserOptional, UserBase):
                 "birthdate": date(2004, 1, 1),
                 "phone_number": "+593987654321",
                 "city": "Austin",
-                "country": "United States"
-            }
-        }
+                "country": "United States"}}
 
 
 class UserSuperCreate(UserCreate):
@@ -166,9 +162,7 @@ class UserSuperCreate(UserCreate):
                 "phone_number": "+593987654321",
                 "city": "Austin",
                 "country": "United States",
-                "is_superuser": True
-            }
-        }
+                "is_superuser": True}}
 
 
 class UserCreateResponse(UserBase, UserID):
@@ -188,9 +182,7 @@ class UserCreateResponse(UserBase, UserID):
                 "username": "username",
                 "email": "example@mail.com",
                 "first_name": "Some",
-                "last_name": "Example",
-            }
-        }
+                "last_name": "Example"}}
 
 
 class UserUpdate(BaseModel):
@@ -245,9 +237,7 @@ class UserUpdate(BaseModel):
                 "birthdate": date(2004, 1, 1),
                 "phone_number": "+593987654321",
                 "city": "Austin",
-                "country": "United States"
-            }
-        }
+                "country": "United States"}}
 
 
 class UserInDB(UserUpdatedAt, BaseModel):
@@ -275,8 +265,8 @@ class UserPassword(BaseModel):
         description='Hashed Password of the User')
 
 
-class UserUpdateResponse(
-    UserInDB, UserOptional, UserPassword, UserName, UserAuth):
+class UserUpdateResponse(UserInDB, UserOptional, UserPassword, UserName,
+                         UserAuth):
     """
     Response class for updating User that inherits from UserInDB,
      UserOptional, UserPassword, UserName and UserAuth.
@@ -304,9 +294,7 @@ class UserUpdateResponse(
                 "is_active": True,
                 "is_superuser": False,
                 "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow(),
-            }
-        }
+                "updated_at": datetime.utcnow()}}
 
 
 class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
@@ -350,9 +338,7 @@ class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
                 "is_superuser": False,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow(),
-                "analyses": None
-            }
-        }
+                "analyses": None}}
 
 
 class UserResponse(UserRelationship, UserInDB, UserOptional, UserBase, UserID):
@@ -383,6 +369,4 @@ class UserResponse(UserRelationship, UserInDB, UserOptional, UserBase, UserID):
                 "is_superuser": False,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow(),
-                "analyses": None
-            }
-        }
+                "analyses": None}}

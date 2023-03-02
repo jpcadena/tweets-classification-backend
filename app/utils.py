@@ -8,14 +8,19 @@ import smtplib
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiofiles
 from jinja2 import Template
 from jose import jwt
 from pydantic import EmailStr, AnyHttpUrl
 
+from app.core import logging_config
 from app.core.config import settings
+from app.core.decorators import with_logging, benchmark
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 telephone_regex: str = r"\(?\+[0-9]{1,3}\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?" \
                        r"[0-9]{4}( ?-?[0-9]{3})? ?(\w{1,10}\s?\d{1,6})?"
@@ -53,9 +58,12 @@ async def create_message(html: str, subject: str) -> MIMEText:
     message["Subject"] = subject
     message[
         "From"] = f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
+    print("Message created from: %s", settings.EMAILS_FROM_EMAIL)
     return message
 
 
+@with_logging
+@benchmark
 async def send_message(email_to: EmailStr, message: MIMEText) -> bool:
     """
     Sends the message to the given email address.
@@ -86,9 +94,9 @@ async def send_message(email_to: EmailStr, message: MIMEText) -> bool:
             settings.EMAILS_FROM_EMAIL, [email_to], message.as_string())
         smtp_conn.quit()
         is_sent = True
-        logging.info("sent email to %s", email_to)
+        print("sent email to %s", email_to)
     except smtplib.SMTPException as exc:
-        logging.error("error sending email to %s.\n%s", email_to, exc)
+        print("error sending email to %s.\n%s", email_to, exc)
     return is_sent
 
 
@@ -111,14 +119,14 @@ async def send_email(
     """
     assert settings.EMAILS_ENABLED, \
         "no provided configuration for email variables"
-    subject: str = render_template(subject_template, environment)
-    html: str = render_template(html_template, environment)
-    message: MIMEText = create_message(html, subject)
+    subject: str = await render_template(subject_template, environment)
+    html: str = await render_template(html_template, environment)
+    message: MIMEText = await create_message(html, subject)
     is_sent: bool = send_message(email_to, message)
     return is_sent
 
 
-async def read_template_file(template_path: str) -> str:
+async def read_template_file(template_path: Union[str, Path]) -> str:
     """
     Read the template file
     :param template_path: Path to the template
@@ -139,9 +147,9 @@ async def send_test_email(email_to: EmailStr) -> bool:
     :return: True if the email was sent; otherwise false
     :rtype: bool
     """
-    subject = f"{settings.PROJECT_NAME} - Test email"
+    subject: str = f"{settings.PROJECT_NAME} - Test email"
     template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "test_email.html"
-    template_str = await read_template_file(template_path)
+    template_str: str = await read_template_file(template_path)
     is_sent: bool = await send_email(
         email_to=email_to,
         subject_template=subject,
@@ -163,11 +171,12 @@ async def send_reset_password_email(
     :return: True if the email was sent successfully; False otherwise
     :rtype: bool
     """
-    subject = f"{settings.PROJECT_NAME} - Password recovery for user {username}"
+    subject: str = f"{settings.PROJECT_NAME} - Password recovery for user " \
+                   f"{username}"
     template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password.html"
-    template_str = await read_template_file(template_path)
+    template_str: str = await read_template_file(template_path)
     server_host: AnyHttpUrl = settings.SERVER_HOST
-    link: AnyHttpUrl = f"{server_host}/reset-password?token={token}"
+    link: str = f"{server_host}/reset-password?token={token}"
     is_sent: bool = await send_email(
         email_to=email_to,
         subject_template=subject,
@@ -181,7 +190,7 @@ async def send_reset_password_email(
 
 
 async def send_new_account_email(
-        email_to: EmailStr, username: str) -> None:
+        email_to: EmailStr, username: str) -> bool:
     """
     Send a new account email
     :param email_to: The email address of the recipient with new
@@ -192,9 +201,9 @@ async def send_new_account_email(
     :return: True if the email was sent; otherwise false
     :rtype: bool
     """
-    subject = f"{settings.PROJECT_NAME} - New account for user {username}"
+    subject: str = f"{settings.PROJECT_NAME} - New account for user {username}"
     template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "new_account.html"
-    template_str = await read_template_file(template_path)
+    template_str: str = await read_template_file(template_path)
     link = settings.SERVER_HOST
     is_sent: bool = await send_email(
         email_to=email_to,
@@ -264,6 +273,8 @@ async def hide_email(email: EmailStr) -> str:
     return hidden_email
 
 
+@with_logging
+@benchmark
 async def update_json() -> None:
     """
     Update JSON file for client
@@ -289,4 +300,4 @@ async def update_json() -> None:
     async with aiofiles.open(
             file_path, mode='w', encoding=settings.ENCODING) as out_file:
         await out_file.write(json.dumps(data, indent=4))
-    print("Updated OpenAPI JSON file")
+    logger.info("Updated OpenAPI JSON file")

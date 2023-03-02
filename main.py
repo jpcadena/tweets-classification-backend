@@ -1,6 +1,7 @@
 """
 Main script
 """
+import logging
 from typing import Optional
 
 from fastapi import FastAPI
@@ -8,15 +9,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 
-from app.api.api_v1.router import authentication, user, model, analysis
+from app.api.api_v1.api import api_router
+from app.core import logging_config
 from app.core.config import settings
+from app.core.decorators import with_logging, benchmark
 from app.crud.user import get_user_repository
 from app.db.authorization import init_auth_db
 from app.db.init_db import init_db
 from app.db.session import get_session
-from app.schemas import Msg
+from app.schemas.msg import Msg
 from app.utils import update_json
 
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 DESCRIPTION: str = """**FastAPI**, **SQLAlchemy** and **Redis** helps you do
  awesome stuff. 🚀\n\n ![Twitter](https://rb.gy/iu4yij)"""
 tags_metadata = [
@@ -71,11 +76,7 @@ app: FastAPI = FastAPI(
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html"},
     generate_unique_id_function=custom_generate_unique_id
 )
-app.include_router(authentication.router, prefix=settings.API_V1_STR)
-app.include_router(user.router, prefix=settings.API_V1_STR)
-app.include_router(model.router, prefix=settings.API_V1_STR)
-app.include_router(analysis.router, prefix=settings.API_V1_STR)
-
+app.include_router(api_router, prefix=settings.API_V1_STR)
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
@@ -89,6 +90,8 @@ app.mount('/./app/assets/images', StaticFiles(directory='./app/assets/images'),
           name='images')
 
 
+@with_logging
+@benchmark
 @app.on_event('startup')
 async def startup_event() -> None:
     """
@@ -96,6 +99,7 @@ async def startup_event() -> None:
     :return: None
     :rtype: NoneType
     """
+    logger.info('Starting API...')
     await update_json()
     await init_db(await get_user_repository(await get_session()))
     await init_auth_db()
@@ -108,4 +112,5 @@ async def root() -> Msg:
     - :return: Welcome message
     - :rtype: Msg
     """
+    logger.info("Salute!")
     return Msg(msg="Hello, world!")

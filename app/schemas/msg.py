@@ -1,7 +1,6 @@
 """
 Message schema
 """
-
 from pydantic import BaseModel, Field
 
 
@@ -16,7 +15,4 @@ class Msg(BaseModel):
         Config class for Msg.
         """
         schema_extra: dict[str, dict[str, str]] = {
-            "example": {
-                'msg': "Hello, World!!!"
-            }
-        }
+            "example": {'msg': "Hello, World!!!"}}

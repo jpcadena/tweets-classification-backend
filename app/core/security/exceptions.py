@@ -1,5 +1,5 @@
 """
-Main script
+Exceptions script at Core Security package
 """
 from sqlalchemy.exc import SQLAlchemyError
 

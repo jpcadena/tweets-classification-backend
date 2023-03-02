@@ -12,7 +12,7 @@ from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.specification import IdSpecification, UsernameSpecification, \
     EmailSpecification
 from app.crud.user import UserRepository, get_user_repository
-from app.models import User
+from app.models.user import User
 from app.schemas.user import UserSuperCreate, UserCreateResponse, \
     UserResponse, UserUpdateResponse, UserCreate, UserUpdate
 from app.services import model_to_response
@@ -66,7 +66,7 @@ class UserService:
             user: User = await self.user_repo.read_by_username(
                 UsernameSpecification(username))
         except DatabaseException as db_exc:
-            raise ServiceException(db_exc) from db_exc
+            raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
     async def get_user_by_email(

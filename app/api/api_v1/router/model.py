@@ -32,6 +32,8 @@ async def create_model(
       with Analysis: analysis_id and its creation timestamp
     - :rtype: Model
     \f
+    :param model_service: Dependency method for Model service object
+    :type model_service: ModelService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
@@ -55,10 +57,12 @@ async def get_model(model_id: PositiveInt = Path(
       computing_time, analysis_id and its creation timestamp
     - :rtype: Model
     \f
+    :param model_service: Dependency method for Model service object
+    :type model_service: ModelService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    found_model: ModelCreate = await model_service.read_model_by_id(model_id)
+    found_model: ModelCreate = await model_service.get_model_by_id(model_id)
     if not found_model:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'ModelCreate with ID {model_id} '

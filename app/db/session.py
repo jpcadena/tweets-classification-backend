@@ -7,12 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, \
     AsyncEngine
 
 from app.core.config import settings
+from app.core.decorators import with_logging, benchmark
 
 async_engine: AsyncEngine = create_async_engine(
     settings.SQLALCHEMY_DATABASE_URI, pool_pre_ping=True, future=True,
     echo=True)
 
 
+@with_logging
 async def get_db(
         engine: AsyncEngine = async_engine
 ) -> AsyncGenerator[AsyncSession, Any]:
@@ -27,6 +29,8 @@ async def get_db(
     await async_session.close()
 
 
+@with_logging
+@benchmark
 async def get_session() -> AsyncSession:
     """
     Get connection session to the database

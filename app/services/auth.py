@@ -3,9 +3,10 @@ Main script
 """
 import time
 import uuid
+
 from app.core import config
 from app.core.security.jwt import create_access_token, create_refresh_token
-from app.models import User
+from app.models.user import User
 from app.utils import audience
 
 

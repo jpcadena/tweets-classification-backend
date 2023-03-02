@@ -1,3 +1,3 @@
 """
-CRUD module
+CRUD initialization package
 """

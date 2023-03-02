@@ -1,3 +1,3 @@
 """
-Main script
+App initialization package
 """

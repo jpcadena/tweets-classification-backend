@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.crud.analysis import AnalysisRepository, get_analysis_repository
 from app.crud.specification import IdSpecification
-from app.models import Analysis
+from app.models.analysis import Analysis
 from app.schemas.analysis import AnalysisCreate, Analysis as AnalysisResponse
 from app.services import model_to_response
 

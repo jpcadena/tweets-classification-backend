@@ -12,7 +12,7 @@ from jose import jwt, JWTError
 from pydantic import ValidationError
 
 from app.core import config
-from app.models import User
+from app.models.user import User
 from app.schemas.token import TokenPayload
 from app.schemas.user import UserAuth
 from app.services.user import UserService, get_user_service
@@ -22,6 +22,9 @@ oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
     tokenUrl="api/v1/auth/login", scheme_name="JWT")
 
 
+# FixMe: Divide the get_current_user function
+
+
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
         setting: config.Settings = Depends(config.get_setting),
@@ -29,10 +32,13 @@ async def get_current_user(
 ) -> UserAuth:
     """
     Function to get current user
+
     :param token: access token from OAuth2PasswordBearer
     :type token: str
     :param setting: Dependency method for cached setting object
     :type setting: Settings
+    :param user_service: Dependency method for User service object
+    :type user_service: UserService
     :return: current user from DB
     :rtype: UserAuth
     """

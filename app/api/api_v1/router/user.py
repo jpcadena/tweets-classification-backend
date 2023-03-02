@@ -113,7 +113,8 @@ async def create_user(
 #         user_in.full_name = full_name
 #     if email is not None:
 #         user_in.email = email
-#     user = UserService.update(session, session_obj=current_user, obj_in=user_in)
+#     user = UserService.update(
+#         session, session_obj=current_user, obj_in=user_in)
 #     return user
 
 

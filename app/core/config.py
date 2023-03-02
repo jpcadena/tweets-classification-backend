@@ -5,8 +5,7 @@ from functools import lru_cache
 from typing import Any, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
-    validator, \
-    RedisDsn
+    validator, RedisDsn
 
 
 class Settings(BaseSettings):
@@ -47,8 +46,8 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str],
-                               values: dict[str, Any]) -> Any:
+    def assemble_db_connection(
+            cls, v: Optional[str], values: dict[str, Any]) -> Any:
         """
         Assemble the database connection as URI string
         :param v: Variables to consider
@@ -70,7 +69,8 @@ class Settings(BaseSettings):
         )
 
     TS_PRECISION: int
-    EMAIL_CONSTRAINT: str = r"email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$'"
+    EMAIL_CONSTRAINT: str = r"email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\." \
+                            r"[A-Z|a-z]{2,}$'"
     PHONE_CONSTRAINT: str = r"phone_number ~* '^\+[0-9]{1,15}$'"
     USERNAME_CONSTRAINT: str = r"tweet_username ~* '^[a-zA-Z0-9_]+$'"
     SMTP_TLS: bool = True
@@ -83,7 +83,7 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
-    EMAIL_TEMPLATES_DIR: str = "/app/assets/etemplates"
+    EMAIL_TEMPLATES_DIR: str = "/app/assets/templates"
     EMAILS_ENABLED: bool = False
     SUPERUSER_EMAIL: EmailStr
     SUPERUSER_FIRST_NAME: str
@@ -98,8 +98,8 @@ class Settings(BaseSettings):
     AIOREDIS_DATABASE_URI: Optional[RedisDsn] = None
 
     @validator("AIOREDIS_DATABASE_URI", pre=True)
-    def assemble_jwt_db_connection(cls, v: Optional[str],
-                               values: dict[str, Any]) -> Any:
+    def assemble_jwt_db_connection(
+            cls, v: Optional[str], values: dict[str, Any]) -> Any:
         """
         Assemble the cache database connection as URI string
         :param v: Variables to consider

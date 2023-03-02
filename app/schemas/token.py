@@ -91,9 +91,7 @@ class TokenPayload(PublicClaimsToken, RegisteredClaimsToken):
                 'jti': 'ce0f27c1-c559-45b1-b016-a81a600af197',
                 'scope': 'access_token',
                 'nickname': 'Juan', 'preferred_username': 'jpcadena',
-                'email': 'jpcadena@espol.edu.ec',
-            }
-        }
+                'email': 'jpcadena@espol.edu.ec'}}
 
 
 class TokenResponse(BaseModel):
@@ -115,9 +113,7 @@ class TokenResponse(BaseModel):
             "example": {
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
                 "token_type": "bearer",
-                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-            }
-        }
+                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"}}
 
 
 class TokenResetPassword(BaseModel):
@@ -137,6 +133,4 @@ class TokenResetPassword(BaseModel):
         schema_extra: dict[str, dict[str, str]] = {
             "example": {
                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
-                "password": "Hk7pH9*35Fu&3U"
-            }
-        }
+                "password": "Hk7pH9*35Fu&3U"}}

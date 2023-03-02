@@ -54,9 +54,7 @@ class AnalysisBase(BaseModel):
                 "tweet_username": "username",
                 "target": True,
                 "created_at": datetime.utcnow(),
-                "user_id": 2
-            }
-        }
+                "user_id": 2}}
 
 
 class AnalysisCreate(AnalysisBase):
@@ -83,6 +81,4 @@ class Analysis(AnalysisBase, AnalysisId):
                 "tweet_username": "my_username",
                 "target": False,
                 "created_at": datetime.utcnow(),
-                "user_id": 5
-            }
-        }
+                "user_id": 5}}

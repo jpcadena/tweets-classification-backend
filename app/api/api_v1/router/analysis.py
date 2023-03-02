@@ -32,6 +32,8 @@ async def create_analysis(
       with Analysis: analysis_id and its creation timestamp
     - :rtype: Analysis
     \f
+    :param analysis_service: Dependency method for Analysis service object
+    :type analysis_service: AnalysisService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
@@ -57,6 +59,8 @@ async def get_analysis(
       computing_time, analysis_id and its creation timestamp
     - :rtype: Analysis
     \f
+    :param analysis_service: Dependency method for Analysis service object
+    :type analysis_service: AnalysisService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """

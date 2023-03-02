@@ -20,12 +20,14 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
     current_date: str = datetime.today().strftime('%d-%b-%Y-%H-%M-%S')
     current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
     project_root: str = current_file_directory
-    while os.path.basename(project_root) != "car-sales-etl":
+    while os.path.basename(project_root) != "tweets-classification-backend":
         project_root = os.path.dirname(project_root)
     log_filename: str = f'log-{current_date}.log'
     filename_path: str = f'{project_root}/logs/{log_filename}'
 
     logger: logging.Logger = logging.getLogger()
+    logger.handlers.clear()
+    logger.propagate = False
     logger.setLevel(log_level)
 
     console_handler: logging.StreamHandler = logging.StreamHandler()
@@ -62,3 +64,4 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
         )
         mail_handler.setLevel(log_level)
         logger.addHandler(mail_handler)
+    logger.info("Logger initialized.")
