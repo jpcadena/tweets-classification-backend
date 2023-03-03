@@ -8,10 +8,9 @@ from aioredis.exceptions import DataError, AuthenticationError, \
     NoPermissionError, TimeoutError as RedisTimeoutError, \
     ConnectionError as RedisConnectionError
 
-from app.core import config, logging_config
+from app.core import config
 from app.core.decorators import benchmark, with_logging
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

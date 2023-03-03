@@ -11,7 +11,6 @@ from sqlalchemy import ScalarResult, Select, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import logging_config
 from app.core.decorators import with_logging, benchmark
 from app.core.security.exceptions import DatabaseException
 from app.core.security.password import get_password_hash
@@ -23,7 +22,6 @@ from app.db.session import get_session
 from app.models.user import User
 from app.schemas.user import UserCreate, UserSuperCreate, UserUpdate
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

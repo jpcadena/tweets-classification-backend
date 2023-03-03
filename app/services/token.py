@@ -8,11 +8,10 @@ from aioredis import RedisError, Redis
 from fastapi import Depends
 
 from app.api.deps import redis_dependency
-from app.core import config, logging_config
+from app.core import config
 from app.db.authorization import handle_redis_exceptions
 from app.models.token import Token
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

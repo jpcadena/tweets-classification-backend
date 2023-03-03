@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import redis_dependency
-from app.core import config, logging_config
+from app.core import config
 from app.core.security.exceptions import ServiceException
 from app.core.security.password import verify_password
 from app.models.token import Token
@@ -18,7 +18,6 @@ from app.services.auth import AuthService
 from app.services.token import TokenService
 from app.services.user import get_user_service, UserService
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])
 

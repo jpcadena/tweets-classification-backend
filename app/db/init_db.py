@@ -9,7 +9,6 @@ from sqlalchemy.exc import CompileError, DataError, DatabaseError, \
     PendingRollbackError, TimeoutError as SATimeoutError
 from sqlalchemy.ext.asyncio import AsyncTransaction
 
-from app.core import logging_config
 from app.core.config import settings
 from app.core.decorators import benchmark, with_logging
 from app.crud.user import UserRepository, get_user_repository
@@ -19,7 +18,6 @@ from app.models.user import User
 from app.schemas.user import UserSuperCreate
 from app.utils import hide_email
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

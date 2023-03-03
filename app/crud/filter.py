@@ -10,7 +10,6 @@ from sqlalchemy import select, Select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import logging_config
 from app.core.decorators import with_logging, benchmark
 from app.crud.specification import Specification, IdSpecification, \
     UsernameSpecification, EmailSpecification
@@ -18,7 +17,6 @@ from app.models.analysis import Analysis
 from app.models.model import Model
 from app.models.user import User
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

@@ -6,9 +6,6 @@ import logging
 from time import perf_counter
 from typing import Callable, Any
 
-from app.core import logging_config
-
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

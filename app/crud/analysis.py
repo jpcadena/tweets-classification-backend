@@ -9,7 +9,6 @@ from sqlalchemy import select, Select, ScalarResult
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import logging_config
 from app.core.security.exceptions import DatabaseException
 from app.crud.filter import IndexFilter, get_index_filter
 from app.crud.specification import IdSpecification
@@ -17,7 +16,6 @@ from app.db.session import get_session
 from app.models.analysis import Analysis
 from app.schemas.analysis import AnalysisCreate
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

@@ -8,11 +8,9 @@ from typing import Callable, Any
 import snscrape.modules.twitter as sn_twitter
 from pydantic import PositiveInt
 
-from app.core import logging_config
 from app.core.decorators import with_logging, benchmark
 from app.crud.specification import TwitterBaseSpecification
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

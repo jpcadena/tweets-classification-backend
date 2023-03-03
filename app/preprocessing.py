@@ -14,10 +14,9 @@ from pydantic import NonNegativeInt
 from sklearn.exceptions import FitFailedWarning, NotFittedError
 from sklearn.feature_extraction.text import CountVectorizer
 
-from app.core import config, logging_config
+from app.core import config
 from app.core.decorators import with_logging, benchmark
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 

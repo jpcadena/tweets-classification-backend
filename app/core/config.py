@@ -1,11 +1,16 @@
 """
 Core config script
 """
+import base64
 from functools import lru_cache
+from pathlib import Path
 from typing import Any, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
     validator, RedisDsn
+
+img_path = Path('./app/assets/images/api-docs.png')
+img_b64 = base64.b64encode(img_path.read_bytes()).decode('utf-8')
 
 
 class Settings(BaseSettings):
@@ -118,6 +123,37 @@ class Settings(BaseSettings):
             host=values.get("REDIS_HOST"),
             port=str(values.get('REDIS_PORT')),
         )
+
+    DESCRIPTION: str = f"""**FastAPI**, **SQLAlchemy** and **Redis** helps you
+     do awesome stuff. 🚀\n\n<img src='data:image/png;base64,{img_b64}'/>"""
+    CONTACT: dict[str, str] = {
+        "name": "Juan Pablo Cadena Aguilar",
+        "url": "https://www.github.com/jpcadena",
+        "email": "jpcadena@espol.edu.ec"}
+    LICENSE_INFO: dict[str, str] = {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"}
+    TAGS_METADATA: list[dict[str, str]] = [
+        {
+            "name": "users",
+            "description": "Operations with users, such as register, get, "
+                           "update and delete."
+        },
+        {
+            "name": "analyses",
+            "description": "Manage analyses with creation and get a specific"
+                           " analysis on a single or multiple tweets from an"
+                           " specific username."
+        },
+        {
+            "name": "models",
+            "description": "Manage Machine Learning model with creation and"
+                           " get a specific model performance information."
+        },
+        {
+            "name": "auth",
+            "description": "The authentication logic is here as well as"
+                           " password recovery and reset."}]
 
     class Config:
         """

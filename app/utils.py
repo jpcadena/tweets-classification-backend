@@ -15,11 +15,9 @@ from jinja2 import Template
 from jose import jwt
 from pydantic import EmailStr, AnyHttpUrl
 
-from app.core import logging_config
 from app.core.config import settings
 from app.core.decorators import with_logging, benchmark
 
-logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
 
 telephone_regex: str = r"\(?\+[0-9]{1,3}\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?" \
