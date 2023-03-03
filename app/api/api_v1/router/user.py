@@ -8,7 +8,6 @@ from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.deps import get_current_user
-from app.core import config
 from app.core.security.exceptions import ServiceException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserAuth, UserUpdate, UserUpdateResponse
@@ -60,7 +59,6 @@ async def create_user(
         user: UserCreate = Body(..., title='New user',
                                 description='New user to register'),
         user_service: UserService = Depends(get_user_service),
-        setting: config.Settings = Depends(config.get_setting)
 ) -> UserCreateResponse:
     """
     Register new user into the system.
@@ -77,9 +75,6 @@ async def create_user(
     :type background_tasks: BackgroundTasks
     :param user_service: Dependency method for user service layer
     :type user_service: UserService
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
-
     """
     try:
         new_user = await user_service.register_user(user)
@@ -88,9 +83,9 @@ async def create_user(
             status.HTTP_400_BAD_REQUEST,
             detail=f'Error at creating user.\n{str(serv_exc)}') from serv_exc
     if new_user:
-        if setting.EMAILS_ENABLED and user.email:
-            background_tasks.add_task(send_new_account_email, user.email,
-                                      user.username, setting)
+        if user.email:
+            background_tasks.add_task(
+                send_new_account_email, user.email, user.username)
     return new_user
 
 
@@ -148,7 +143,7 @@ async def get_user_me(
     return user
 
 
-@router.get("/user_id", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user_by_id(
         user_id: PositiveInt = Path(
             ..., title='User ID', description='ID of the User to searched',

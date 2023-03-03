@@ -2,9 +2,10 @@
 User CRUD script
 """
 import logging
+from datetime import datetime
 from typing import Optional, Union
 
-from fastapi import Depends
+from fastapi.encoders import jsonable_encoder
 from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy import ScalarResult, Select, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -54,7 +55,7 @@ class UserRepository:
         return user
 
     async def read_by_username(
-            self, username: UsernameSpecification) -> Optional[User]:
+            self, username: UsernameSpecification) -> User:
         """
         Read the user by its username
         :param username: The username to search
@@ -111,7 +112,7 @@ class UserRepository:
     @benchmark
     async def create_user(
             self, user: Union[UserCreate, UserSuperCreate],
-    ) -> Optional[User]:
+    ) -> User:
         """
         Create user into the database
         :param user: Request object representing the user
@@ -154,16 +155,19 @@ class UserRepository:
             found_user: User = await self.read_by_id(user_id)
         except DatabaseException as db_exc:
             raise DatabaseException(str(db_exc)) from db_exc
-        user_data: dict = user.dict(exclude_unset=True)
-        if user_data.get('password'):
-            hashed_password = await get_password_hash(user_data["password"])
-            user_data["password"] = hashed_password
-        for key, value in user_data.items():
-            setattr(found_user, key, value)
-        user_update: UserUpdate = UserUpdate(**found_user.dict())
-        async with self.session.begin():
-            self.session.add(user_update)
-            await self.session.commit()
+        obj_data: dict = jsonable_encoder(found_user)
+        update_data: dict = user.dict(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                if field == 'password':
+                    setattr(found_user, field, await get_password_hash(
+                        update_data[field]))
+                else:
+                    setattr(found_user, field, update_data[field])
+            if field == 'updated_at':
+                setattr(found_user, field, datetime.utcnow())
+        self.session.add(found_user)
+        await self.session.commit()
         try:
             updated_user: User = await self.read_by_id(user_id)
         except DatabaseException as db_exc:
@@ -194,15 +198,11 @@ class UserRepository:
         return True
 
 
-async def get_user_repository(
-        session: AsyncSession = Depends(get_session)
-) -> UserRepository:
+async def get_user_repository() -> UserRepository:
     """
     Get an instance of the user repository with the given session.
-    :param session: Session object for database connectio n
-    :type session: AsyncSession
     :return: UserRepository instance with session associated
     :rtype: UserRepository
     """
-    return UserRepository(session, await get_index_filter(),
+    return UserRepository(await get_session(), await get_index_filter(),
                           await get_unique_filter())

@@ -84,7 +84,7 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: Optional[str] = None
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "/app/assets/templates"
-    EMAILS_ENABLED: bool = False
+    EMAILS_ENABLED: bool = True
     SUPERUSER_EMAIL: EmailStr
     SUPERUSER_FIRST_NAME: str
     SUPERUSER_PASSWORD: str

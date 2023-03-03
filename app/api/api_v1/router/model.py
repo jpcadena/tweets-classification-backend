@@ -6,6 +6,7 @@ from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
 
 from app.api.deps import get_current_user
+from app.core.security.exceptions import ServiceException
 from app.schemas.model import Model, ModelCreate
 from app.schemas.user import UserAuth
 from app.services.model import ModelService, get_model_service
@@ -37,21 +38,28 @@ async def create_model(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    created_model: Model = await model_service.register_model(model)
+    try:
+        created_model: Model = await model_service.register_model(model)
+    except ServiceException as serv_exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            detail=f'Error at creating model.\n{str(serv_exc)}'
+        ) from serv_exc
     return created_model
 
 
 @router.get('/{model_id}', response_model=Model)
-async def get_model(model_id: PositiveInt = Path(
-    ..., title='ModelCreate ID',
-    description='ID of the ModelCreate to searched',
-    example=1), model_service: ModelService = Depends(get_model_service),
+async def get_model(
+        model_id: PositiveInt = Path(
+            ..., title='Model ID',
+            description='ID of the Model to searched', example=1),
+        model_service: ModelService = Depends(get_model_service),
         current_user: UserAuth = Depends(get_current_user)
 ) -> Model:
     """
     Search for specific Model by ID from the system.
     - :param model_id: Path Parameter of Model ID to search
-    - :type model_id: PydanticObjectId
+    - :type model_id: PositiveInt
     - :return: Found Model from logged-in user with id, tweet_id,
      model_name, accuracy, precision, recall, f1_score, roc_auc,
       computing_time, analysis_id and its creation timestamp
@@ -62,13 +70,12 @@ async def get_model(model_id: PositiveInt = Path(
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
     """
-    found_model: ModelCreate = await model_service.get_model_by_id(model_id)
+    found_model: Model = await model_service.get_model_by_id(model_id)
     if not found_model:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'ModelCreate with ID {model_id} '
-                                   f'not found in the system.')
-    model: Model = Model(**found_model.dict())
-    return model
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'Model with ID {model_id} not found in the system.')
+    return found_model
 
 
 @router.get('', response_model=list[Model])

@@ -15,18 +15,18 @@ async_engine: AsyncEngine = create_async_engine(
 
 
 @with_logging
-async def get_db(
-        engine: AsyncEngine = async_engine
-) -> AsyncGenerator[AsyncSession, Any]:
+async def get_db() -> AsyncGenerator[AsyncSession, Any]:
     """
     Get connection session to the database as a generator
     :return session: Async session for database connection
     :rtype session: AsyncSession
     """
     async with AsyncSession(
-            bind=engine, expire_on_commit=False) as async_session:
-        yield async_session
-    await async_session.close()
+            bind=async_engine, expire_on_commit=False) as async_session:
+        try:
+            yield async_session
+        finally:
+            await async_session.close()
 
 
 @with_logging

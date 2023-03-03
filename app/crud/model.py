@@ -4,7 +4,6 @@ Model CRUD script
 import logging
 from typing import Optional
 
-from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
 from sqlalchemy import select, Select, ScalarResult
 from sqlalchemy.exc import SQLAlchemyError
@@ -41,7 +40,7 @@ class ModelRepository:
         :rtype: Model
         """
         try:
-            model: Model = self.index_filter.filter(
+            model: Model = await self.index_filter.filter(
                 _id, self.session, self.model)
         except SQLAlchemyError as db_exc:
             raise DatabaseException(
@@ -74,7 +73,7 @@ class ModelRepository:
         """
         Create model into the database
         :param model: Request object representing the model
-        :type model: ModelCreate or ModelSuperCreate
+        :type model: ModelCreate
         :return: Response object representing the created model in the
          database
         :rtype: Model
@@ -87,19 +86,18 @@ class ModelRepository:
             logger.error(sa_exc)
             raise DatabaseException(
                 f"Error at creating model with {model_create.id}") from sa_exc
-        created_model: Model = await self.read_by_id(IdSpecification(
-            model_create.id))
+        try:
+            created_model: Model = await self.read_by_id(IdSpecification(
+                model_create.id))
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
         return created_model
 
 
-async def get_model_repository(
-        session: AsyncSession = Depends(get_session)
-) -> ModelRepository:
+async def get_model_repository() -> ModelRepository:
     """
     Get an instance of the model repository with the given session.
-    :param session: Session object for database connectio n
-    :type session: AsyncSession
     :return: ModelRepository instance with session associated
     :rtype: ModelRepository
     """
-    return ModelRepository(session, await get_index_filter())
+    return ModelRepository(await get_session(), await get_index_filter())

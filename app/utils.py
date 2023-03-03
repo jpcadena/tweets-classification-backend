@@ -58,7 +58,7 @@ async def create_message(html: str, subject: str) -> MIMEText:
     message["Subject"] = subject
     message[
         "From"] = f"{settings.EMAILS_FROM_NAME} <{settings.EMAILS_FROM_EMAIL}>"
-    print("Message created from: %s", settings.EMAILS_FROM_EMAIL)
+    logger.info("Message created from: %s", settings.EMAILS_FROM_EMAIL)
     return message
 
 
@@ -94,9 +94,9 @@ async def send_message(email_to: EmailStr, message: MIMEText) -> bool:
             settings.EMAILS_FROM_EMAIL, [email_to], message.as_string())
         smtp_conn.quit()
         is_sent = True
-        print("sent email to %s", email_to)
+        logger.info("sent email to %s", email_to)
     except smtplib.SMTPException as exc:
-        print("error sending email to %s.\n%s", email_to, exc)
+        logger.error("error sending email to %s.\n%s", email_to, exc)
     return is_sent
 
 
@@ -122,7 +122,7 @@ async def send_email(
     subject: str = await render_template(subject_template, environment)
     html: str = await render_template(html_template, environment)
     message: MIMEText = await create_message(html, subject)
-    is_sent: bool = send_message(email_to, message)
+    is_sent: bool = await send_message(email_to, message)
     return is_sent
 
 

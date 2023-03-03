@@ -3,28 +3,34 @@ Password security script
 """
 from passlib.context import CryptContext
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def get_password_hash(password: str) -> str:
     """
-    Bcrypt function for password
-    :param password: User password to encrypt
+    Hashes a password using the bcrypt algorithm
+    :param password: the password to hash
     :type password: str
-    :return: Hashed password
+    :return: the hashed password
     :rtype: str
     """
-    return pwd_context.hash(secret=password)
+    if not password:
+        raise ValueError("Password cannot be empty or None")
+    return pwd_context.hash(password)
 
 
 async def verify_password(hashed_password, plain_password) -> bool:
     """
-    Verify if secret is hashed password
-    :param hashed_password: Hash password
-    :type hashed_password: str
-    :param plain_password: User password
+    Verifies if a plain password matches a hashed password
+    :param plain_password: the plain text password to check
     :type plain_password: str
-    :return: If passwords match
+    :param hashed_password: the hashed password to compare against
+    :type hashed_password: str
+    :return: True if the passwords match, False otherwise
     :rtype: bool
     """
-    return pwd_context.verify(secret=plain_password, hash=hashed_password)
+    if not plain_password:
+        raise ValueError("Plain password cannot be empty or None")
+    if not hashed_password:
+        raise ValueError("Hashed password cannot be empty or None")
+    return pwd_context.verify(plain_password, hashed_password)

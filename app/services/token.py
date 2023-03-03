@@ -1,15 +1,19 @@
 """
 Token Service
 """
+import logging
 from typing import Optional
 
 from aioredis import RedisError, Redis
 from fastapi import Depends
 
 from app.api.deps import redis_dependency
-from app.core import config
+from app.core import config, logging_config
 from app.db.authorization import handle_redis_exceptions
 from app.models.token import Token
+
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class TokenService:
@@ -34,12 +38,12 @@ class TokenService:
         :return: True if the token was inserted; otherwise false
         :rtype: bool
         """
-        inserted: bool = False
         try:
-            inserted = await redis.setex(
+            inserted: bool = await redis.setex(
                 token.key, setting.REFRESH_TOKEN_EXPIRE_MINUTES, token.token)
         except RedisError as r_exc:
-            print("REDIS ERROR:", r_exc)
+            logger.error('Error at creating token. %s', r_exc)
+            raise r_exc
         return inserted
 
     @staticmethod
@@ -56,9 +60,9 @@ class TokenService:
         :return: Refresh token
         :rtype: str
         """
-        value: Optional[str] = None
         try:
-            value = await redis.get(key)
+            value: str = await redis.get(key)
         except RedisError as r_exc:
-            print(r_exc)
+            logger.error('Error at getting token. %s', r_exc)
+            raise r_exc
         return value

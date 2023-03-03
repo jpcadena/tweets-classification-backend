@@ -1,7 +1,7 @@
 """
 Services initialization package
 """
-from typing import TypeVar, Union
+from typing import TypeVar, Union, Optional
 
 from app.models.analysis import Analysis
 from app.models.model import Model
@@ -16,7 +16,7 @@ T = TypeVar('T', UserResponse, UserCreateResponse, UserUpdateResponse,
 
 
 async def model_to_response(
-        model: Union[User, Analysis, Model], response_model: T) -> T:
+        model: Union[User, Analysis, Model], response_model: T) -> Optional[T]:
     """
     Converts a User object to a Pydantic response model
     :param model: Object from Pydantic Base Model class
@@ -26,4 +26,8 @@ async def model_to_response(
     :return: Model inherited from SQLAlchemy Declarative Base
     :rtype: T
     """
+    print(model)
+    print(type(model))
+    if not model:
+        return None
     return response_model.from_orm(model)

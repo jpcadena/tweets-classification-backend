@@ -1,29 +1,32 @@
 """
 Login API Router
 """
+import logging
+
 from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import redis_dependency
-from app.core import config
+from app.core import config, logging_config
 from app.core.security.exceptions import ServiceException
 from app.core.security.password import verify_password
-from app.crud.specification import UsernameSpecification
-from app.crud.user import UserRepository, get_user_repository
 from app.models.token import Token
 from app.models.user import User
 from app.schemas.token import TokenResponse
 from app.services.auth import AuthService
 from app.services.token import TokenService
+from app.services.user import get_user_service, UserService
 
+logging_config.setup_logging()
+logger: logging.Logger = logging.getLogger(__name__)
 router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
         user: OAuth2PasswordRequestForm = Depends(),
-        user_repo: UserRepository = Depends(get_user_repository),
+        user_service: UserService = Depends(get_user_service),
         setting: config.Settings = Depends(config.get_setting),
         redis: Redis = Depends(redis_dependency)
 ) -> TokenResponse:
@@ -36,29 +39,32 @@ async def login(
      refresh token
     - :rtype: TokenResponse
     \f
-    :param user_repo: Dependency method for async Postgres connection
-    :type user_repo: UserRepository
+    :param user_service: Dependency method for User Service
+    :type user_service: UserService
     :param setting: Dependency method for cached setting object
     :type setting: Settings
     :param redis: Dependency method for async Redis connection
     :type redis: Redis
     """
     try:
-        found_user: User = await user_repo.read_by_username(
-            UsernameSpecification(user.username))
+        found_user: User = await user_service.get_login_user(user.username)
     except ServiceException as s_exc:
+        logger.error(s_exc)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Invalid credentials') from s_exc
     if not await verify_password(found_user.password, user.password):
+        logger.warning('Incorrect password')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='Incorrect password')
     if not found_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        logger.warning('Inactive user')
+        raise HTTPException(status_code=400, detail='Inactive user')
     access_token, refresh_token, name = await AuthService.auth_token(
         found_user, setting)
     token: Token = Token(key=name, token=refresh_token)
     token_set: bool = await TokenService.create_token(token, setting, redis)
     if not token_set:
+        logger.warning('Could not insert data in Authorization database')
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Could not insert data in Authorization database')

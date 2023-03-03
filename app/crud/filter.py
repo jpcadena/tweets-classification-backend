@@ -89,7 +89,7 @@ class UniqueFilter(Filter):
 
 async def get_index_filter() -> IndexFilter:
     """
-
+    Get an IndexFilter instance
     :return: IndexFilter instance
     :rtype: IndexFilter
     """
@@ -98,7 +98,7 @@ async def get_index_filter() -> IndexFilter:
 
 async def get_unique_filter() -> UniqueFilter:
     """
-
+    Get an UniqueFilter instance
     :return: UniqueFilter instance
     :rtype: UniqueFilter
     """

@@ -40,24 +40,7 @@ class UserService:
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
-    # async def get_login_user(
-    #         self, username: str) -> Union[UserResponse, User]:
-    #     """
-    #     Get user information with the correct schema for response
-    #     :param username: username to retrieve User from
-    #     :type username: str
-    #     :return: User information
-    #     :rtype: UserResponse
-    #     """
-    #     try:
-    #         user: User = await self.user_repo.read_by_username(
-    #             UsernameSpecification(username))
-    #     except DatabaseException as db_exc:
-    #         raise ServiceException(db_exc) from db_exc
-    #     return user
-
-    async def get_user_by_username(
-            self, username: str) -> Union[UserResponse, User]:
+    async def get_login_user(self, username: str) -> User:
         """
         Get user information with the correct schema for response
         :param username: username to retrieve User from
@@ -68,6 +51,20 @@ class UserService:
         try:
             user: User = await self.user_repo.read_by_username(
                 UsernameSpecification(username))
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
+        return user
+
+    async def get_user_by_username(self, username: str) -> UserResponse:
+        """
+        Get user information with the correct schema for response
+        :param username: username to retrieve User from
+        :type username: str
+        :return: User information
+        :rtype: UserResponse
+        """
+        try:
+            user: User = await self.get_login_user(username)
         except DatabaseException as db_exc:
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)

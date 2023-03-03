@@ -27,8 +27,8 @@ async def create_access_token(
         setting: config.Settings = Depends(config.get_setting)) -> str:
     """
     Function to create a new access token
-    :param scope:
-    :type scope:
+    :param scope: The token's scope.
+    :type scope: Scope
     :param payload: claims for token
     :type payload: dict
     :param expires_delta: time expiration
@@ -50,8 +50,8 @@ async def create_access_token(
     encoded_jwt: str = jwt.encode(claims=claims, key=setting.SECRET_KEY,
                                   algorithm=setting.ALGORITHM)
     logger.info(
-        "JWT created with JTI: %s for sub: %s", payload.get('jti'),
-        payload.get('sub'))
+        "JWT created with JTI: %s for sub: %s. Expires in %s.",
+        payload.get("jti"), payload.get("sub"), expire - datetime.utcnow())
     return encoded_jwt
 
 

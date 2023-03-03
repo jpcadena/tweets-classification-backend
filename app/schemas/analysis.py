@@ -17,9 +17,18 @@ class AnalysisId(BaseModel):
         ..., title='Analysis ID', description='ID of the Analysis')
 
 
+class AnalysisTarget(BaseModel):
+    """
+    Analysis Target class that inherits from Pydantic Base Model.
+    """
+    target: bool = Field(
+        ..., title='Target (Insecurity)',
+        description='True if the user is active; otherwise false')
+
+
 class AnalysisBase(BaseModel):
     """
-    Base Analysis class that inherits from Pydantic Base Model.
+    Base Analysis class that inherits from AnalysisTarget.
     """
     tweet_id: PositiveInt = Field(
         ..., title='Tweet ID', description='ID of the Tweet')
@@ -31,11 +40,9 @@ class AnalysisBase(BaseModel):
         ..., title='Tweet Username',
         description='Username to identify the user', min_length=4,
         max_length=15)
-    target: bool = Field(
-        ..., title='Target (Insecurity)',
-        description='True if the user is active; otherwise false')
     created_at: datetime = Field(
-        ..., title='Created At', description='Time the Analysis was performed')
+        default_factory=datetime.now, title='Created At',
+        description='Time the Analysis was performed')
     user_id: PositiveInt = Field(
         ..., title='User ID',
         description='ID of the User who performed the Analysis')
@@ -43,29 +50,32 @@ class AnalysisBase(BaseModel):
         default=[], title='Models', description='List of performed model',
         unique_items=True)
 
+
+class AnalysisCreate(AnalysisTarget, AnalysisBase):
+    """
+    Class for created Analysis that inherits from AnalysisBase
+    """
+
     class Config:
         """
-        Config class for AnalysisBase
+        Config class for AnalysisCreate
         """
+        orm_mode: bool = True
         schema_extra: dict[str, dict] = {
             "example": {
                 "tweet_id": 1,
                 "content": "Hello, world",
                 "tweet_username": "username",
-                "target": True,
                 "created_at": datetime.utcnow(),
-                "user_id": 2}}
+                "user_id": 2,
+                "models": None,
+                "target": False}}
 
 
-class AnalysisCreate(AnalysisBase):
+class Analysis(AnalysisTarget, AnalysisBase, AnalysisId):
     """
-    Class for created Analysis that inherits from AnalysisBase
-    """
-
-
-class Analysis(AnalysisBase, AnalysisId):
-    """
-    Analysis class that inherits from AnalysisBase class.
+    Analysis class that inherits from AnalysisId, AnalysisBase and
+    AnalysisTarget.
     """
 
     class Config:
@@ -79,6 +89,7 @@ class Analysis(AnalysisBase, AnalysisId):
                 "tweet_id": 242312391,
                 "content": "Hello, world #Ecuador #insecurity",
                 "tweet_username": "my_username",
-                "target": False,
                 "created_at": datetime.utcnow(),
-                "user_id": 5}}
+                "user_id": 5,
+                "models": None,
+                "target": False}}

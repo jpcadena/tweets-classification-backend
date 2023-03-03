@@ -15,7 +15,6 @@ from app.core.decorators import with_logging, benchmark
 from app.crud.user import get_user_repository
 from app.db.authorization import init_auth_db
 from app.db.init_db import init_db
-from app.db.session import get_session
 from app.schemas.msg import Msg
 from app.utils import update_json
 
@@ -93,7 +92,7 @@ async def startup_event() -> None:
     """
     logger.info('Starting API...')
     await update_json()
-    await init_db(await get_user_repository(await get_session()))
+    await init_db(await get_user_repository())
     await init_auth_db()
 
 

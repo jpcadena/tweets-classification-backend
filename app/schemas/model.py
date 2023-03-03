@@ -40,33 +40,17 @@ class ModelBase(BaseModel):
         ..., title='Computing Time',
         description='The time it took to classify the tweet')
 
-    class Config:
-        """
-        Config class for ModelBase
-        """
-        orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
-            "example": {
-                "tweet_id": 112317014,
-                "model_name": "Logistic Regression",
-                "accuracy": 0.85,
-                "precision": 0.9,
-                "recall": 0.8,
-                "f1_score": 0.84,
-                "roc_auc": 0.91,
-                "computing_time": 2.5}}
-
 
 class ModelCreatedAt(BaseModel):
     """
     Model Created At class that inherits from Pydantic Base Model.
     """
-    created_at: datetime = Field(
-        default_factory=datetime.now(), title='Created At',
+    created_at: Optional[datetime] = Field(
+        default_factory=datetime.now, title='Created At',
         description='Time the Model was executed')
 
 
-class ModelCreate(ModelBase):
+class ModelCreate(ModelCreatedAt, ModelBase):
     """
     Class for creating Model that inherits from ModelBase.
     """
@@ -74,8 +58,25 @@ class ModelCreate(ModelBase):
         default=None, title='Analysis ID',
         description='ID of the Analysis where the model was executed')
 
+    class Config:
+        """
+        Config class for ModelCreate
+        """
+        orm_mode: bool = True
+        schema_extra: dict[str, dict] = {
+            "example": {
+                "tweet_id": 24578931,
+                "model_name": "Logistic Regression",
+                "accuracy": 0.84,
+                "precision": 0.94,
+                "recall": 0.85,
+                "f1_score": 0.89,
+                "roc_auc": 0.99,
+                "computing_time": 0.03,
+                "analysis_id": 1}}
 
-class Model(ModelCreatedAt, ModelCreate, ModelID):
+
+class Model(ModelCreate, ModelID):
     """
     Model class that inherits from ModelCreatedAt, ModelCreate and
      ModelID.

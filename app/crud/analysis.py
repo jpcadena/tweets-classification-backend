@@ -4,7 +4,6 @@ Analysis CRUD script
 import logging
 from typing import Optional
 
-from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
 from sqlalchemy import select, Select, ScalarResult
 from sqlalchemy.exc import SQLAlchemyError
@@ -98,14 +97,10 @@ class AnalysisRepository:
         return created_analysis
 
 
-async def get_analysis_repository(
-        session: AsyncSession = Depends(get_session)
-) -> AnalysisRepository:
+async def get_analysis_repository() -> AnalysisRepository:
     """
     Get an instance of the analysis repository with the given session.
-    :param session: Session object for database connectio n
-    :type session: AsyncSession
     :return: AnalysisRepository instance with session associated
     :rtype: AnalysisRepository
     """
-    return AnalysisRepository(session, await get_index_filter())
+    return AnalysisRepository(await get_session(), await get_index_filter())
