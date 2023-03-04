@@ -96,17 +96,17 @@ def remove_stopwords_and_tokenize(
 
 
 async def get_stopwords(
-        setting: config.Settings = Depends(config.get_setting)) -> list[str]:
+        settings: config.Settings = Depends(config.get_settings)) -> list[str]:
     """
     Get stopwords from file and NLTK
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :return: List of the stopwords
     :rtype: list[str]
     """
     async with aiofiles.open(
             '/app/assets/static/related_words_users.json',
-            encoding=setting.ENCODING) as file:
+            encoding=settings.ENCODING) as file:
         content: str = await file.read()
     stopwords_file: dict = json.loads(content)
     exclude_words: list[str] = stopwords_file.get('spanish')
@@ -120,17 +120,17 @@ async def get_stopwords(
 @benchmark
 async def preprocess_tweet_text(
         tweet_text: str,
-        setting: config.Settings = Depends(config.get_setting)) -> str:
+        settings: config.Settings = Depends(config.get_settings)) -> str:
     """
     Preprocess a tweet text
     :param tweet_text: Raw text to preprocess
     :type tweet_text: str
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :return: Preprocessed tweet text
     :rtype: str
     """
-    stop_words: list[str] = await get_stopwords(setting)
+    stop_words: list[str] = await get_stopwords(settings)
     no_emojis: str = remove_emoji(tweet_text)
     cleaned: str = twitter_text_cleaning(no_emojis)
     wo_punctuation: str = remove_punc(cleaned)
@@ -142,18 +142,18 @@ async def preprocess_tweet_text(
 
 
 async def get_ngram_counts(
-        tweet: str, setting: config.Settings = Depends(config.get_setting)
+        tweet: str, settings: config.Settings = Depends(config.get_settings)
 ) -> list[tuple[str, NonNegativeInt]]:
     """
     Calculates the count of n-grams in a tweet
     :param tweet: The tweet to process
     :type tweet: str
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :return: A list with the count of each n-gram together as a tuple.
     :rtype: list[tuple[str, NonNegativeInt]]
     """
-    stop_words: list[str] = await get_stopwords(setting)
+    stop_words: list[str] = await get_stopwords(settings)
     token_counts_matrix: CountVectorizer = CountVectorizer(
         stop_words=stop_words, ngram_range=(1, 3))
     try:

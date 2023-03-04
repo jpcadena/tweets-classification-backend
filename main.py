@@ -18,7 +18,7 @@ from app.db.init_db import init_db
 from app.schemas.msg import Msg
 from app.utils.utils import update_json
 
-logging_config.setup_logging()
+logging_config.setup_logging(settings=settings)
 logger: logging.Logger = logging.getLogger(__name__)
 
 
@@ -58,22 +58,23 @@ app.mount('/./app/assets/images', StaticFiles(directory='./app/assets/images'),
 @app.on_event('startup')
 async def startup_event() -> None:
     """
-    Startup API
+    Startup API.
     :return: None
     :rtype: NoneType
     """
     logger.info('Starting API...')
-    await update_json()
-    await init_db(await get_user_repository())
-    await init_auth_db()
+    await update_json(settings)
+    await init_db(await get_user_repository(), settings)
+    await init_auth_db(settings)
 
 
 @app.get("/", response_model=Msg)
 async def welcome_message() -> Msg:
     """
     Function to retrieve homepage.
-    - :return: Welcome message
-    - :rtype: Msg
+    ## Response:
+    - `return:` **Welcome message**
+    - `rtype:` **Msg**
     """
     logger.info("Salute!")
     return Msg(msg="Hello, world!")

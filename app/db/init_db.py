@@ -9,7 +9,7 @@ from sqlalchemy.exc import CompileError, DataError, DatabaseError, \
     PendingRollbackError, TimeoutError as SATimeoutError
 from sqlalchemy.ext.asyncio import AsyncTransaction
 
-from app.core.config import settings
+from app.core import config
 from app.core.decorators import benchmark, with_logging
 from app.crud.user import UserRepository, get_user_repository
 from app.db.base_class import Base
@@ -60,11 +60,14 @@ async def create_db_and_tables() -> None:
 @with_logging
 @benchmark
 async def init_db(
-        user_repo: UserRepository = Depends(get_user_repository)) -> None:
+        user_repo: UserRepository = Depends(get_user_repository),
+        settings: config.Settings = Depends(config.get_settings)) -> None:
     """
     Initialization of the database connection
     :param user_repo: Dependency injection for user repository
     :type user_repo: UserRepository
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: None
     :rtype: NoneType
     """

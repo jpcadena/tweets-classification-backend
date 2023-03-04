@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from logging.handlers import SMTPHandler
 
-from app.core.config import settings
+from app.core import config
 
 
 def _setup_console_handler(logger: logging.Logger, log_level: int) -> None:
@@ -24,7 +24,9 @@ def _setup_console_handler(logger: logging.Logger, log_level: int) -> None:
     logger.addHandler(console_handler)
 
 
-def _setup_mail_handler(logger: logging.Logger, log_level: int) -> None:
+def _setup_mail_handler(
+        logger: logging.Logger, log_level: int,
+        settings: config.Settings = config.get_settings()) -> None:
     """
     Setup mail handler
     :param logger: Logger instance
@@ -87,11 +89,15 @@ def _setup_file_handler(logger: logging.Logger, log_level: int) -> None:
     file_handler.flush()
 
 
-def setup_logging(log_level: int = logging.DEBUG) -> None:
+def setup_logging(
+        log_level: int = logging.DEBUG,
+        settings: config.Settings = config.get_settings()) -> None:
     """
     Setup logging
     :param log_level: Level of logging
     :type log_level: int
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: None
     :rtype: NoneType
     """
@@ -101,5 +107,5 @@ def setup_logging(log_level: int = logging.DEBUG) -> None:
     logger.setLevel(log_level)
 
     _setup_console_handler(logger, log_level)
-    _setup_mail_handler(logger, log_level)
+    _setup_mail_handler(logger, log_level, settings)
     _setup_file_handler(logger, log_level)

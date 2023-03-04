@@ -42,7 +42,7 @@ async def create_access_token(
         payload: dict,
         scope: Scope = Scope.ACCESS_TOKEN,
         expires_delta: Optional[timedelta] = None,
-        setting: config.Settings = Depends(config.get_setting),
+        settings: config.Settings = Depends(config.get_settings),
 ) -> str:
     """
     Function to create a new access token
@@ -52,18 +52,18 @@ async def create_access_token(
     :type payload: dict
     :param expires_delta: time expiration
     :type expires_delta: timedelta
-    :param setting: Dependency method for cached setting object
-    :type setting: config.Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: encoded JWT
     :rtype: str
     """
     expire_time: datetime = await _generate_expiration_time(
-        expires_delta, setting.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta, settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     payload.update({'exp': int(expire_time.timestamp())})
     payload['scope'] = scope
     claims: dict = jsonable_encoder(payload)
     encoded_jwt: str = jwt.encode(
-        claims=claims, key=setting.SECRET_KEY, algorithm=setting.ALGORITHM
+        claims=claims, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
     )
     logger.info(
         "JWT created with JTI: %s for sub: %s. Expires in %s.",
@@ -76,19 +76,19 @@ async def create_access_token(
 
 @with_logging
 async def create_refresh_token(
-        payload: dict, setting: config.Settings = Depends(config.get_setting)
+        payload: dict, settings: config.Settings = Depends(config.get_settings)
 ) -> str:
     """
     Create refresh token for authentication
     :param payload: data to be used as payload in Token
     :type payload: dict
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :return: access token with refresh expiration time
     :rtype: str
     """
     expires: timedelta = timedelta(
-        minutes=setting.REFRESH_TOKEN_EXPIRE_MINUTES)
+        minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     return await create_access_token(
         payload=payload, scope=Scope.REFRESH_TOKEN, expires_delta=expires,
-        setting=setting)
+        settings=settings)

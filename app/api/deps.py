@@ -13,30 +13,29 @@ from pydantic import ValidationError
 from app.core import config
 from app.schemas.user import UserAuth
 from app.services.user import UserService, get_user_service
-from app.utils.utils import audience
 
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
     tokenUrl="api/v1/auth/login", scheme_name="JWT")
 
 
-async def validate_token(token: str, setting: config.Settings) -> dict:
+async def validate_token(token: str, settings: config.Settings) -> dict:
     """
     Validate the token.
     :param token: The token to validate
     :type token: str
-    :param setting: Dependency method for cached setting object
-    :type setting: config.Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: The token decoded
     :rtype: dict
     """
     try:
         return jwt.decode(
             token=token,
-            key=setting.SECRET_KEY,
-            algorithms=[setting.ALGORITHM],
+            key=settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
             options={"verify_subject": False},
-            audience=audience,
-            issuer=setting.SERVER_HOST
+            audience=settings.AUDIENCE,
+            issuer=settings.SERVER_HOST
         )
     except jwt.ExpiredSignatureError as es_exc:
         raise HTTPException(
@@ -61,22 +60,22 @@ async def validate_token(token: str, setting: config.Settings) -> dict:
 
 async def get_current_user(
         token: str = Depends(oauth2_scheme),
-        setting: config.Settings = Depends(config.get_setting),
+        settings: config.Settings = Depends(config.get_settings),
         user_service: UserService = Depends(get_user_service)
 ) -> UserAuth:
     """
     Function to get current user
     :param token: access token from OAuth2PasswordBearer
     :type token: str
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :param user_service: Dependency method for User service object
     :type user_service: UserService
     :return: current user from DB
     :rtype: UserAuth
     """
     try:
-        payload = await validate_token(token, setting)
+        payload = await validate_token(token, settings)
         username = payload.get("preferred_username")
         if username is None:
             raise HTTPException(
@@ -122,8 +121,8 @@ class RedisDependency:
         :return: None
         :rtype: NoneType
         """
-        setting: config.Settings = config.get_setting()
-        url: str = setting.AIOREDIS_DATABASE_URI
+        settings: config.Settings = config.get_settings()
+        url: str = settings.AIOREDIS_DATABASE_URI
         self.redis = await Redis.from_url(url, decode_responses=True)
 
 

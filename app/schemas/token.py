@@ -6,8 +6,9 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, EmailStr, AnyUrl
 
 from app.core import config
+from app.core.config import settings
 from app.schemas.scope import Scope
-from app.utils.utils import sub_regex, audience, password_regex
+from app.utils.utils import sub_regex, password_regex
 
 
 class PublicClaimsToken(BaseModel):
@@ -34,14 +35,14 @@ class RegisteredClaimsToken(BaseModel):
     Registered claims.
     """
     iss: AnyUrl = Field(
-        default=config.get_setting().SERVER_HOST, title='Issuer',
+        default=config.get_settings().SERVER_HOST, title='Issuer',
         description='Principal that issued JWT as HTTP URL')
     sub: str = Field(
         ..., title='Subject',
         description="Subject of JWT starting with 'username:' followed by"
                     " User ID", min_length=1, regex=sub_regex)
     aud: str = Field(
-        default=audience,
+        default=settings.AUDIENCE,
         title='Audience', description='Recipient of JWT', const=True,
         min_length=1)
     exp: int = Field(

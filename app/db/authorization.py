@@ -7,6 +7,7 @@ import aioredis
 from aioredis.exceptions import DataError, AuthenticationError, \
     NoPermissionError, TimeoutError as RedisTimeoutError, \
     ConnectionError as RedisConnectionError
+from fastapi import Depends
 
 from app.core import config
 from app.core.decorators import benchmark, with_logging
@@ -16,14 +17,16 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 @with_logging
 @benchmark
-async def init_auth_db() -> None:
+async def init_auth_db(
+        settings: config.Settings = Depends(config.get_settings)) -> None:
     """
     Init connection to Redis Database
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: None
     :rtype: NoneType
     """
-    setting: config.Settings = config.get_setting()
-    url: str = setting.AIOREDIS_DATABASE_URI
+    url: str = settings.AIOREDIS_DATABASE_URI
     await aioredis.from_url(url, decode_responses=True)
     logger.info('Redis Database initialized')
 

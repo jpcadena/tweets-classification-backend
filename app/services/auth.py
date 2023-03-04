@@ -4,10 +4,11 @@ Main script
 import time
 import uuid
 
+from fastapi import Depends
+
 from app.core import config
 from app.core.security.jwt import create_access_token, create_refresh_token
 from app.models.user import User
-from app.utils.utils import audience
 
 
 class AuthService:
@@ -17,21 +18,23 @@ class AuthService:
 
     @staticmethod
     async def auth_token(
-            user: User, setting: config.Settings) -> tuple[str, str, str]:
+            user: User,
+            settings: config.Settings = Depends(config.get_settings)
+    ) -> tuple[str, str, str]:
         """
         Authentication function for JWT
         :param user: User to authenticate
         :type user: User
-        :param setting: Dependency method for cached setting object
-        :type setting: config.Settings
+        :param settings: Dependency method for cached setting object
+        :type settings: config.Settings
         :return: Tuple with tokens and name for token
         :rtype: tuple[str, str, str]
         """
         jti: uuid.UUID = uuid.uuid4()
         payload: dict = {
-            "iss": setting.SERVER_HOST, "sub": "username:" + str(user.id),
-            "aud": audience,
-            "exp": int(time.time()) + setting.ACCESS_TOKEN_EXPIRE_MINUTES,
+            "iss": settings.SERVER_HOST, "sub": "username:" + str(user.id),
+            "aud": settings.AUDIENCE,
+            "exp": int(time.time()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES,
             "nbf": int(time.time()) - 1, "iat": int(time.time()),
             "jti": jti, "nickname": user.username,
             "preferred_username": user.username, "email": user.email}
@@ -48,8 +51,10 @@ class AuthService:
         # if user.gender:
         #     payload["updated_at"] = user.updated_at
         access_token: str = await create_access_token(
-            payload=payload, setting=setting)
+            payload=payload,
+            # scope=Scope.ACCESS_TOKEN, expires_delta=None,
+            settings=settings)
         refresh_token: str = await create_refresh_token(
-            payload=payload, setting=setting)
+            payload=payload, settings=settings)
         name: str = str(user.id) + ':' + str(jti)
         return access_token, refresh_token, name

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
-    validator, RedisDsn
+    validator, RedisDsn, root_validator
 
 img_path = Path('./app/assets/images/api-docs.png')
 img_b64 = base64.b64encode(img_path.read_bytes()).decode('utf-8')
@@ -29,6 +29,21 @@ class Settings(BaseSettings):
     ENCODING: str
     OPENAPI_FILE_PATH: str
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
+    AUDIENCE: Optional[str] = None
+
+    @validator('AUDIENCE', pre=True)
+    def assemble_audience(
+            cls, v: Optional[str], values: dict[str, Any]) -> str:
+        """
+        Combine server host and API_V1_STR to create the audience string.
+        :param v: The value of audience attribute
+        :type v: Optional[str]
+        :param values: The values to assemble the audience string
+        :type values: dict[str, Any]
+        :return: The AUDIENCE attribute
+        :rtype: str
+        """
+        return f'{values["SERVER_HOST"]}{values["API_V1_STR"]}/auth/login'
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
@@ -127,12 +142,26 @@ class Settings(BaseSettings):
             port=str(values.get('REDIS_PORT')),
         )
 
+    CONTACT_NAME: str = None
+    CONTACT_URL: AnyHttpUrl = None
+    CONTACT_EMAIL: EmailStr = None
+    CONTACT: dict[str, Any]
+
+    @root_validator(pre=True)
+    def assemble_contact(cls, values):
+        contact: dict[str, Any] = {}
+        if values.get('CONTACT_NAME'):
+            contact['name'] = values['CONTACT_NAME']
+        if values.get('CONTACT_URL'):
+            contact['url'] = values['CONTACT_URL']
+        if values.get('CONTACT_EMAIL'):
+            contact['email'] = values['CONTACT_EMAIL']
+        values['CONTACT'] = contact
+        return {k: v for k, v in values.items() if
+                k not in ('CONTACT_NAME', 'CONTACT_URL', 'CONTACT_EMAIL')}
+
     DESCRIPTION: str = f"""**FastAPI**, **SQLAlchemy** and **Redis** helps you
      do awesome stuff. 🚀\n\n<img src='data:image/png;base64,{img_b64}'/>"""
-    CONTACT: dict[str, str] = {
-        "name": "Juan Pablo Cadena Aguilar",
-        "url": "https://www.github.com/jpcadena",
-        "email": "jpcadena@espol.edu.ec"}
     LICENSE_INFO: dict[str, str] = {
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -167,11 +196,11 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-settings = Settings()
+settings: Settings = Settings()
 
 
 @lru_cache()
-def get_setting() -> Settings:
+def get_settings() -> Settings:
     """
     Get settings cached
     :return: settings object

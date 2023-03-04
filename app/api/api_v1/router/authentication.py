@@ -4,7 +4,7 @@ Login API Router
 import logging
 
 from aioredis import Redis
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Path
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr, PositiveInt
 
@@ -32,22 +32,24 @@ router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])
 async def login(
         user: OAuth2PasswordRequestForm = Depends(),
         user_service: UserService = Depends(get_user_service),
-        setting: config.Settings = Depends(config.get_setting),
+        settings: config.Settings = Depends(config.get_settings),
         redis: Redis = Depends(redis_dependency)
 ) -> TokenResponse:
     """
     Login with OAuth2 authentication using request form.
-    - :param user: Object from request body with username and password
-     as DI
-    - :type user: OAuth2PasswordRequestForm
-    - :return: Token information with access token, its type and
-     refresh token
-    - :rtype: TokenResponse
+    ## Parameter:
+    - `user:` **Object from request body with username and
+     password as DI**
+    - `type:` **OAuth2PasswordRequestForm**
+    ## Response:
+    - `return:` **Token information with access token, its type and
+     refresh token**
+    - `rtype:` **TokenResponse**
     \f
     :param user_service: Dependency method for User Service
     :type user_service: UserService
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     :param redis: Dependency method for async Redis connection
     :type redis: Redis
     """
@@ -66,9 +68,9 @@ async def login(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Inactive user')
     access_token, refresh_token, name = await AuthService.auth_token(
-        found_user, setting)
+        found_user, settings)
     token: Token = Token(key=name, token=refresh_token)
-    token_set: bool = await TokenService.create_token(token, setting, redis)
+    token_set: bool = await TokenService.create_token(token, settings, redis)
     if not token_set:
         logger.warning('Could not insert data in Authorization database')
         raise HTTPException(
@@ -82,28 +84,40 @@ async def login(
 async def test_token(
         current_user: UserAuth = Depends(get_current_user)) -> UserAuth:
     """
-    Test access token
+    Test access token.
+    ## Response:
+    - `return:` **User instance**
+    - `rtype:` **UserAuth**
+    \f
     :param current_user: The current user
     :type current_user: UserAuth
-    :return: User instance
-    :rtype: UserAuth
     """
     return current_user
 
 
 @router.post("/password-recovery/{email}", response_model=Msg)
 async def recover_password(
-        email: EmailStr, user_service: UserService = Depends(get_user_service)
+        email: EmailStr = Path(
+            ..., title='Email',
+            description='The email used to recover the password',
+            example='someone@example.com'),
+        user_service: UserService = Depends(get_user_service),
+        settings: config.Settings = Depends(config.get_settings)
 ) -> Msg:
     """
-    Recover password
-    - :param email: The email to recover
-    - :type email: EmailStr
-    - :return: Message object
-    - :rtype: Msg
+    Recover password.
+    ## Parameter:
+    - `email:` **Path parameter that references the email used to recover
+     the password**
+    - `type:` **EmailStr**
+    ## Response:
+    - `return:` **Message object**
+    - `rtype:` **Msg**
     \f
     :param user_service: Dependency method for User service object
     :type user_service: UserService
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     """
     try:
         user: UserResponse = await user_service.get_user_by_email(email)
@@ -116,9 +130,10 @@ async def recover_password(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The user with this username does not exist in the system.")
-    password_reset_token: str = await generate_password_reset_token(email)
+    password_reset_token: str = await generate_password_reset_token(
+        email, settings)
     await send_reset_password_email(
-        user.email, user.username, password_reset_token)
+        user.email, user.username, password_reset_token, settings)
     return Msg(msg="Password recovery email sent")
 
 
@@ -130,11 +145,13 @@ async def reset_password(
         user_service: UserService = Depends(get_user_service),
 ) -> Msg:
     """
-    Reset password
-    - :param token_reset_password: Object with token and new password
-    - :type token_reset_password: TokenResetPassword
-    - :return: Message object
-    - :rtype: Msg
+    Reset password.
+    ## Parameter:
+    - `token_reset_password:` **Body Object with token and new password**
+    - `type:` **TokenResetPassword**
+    ## Response:
+    - `return:` **Message object**
+    - `rtype:` **Msg**
     \f
 
     :param user_service:

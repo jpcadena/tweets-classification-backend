@@ -8,10 +8,11 @@ from pathlib import Path
 from typing import Any, Union
 
 import aiofiles
+from fastapi import Depends
 from jinja2 import Template
 from pydantic import EmailStr
 
-from app.core.config import settings
+from app.core import config
 from app.core.decorators import with_logging, benchmark
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -31,13 +32,17 @@ async def render_template(template: str, environment: dict[str, Any]) -> str:
     return Template(template).render(environment)
 
 
-async def create_message(html: str, subject: str) -> MIMEText:
+async def create_message(
+        html: str, subject: str,
+        settings: config.Settings = Depends(config.get_settings)) -> MIMEText:
     """
     Creates an email message with the given HTML content and subject
     :param html: Rendered template with environment variables
     :type html: str
     :param subject: The subject of the email
     :type subject: str
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: Message with subject and rendered template
     :rtype: MIMEText
     """
@@ -51,13 +56,17 @@ async def create_message(html: str, subject: str) -> MIMEText:
 
 @with_logging
 @benchmark
-async def send_message(email_to: EmailStr, message: MIMEText) -> bool:
+async def send_message(
+        email_to: EmailStr, message: MIMEText,
+        settings: config.Settings = Depends(config.get_settings)) -> bool:
     """
     Sends the message to the given email address.
     :param email_to: The email address of the recipient
     :type email_to: EmailStr
     :param message: Message with subject and rendered template
     :type message: MIMEText
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: True if the email was sent; otherwise false
     :rtype: bool
     """
@@ -89,9 +98,12 @@ async def send_message(email_to: EmailStr, message: MIMEText) -> bool:
 
 async def send_email(
         email_to: EmailStr, subject_template: str = "",
-        html_template: str = "", environment: dict[str, Any] = None) -> bool:
+        html_template: str = "", environment: dict[str, Any] = None,
+        settings: config.Settings = Depends(config.get_settings)) -> bool:
     """
     Send an e-mail to a recipient.
+    :param settings:
+    :type settings:
     :param email_to: The email address of the recipient
     :type email_to: EmailStr
     :param subject_template: The subject of the email
@@ -101,6 +113,8 @@ async def send_email(
     :param environment: A dictionary of variables used in the email
      templates
     :type environment: dict[str, Any]
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: True if the email was sent; otherwise false
     :rtype: bool
     """
@@ -108,16 +122,20 @@ async def send_email(
         "no provided configuration for email variables"
     subject: str = await render_template(subject_template, environment)
     html: str = await render_template(html_template, environment)
-    message: MIMEText = await create_message(html, subject)
-    is_sent: bool = await send_message(email_to, message)
+    message: MIMEText = await create_message(html, subject, settings)
+    is_sent: bool = await send_message(email_to, message, settings)
     return is_sent
 
 
-async def read_template_file(template_path: Union[str, Path]) -> str:
+async def read_template_file(
+        template_path: Union[str, Path],
+        settings: config.Settings = Depends(config.get_settings)) -> str:
     """
     Read the template file
     :param template_path: Path to the template
     :type template_path: str
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: Template string
     :rtype: str
     """

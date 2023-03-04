@@ -26,7 +26,7 @@ async def create_analysis(
         analysis_service: AnalysisService = Depends(get_analysis_service),
         nlp_service: NLPService = Depends(get_nlp_model_service),
         current_user: UserAuth = Depends(get_current_user),
-        setting: config.Settings = Depends(config.get_setting)
+        settings: config.Settings = Depends(config.get_settings)
 ) -> Analysis:
     """
     Create a new analysis into the system.
@@ -44,12 +44,12 @@ async def create_analysis(
     :type nlp_service: NLPService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     """
     tweet: dict = await nlp_service.nlp_model_repo.get_single_tweet(tweet_id)
     analysis_obj: dict = await nlp_service.create_analysis_dict(
-        tweet, setting)
+        tweet, settings)
     target: bool = await nlp_service.classify_tweet(analysis_obj)
     analysis_performed: dict = {
         'tweet_id': analysis_obj.get('tweet_id'),
@@ -87,10 +87,10 @@ async def create_multiple_analysis(
         analysis_service: AnalysisService = Depends(get_analysis_service),
         nlp_service: NLPService = Depends(get_nlp_model_service),
         current_user: UserAuth = Depends(get_current_user),
-        setting: config.Settings = Depends(config.get_setting)
+        settings: config.Settings = Depends(config.get_settings)
 ) -> list[Analysis]:
     """
-    Create a multiple analyses into the system.
+    Create multiple analyses into the system.
     - :param username: Path Parameter that identifies username to fetch
      tweets
     - :param number_tweets: Query parameter for the quantity of recent
@@ -107,15 +107,15 @@ async def create_multiple_analysis(
     :type nlp_service: NLPService
     :param current_user: Dependency method for authorization by current user
     :type current_user: UserAuth
-    :param setting: Dependency method for cached setting object
-    :type setting: Settings
+    :param settings: Dependency method for cached setting object
+    :type settings: Settings
     """
     tweets: list[dict] = await nlp_service.nlp_model_repo.get_tweets(
         TwitterUsernameSpecification(username), number_tweets)
     analyses: list[Analysis] = []
     for tweet in tweets:
         analysis_obj: dict = await nlp_service.create_analysis_dict(
-            tweet, setting)
+            tweet, settings)
         target: bool = await nlp_service.classify_tweet(analysis_obj)
         analysis_performed: dict = {
             'tweet_id': analysis_obj.get('tweet_id'),

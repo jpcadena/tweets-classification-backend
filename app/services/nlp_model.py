@@ -45,20 +45,20 @@ class NLPService:
 
     async def create_analysis_dict(
             self, tweet: dict,
-            setting: config.Settings = Depends(config.get_setting)) -> dict:
+            settings: config.Settings = Depends(config.get_settings)) -> dict:
         """
         Create the analysis dictionary base object
         :param tweet: The Tweet object from Twitter
         :type tweet: dict
-        :param setting: Dependency method for cached setting object
-        :type setting: config.Settings
+        :param settings: Dependency method for cached setting object
+        :type settings: config.Settings
         :return: The Analysis base object
         :rtype: dict
         """
         preprocessed_text: str = await preprocess_tweet_text(
-            tweet.get('raw_content'), setting)
+            tweet.get('raw_content'), settings)
         vocabulary: list[tuple[str, NonNegativeInt]] = await get_ngram_counts(
-            preprocessed_text, setting)
+            preprocessed_text, settings)
         ngrams: list[str] = []
         counts: list[NonNegativeInt] = []
         for item in vocabulary:

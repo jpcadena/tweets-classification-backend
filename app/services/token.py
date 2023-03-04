@@ -24,14 +24,14 @@ class TokenService:
     @handle_redis_exceptions
     async def create_token(
             token: Token,
-            setting: config.Settings = Depends(config.get_setting),
+            settings: config.Settings = Depends(config.get_settings),
             redis: Redis = Depends(redis_dependency)) -> bool:
         """
         Create token in authorization database
         :param token: Token object with key and value
         :type token: Token
-        :param setting: Dependency method for cached setting object
-        :type setting: config.Settings
+        :param settings: Dependency method for cached setting object
+        :type settings: config.Settings
         :param redis: Dependency method for async Redis connection
         :type redis: Redis
         :return: True if the token was inserted; otherwise false
@@ -39,7 +39,7 @@ class TokenService:
         """
         try:
             inserted: bool = await redis.setex(
-                token.key, setting.REFRESH_TOKEN_EXPIRE_MINUTES, token.token)
+                token.key, settings.REFRESH_TOKEN_EXPIRE_MINUTES, token.token)
         except RedisError as r_exc:
             logger.error('Error at creating token. %s', r_exc)
             raise r_exc

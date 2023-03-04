@@ -1,3 +1,3 @@
 """
-Main script
+Unit Tests initialization package
 """
