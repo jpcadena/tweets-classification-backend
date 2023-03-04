@@ -7,7 +7,7 @@ import uuid
 from app.core import config
 from app.core.security.jwt import create_access_token, create_refresh_token
 from app.models.user import User
-from app.utils import audience
+from app.utils.utils import audience
 
 
 class AuthService:

@@ -12,7 +12,7 @@ from app.core.security.exceptions import ServiceException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserAuth, UserUpdate, UserUpdateResponse
 from app.services.user import UserService, get_user_service
-from app.utils import send_new_account_email
+from app.utils.utils import send_new_account_email
 
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 
@@ -87,31 +87,6 @@ async def create_user(
             background_tasks.add_task(
                 send_new_account_email, user.email, user.username)
     return new_user
-
-
-# @router.put("/me", response_model=schemas.User)
-# def update_user_me(
-#         *,
-#         session: AsyncSession = Depends(deps.get_session),
-#         password: str = Body(None),
-#         full_name: str = Body(None),
-#         email: EmailStr = Body(None),
-#         current_user: models.User = Depends(deps.get_current_active_user),
-# ) -> Any:
-#     """
-#     Update own user.
-#     """
-#     current_user_data = jsonable_encoder(current_user)
-#     user_in = schemas.UserUpdate(**current_user_data)
-#     if password is not None:
-#         user_in.password = password
-#     if full_name is not None:
-#         user_in.full_name = full_name
-#     if email is not None:
-#         user_in.email = email
-#     user = UserService.update(
-#         session, session_obj=current_user, obj_in=user_in)
-#     return user
 
 
 @router.get("/me", response_model=UserResponse)

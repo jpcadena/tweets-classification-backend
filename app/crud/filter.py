@@ -28,7 +28,7 @@ class Filter(ABC):
     @abstractmethod
     async def filter(
             self, spec: Specification, session: AsyncSession,
-            model: Union[User, Model, Analysis]
+            model: Union[User, Model, Analysis], field: str
     ) -> Optional[Union[User, Model, Analysis]]:
         """
         Filter method
@@ -38,6 +38,8 @@ class Filter(ABC):
         :type session: AsyncSession
         :param model: Datatable model
         :type model: User, Model or Analysis
+        :param field: The field for UniqueFilter
+        :type field: str
         :return: Datatable model instance
         :rtype: User, Model or Analysis
         """
@@ -52,7 +54,7 @@ class IndexFilter(Filter):
     @benchmark
     async def filter(
             self, spec: IdSpecification, session: AsyncSession,
-            model: Union[User, Model, Analysis]
+            model: Union[User, Model, Analysis], field: str = None
     ) -> Union[User, Model, Analysis]:
         _id: PositiveInt = spec.value
         try:
@@ -73,9 +75,14 @@ class UniqueFilter(Filter):
     @benchmark
     async def filter(
             self, spec: Union[UsernameSpecification, EmailSpecification],
-            session: AsyncSession, model: User
+            session: AsyncSession, model: User, field: str = "email"
     ) -> Union[User, Model, Analysis]:
-        stmt: Select = select(model).where(model.username == spec.value)
+        if field == "username":
+            stmt: Select = select(model).where(model.username == spec.value)
+        elif field == "email":
+            stmt: Select = select(model).where(model.email == spec.value)
+        else:
+            raise ValueError("Invalid field specified for filtering")
         try:
             db_obj = (await session.scalars(stmt)).one()
         except SQLAlchemyError as sa_exc:

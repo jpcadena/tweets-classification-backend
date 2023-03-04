@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, EmailStr, AnyUrl
 
 from app.core import config
 from app.schemas.scope import Scope
-from app.utils import password_regex, sub_regex, audience
+from app.utils.utils import sub_regex, audience, password_regex
 
 
 class PublicClaimsToken(BaseModel):
@@ -121,7 +121,7 @@ class TokenResetPassword(BaseModel):
     Token Reset Password for Request based on Pydantic Base Model.
     """
     token: str = Field(
-        ..., title='Token', description='Access token')
+        ..., title='Token', description='Access token', min_length=30)
     password: str = Field(
         ..., title='New password', description='New password to reset',
         min_length=8, max_length=14, regex=password_regex)

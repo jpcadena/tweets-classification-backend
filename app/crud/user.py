@@ -7,7 +7,7 @@ from typing import Optional, Union
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import NonNegativeInt, PositiveInt
-from sqlalchemy import ScalarResult, Select, select
+from sqlalchemy import ScalarResult, Select, select, Result
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -63,7 +63,7 @@ class UserRepository:
         """
         try:
             user: User = await self.unique_filter.filter(
-                username, self.session, self.model)
+                username, self.session, self.model, "username")
         except SQLAlchemyError as db_exc:
             raise DatabaseException(str(db_exc)) from db_exc
         return user
@@ -77,11 +77,29 @@ class UserRepository:
         :rtype: User
         """
         try:
-            user: User = self.unique_filter.filter(
-                email, self.session, self.model)
+            user: User = await self.unique_filter.filter(
+                email, self.session, self.model, "email")
         except SQLAlchemyError as db_exc:
             raise DatabaseException(str(db_exc)) from db_exc
         return user
+
+    async def read_id_by_email(
+            self, email: EmailSpecification) -> Optional[PositiveInt]:
+        """
+        Read the user by its email
+        :param email: The email to search
+        :type email: EmailSpecification
+        :return: User instance
+        :rtype: PositiveInt
+        """
+        try:
+            stmt: Select = select(User.id).where(
+                self.model.email == email.value)
+            result: Result = await self.session.execute(stmt)
+            user_id: PositiveInt = result.scalar()
+        except SQLAlchemyError as db_exc:
+            raise DatabaseException(str(db_exc)) from db_exc
+        return user_id
 
     @with_logging
     @benchmark

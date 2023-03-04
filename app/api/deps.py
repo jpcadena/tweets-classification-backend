@@ -13,7 +13,7 @@ from pydantic import ValidationError
 from app.core import config
 from app.schemas.user import UserAuth
 from app.services.user import UserService, get_user_service
-from app.utils import audience
+from app.utils.utils import audience
 
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
     tokenUrl="api/v1/auth/login", scheme_name="JWT")

@@ -16,7 +16,7 @@ from app.crud.user import get_user_repository
 from app.db.authorization import init_auth_db
 from app.db.init_db import init_db
 from app.schemas.msg import Msg
-from app.utils import update_json
+from app.utils.utils import update_json
 
 logging_config.setup_logging()
 logger: logging.Logger = logging.getLogger(__name__)
@@ -30,14 +30,14 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     :return: new ID based on tag and route name
     :rtype: str
     """
-    if route.name == 'root':
+    if route.name == 'welcome_message':
         return ''
     return f"{route.tags[0]}-{route.name}"
 
 
 app: FastAPI = FastAPI(
     title=settings.PROJECT_NAME, description=settings.DESCRIPTION,
-    version="1.0",
+    version=settings.VERSION,
     openapi_url=f'{settings.API_V1_STR}{settings.OPENAPI_FILE_PATH}',
     openapi_tags=settings.TAGS_METADATA, contact=settings.CONTACT,
     license_info=settings.LICENSE_INFO,
@@ -69,7 +69,7 @@ async def startup_event() -> None:
 
 
 @app.get("/", response_model=Msg)
-async def root() -> Msg:
+async def welcome_message() -> Msg:
     """
     Function to retrieve homepage.
     - :return: Welcome message

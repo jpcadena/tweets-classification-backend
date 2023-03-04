@@ -85,6 +85,22 @@ class UserService:
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
+    async def get_user_id_by_email(
+            self, email: EmailStr) -> Optional[PositiveInt]:
+        """
+        Read the user ID from the database with unique email.
+        :param email: Email to retrieve User from
+        :type email: EmailStr
+        :return: User ID found in database
+        :rtype: PositiveInt
+        """
+        try:
+            user_id: PositiveInt = await self.user_repo.read_id_by_email(
+                EmailSpecification(email))
+        except DatabaseException as db_exc:
+            raise ServiceException(str(db_exc)) from db_exc
+        return user_id
+
     async def register_user(
             self, user: Union[UserCreate, UserSuperCreate]
     ) -> UserCreateResponse:

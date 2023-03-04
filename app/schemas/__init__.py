@@ -7,7 +7,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, PastDate
 
 from .gender import Gender
-from ..utils import telephone_regex
+from ..utils.utils import telephone_regex
 
 
 class EditableData(BaseModel):

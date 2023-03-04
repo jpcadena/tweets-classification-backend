@@ -16,7 +16,7 @@ from app.db.base_class import Base
 from app.db.session import async_engine
 from app.models.user import User
 from app.schemas.user import UserSuperCreate
-from app.utils import hide_email
+from app.utils.utils import hide_email
 
 logger: logging.Logger = logging.getLogger(__name__)
 

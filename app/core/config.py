@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     """
     Settings class based on Pydantic Base Settings
     """
-    API_V1_STR: str = "/api/v1"
+    API_V1_STR: str
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     SERVER_NAME: str
     SERVER_HOST: AnyHttpUrl
     PROJECT_NAME: str
+    VERSION: str
+    ENCODING: str
+    OPENAPI_FILE_PATH: str
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
@@ -78,23 +81,23 @@ class Settings(BaseSettings):
                             r"[A-Z|a-z]{2,}$'"
     PHONE_CONSTRAINT: str = r"phone_number ~* '^\+[0-9]{1,15}$'"
     USERNAME_CONSTRAINT: str = r"tweet_username ~* '^[a-zA-Z0-9_]+$'"
-    SMTP_TLS: bool = True
+    SMTP_TLS: bool
     SMTP_PORT: Optional[int] = None
     SMTP_HOST: Optional[str] = None
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
     MAIL_SUBJECT: str
     MAIL_TIMEOUT: float
+
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
-    EMAIL_TEMPLATES_DIR: str = "/app/assets/templates"
-    EMAILS_ENABLED: bool = True
+    EMAIL_TEMPLATES_DIR: str
+    EMAILS_ENABLED: bool
+
     SUPERUSER_EMAIL: EmailStr
     SUPERUSER_FIRST_NAME: str
     SUPERUSER_PASSWORD: str
-    ENCODING: str = "UTF-8"
-    OPENAPI_FILE_PATH: str = "/openapi.json"
 
     REDIS_HOST: str
     REDIS_USERNAME: str

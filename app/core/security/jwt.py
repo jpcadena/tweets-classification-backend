@@ -18,12 +18,32 @@ logger: logging.Logger = logging.getLogger(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+async def _generate_expiration_time(
+        expires_delta: Optional[timedelta],
+        minutes: Optional[int] = None,
+) -> datetime:
+    """
+    Generates expiration time
+    :param expires_delta: The expiration delta
+    :type expires_delta: timedelta
+    :param minutes: The minutes to add
+    :type minutes: int
+    :return: The expiration time
+    :rtype: datetime
+    """
+    if expires_delta:
+        return datetime.utcnow() + expires_delta
+    return datetime.utcnow() + timedelta(minutes=minutes)
+
+
 @with_logging
 @benchmark
 async def create_access_token(
-        payload: dict, scope: Scope = Scope.ACCESS_TOKEN,
+        payload: dict,
+        scope: Scope = Scope.ACCESS_TOKEN,
         expires_delta: Optional[timedelta] = None,
-        setting: config.Settings = Depends(config.get_setting)) -> str:
+        setting: config.Settings = Depends(config.get_setting),
+) -> str:
     """
     Function to create a new access token
     :param scope: The token's scope.
@@ -37,20 +57,20 @@ async def create_access_token(
     :return: encoded JWT
     :rtype: str
     """
-    expire: datetime
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=setting.ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload.update({'exp': int(expire.timestamp())})
+    expire_time: datetime = await _generate_expiration_time(
+        expires_delta, setting.ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload.update({'exp': int(expire_time.timestamp())})
     payload['scope'] = scope
     claims: dict = jsonable_encoder(payload)
-    encoded_jwt: str = jwt.encode(claims=claims, key=setting.SECRET_KEY,
-                                  algorithm=setting.ALGORITHM)
+    encoded_jwt: str = jwt.encode(
+        claims=claims, key=setting.SECRET_KEY, algorithm=setting.ALGORITHM
+    )
     logger.info(
         "JWT created with JTI: %s for sub: %s. Expires in %s.",
-        payload.get("jti"), payload.get("sub"), expire - datetime.utcnow())
+        payload.get("jti"),
+        payload.get("sub"),
+        expire_time - datetime.utcnow(),
+    )
     return encoded_jwt
 
 

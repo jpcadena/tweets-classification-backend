@@ -26,8 +26,6 @@ async def model_to_response(
     :return: Model inherited from SQLAlchemy Declarative Base
     :rtype: T
     """
-    print(model)
-    print(type(model))
     if not model:
         return None
     return response_model.from_orm(model)

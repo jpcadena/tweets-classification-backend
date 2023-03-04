@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr, Field, PositiveInt
 
 from app.schemas.analysis import Analysis
 from app.schemas.gender import Gender
-from app.utils import telephone_regex, password_regex
+from app.utils.utils import telephone_regex, password_regex
 
 
 class UserID(BaseModel):
