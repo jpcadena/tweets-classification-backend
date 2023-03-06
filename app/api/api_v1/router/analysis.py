@@ -22,7 +22,8 @@ router: APIRouter = APIRouter(prefix='/analyses', tags=['analyses'])
 async def create_analysis(
         tweet_id: PositiveInt = Path(
             ..., title='Tweet ID',
-            description='Tweet ID to predict sentiment'),
+            description='Tweet ID to predict sentiment',
+            example=1627759518904885248),
         analysis_service: AnalysisService = Depends(get_analysis_service),
         nlp_service: NLPService = Depends(get_nlp_model_service),
         current_user: UserAuth = Depends(get_current_user),
@@ -47,20 +48,21 @@ async def create_analysis(
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
-    tweet: dict = await nlp_service.nlp_model_repo.get_single_tweet(tweet_id)
-    analysis_obj: dict = await nlp_service.create_analysis_dict(
-        tweet, settings)
-    target: bool = await nlp_service.classify_tweet(analysis_obj)
     analysis_performed: dict = {
-        'tweet_id': analysis_obj.get('tweet_id'),
-        'content': analysis_obj.get('preprocessed_text'),
-        'tweet_username': tweet.get('user').get('username'),
-        'user_id': current_user.id, 'target': target}
+        'tweet_id': tweet_id,
+        'content': 'text for tweet',
+        'tweet_username': current_user.username,
+        'user_id': current_user.id, 'target': 1}
+    # TODO: Use the following commented code for analysis_performed
+    # tweet: dict = await nlp_service.nlp_model_repo.get_single_tweet(tweet_id)
+    # analysis_obj: dict = await nlp_service.create_analysis_dict(
+    #     tweet, settings)
+    # target: bool = await nlp_service.classify_tweet(analysis_obj)
     # analysis_performed: dict = {
-    #     'tweet_id': tweet_id,
-    #     'content': 'text for tweet',
-    #     'tweet_username': current_user.username,
-    #     'user_id': current_user.id, 'target': 1}
+    #     'tweet_id': analysis_obj.get('tweet_id'),
+    #     'content': analysis_obj.get('preprocessed_text'),
+    #     'tweet_username': tweet.get('user').get('username'),
+    #     'user_id': current_user.id, 'target': target}
     analysis: AnalysisCreate = AnalysisCreate(**analysis_performed)
     try:
         created_analysis: Analysis = await analysis_service.register_analysis(
@@ -79,7 +81,7 @@ async def create_multiple_analysis(
         username: str = Path(
             ..., title='Twitter username',
             description='Username to fetch tweets for analysis', min_length=4,
-            max_length=15),
+            max_length=15, example='LassoGuillermo'),
         number_tweets: PositiveInt = Query(
             ..., title='Number of tweets'
             , description='Quantity of recent tweets to analyse for the'

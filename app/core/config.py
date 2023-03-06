@@ -9,8 +9,18 @@ from typing import Any, Optional, Union
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
     validator, RedisDsn, root_validator
 
-img_path = Path('./app/assets/images/api-docs.png')
-img_b64 = base64.b64encode(img_path.read_bytes()).decode('utf-8')
+img_path: Path = Path('./app/assets/images/api-docs.png')
+img_b64: str = base64.b64encode(img_path.read_bytes()).decode('utf-8')
+
+users_path: Path = Path('./app/assets/images/users.png')
+users_b64: str = base64.b64encode(users_path.read_bytes()).decode('utf-8')
+analyses_path: Path = Path('./app/assets/images/analyses.png')
+analyses_b64: str = base64.b64encode(analyses_path.read_bytes()).decode(
+    'utf-8')
+models_path: Path = Path('./app/assets/images/models.png')
+models_b64: str = base64.b64encode(models_path.read_bytes()).decode('utf-8')
+auth_path: Path = Path('./app/assets/images/auth.png')
+auth_b64: str = base64.b64encode(auth_path.read_bytes()).decode('utf-8')
 
 
 class Settings(BaseSettings):
@@ -87,7 +97,6 @@ class Settings(BaseSettings):
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
             host=values.get("POSTGRES_SERVER"),
-            # port=str(values.get("POSTGRES_PORT")),
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
@@ -175,24 +184,30 @@ class Settings(BaseSettings):
     TAGS_METADATA: list[dict[str, str]] = [
         {
             "name": "users",
-            "description": "Operations with users, such as register, get, "
-                           "update and delete."
+            "description": f"""Operations with users, such as register, get,
+             update and delete.\n\n<img src='data:image/png;base64,
+             {users_b64}' width='300' height='200'/>"""
         },
         {
             "name": "analyses",
-            "description": "Manage analyses with creation and get a specific"
-                           " analysis on a single or multiple tweets from an"
-                           " specific username."
+            "description": f"""Manage analyses with creation and get a specific
+             analysis on a single or multiple tweets from an specific username.
+             \n\n<img src='data:image/png;base64,{analyses_b64}' width='400'
+              height='200'/>"""
         },
         {
             "name": "models",
-            "description": "Manage Machine Learning model with creation and"
-                           " get a specific model performance information."
+            "description": f"""Manage Machine Learning model with creation and
+             get a specific model performance information.
+             \n\n<img src='data:image/png;base64,{models_b64}' width='500' 
+             height='200'/>"""
         },
         {
             "name": "auth",
-            "description": "The authentication logic is here as well as"
-                           " password recovery and reset."}]
+            "description": f"""The authentication logic is here as well as
+             password recovery and reset.
+             \n\n<img src='data:image/png;base64,{auth_b64}' width='150' 
+             height='150'/>"""}]
 
     class Config:
         """

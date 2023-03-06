@@ -38,21 +38,8 @@ class AuthService:
             "nbf": int(time.time()) - 1, "iat": int(time.time()),
             "jti": jti, "nickname": user.username,
             "preferred_username": user.username, "email": user.email}
-        # if user.middle_name:
-        #     payload["middle_name"] = user.middle_name
-        #     first_names: str = user.first_name + ' ' + user.middle_name
-        #     payload["name"] = first_names + ' ' + user.last_name
-        # if user.gender:
-        #     payload["gender"] = user.gender
-        # if user.gender:
-        #     payload["birthdate"] = user.birthdate
-        # if user.gender:
-        #     payload["phone_number"] = user.phone_number
-        # if user.gender:
-        #     payload["updated_at"] = user.updated_at
         access_token: str = await create_access_token(
             payload=payload,
-            # scope=Scope.ACCESS_TOKEN, expires_delta=None,
             settings=settings)
         refresh_token: str = await create_refresh_token(
             payload=payload, settings=settings)

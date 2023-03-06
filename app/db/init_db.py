@@ -72,9 +72,6 @@ async def init_db(
     :rtype: NoneType
     """
     await create_db_and_tables()
-    # user: UserResponse = await user_repo.read_by_email(
-    #     EmailSpecification(settings.SUPERUSER_EMAIL))
-    # if not user:
     user: UserSuperCreate = UserSuperCreate(
         username=settings.SUPERUSER_EMAIL.split("@")[0],
         email=settings.SUPERUSER_EMAIL,
