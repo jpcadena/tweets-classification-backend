@@ -148,7 +148,14 @@ class Settings(BaseSettings):
     CONTACT: dict[str, Any]
 
     @root_validator(pre=True)
-    def assemble_contact(cls, values):
+    def assemble_contact(cls, values: dict) -> dict:
+        """
+        Assemble contact information
+        :param values: Values of the environment variables
+        :type values: dict
+        :return: The contact attribute
+        :rtype: dict
+        """
         contact: dict[str, Any] = {}
         if values.get('CONTACT_NAME'):
             contact['name'] = values['CONTACT_NAME']
