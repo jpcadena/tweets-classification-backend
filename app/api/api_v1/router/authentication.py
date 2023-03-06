@@ -39,7 +39,7 @@ async def login(
     Login with OAuth2 authentication using request form.
     ## Parameter:
     - `user:` **Object from request body with username and
-     password as DI**
+     password**
     - `type:` **OAuth2PasswordRequestForm**
     ## Response:
     - `return:` **Token information with access token, its type and
