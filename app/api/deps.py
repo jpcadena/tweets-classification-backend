@@ -2,7 +2,7 @@
 API v1 Dependencies script
 """
 from abc import ABC
-from typing import Optional
+from typing import Optional, Annotated, Type
 
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
@@ -127,3 +127,4 @@ class RedisDependency:
 
 
 redis_dependency: RedisDependency = RedisDependency()
+CurrentUser: Type[UserAuth] = Annotated[UserAuth, Depends(get_current_user)]

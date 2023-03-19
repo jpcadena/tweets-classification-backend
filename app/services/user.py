@@ -2,7 +2,7 @@
 User Service to handle business logic
 """
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Union, Type, Annotated
 
 from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
@@ -184,3 +184,7 @@ async def get_user_service(
     :rtype: UserService
     """
     return UserService(user_repo)
+
+
+ServiceUser: Type[UserService] = Annotated[
+    UserService, Depends(get_user_service)]

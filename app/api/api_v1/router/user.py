@@ -1,17 +1,17 @@
 """
 User API Router
 """
-from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, \
-    status, Response
+from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, status, \
+    Response
 from fastapi.params import Query, Path
 from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.deps import get_current_user
+from app.api.deps import CurrentUser
 from app.core.security.exceptions import ServiceException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
-    UserAuth, UserUpdate, UserUpdateResponse
-from app.services.user import UserService, get_user_service
+    UserUpdate, UserUpdateResponse
+from app.services.user import ServiceUser
 from app.utils.utils import send_new_account_email
 
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
@@ -19,12 +19,12 @@ router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("", response_model=list[UserResponse])
 async def get_users(
+        current_user: CurrentUser,
+        user_service: ServiceUser,
         skip: NonNegativeInt = Query(
             0, title='Skip', description='Skip users', example=0),
         limit: PositiveInt = Query(
             100, title='Limit', description='Limit pagination', example=100),
-        user_service: UserService = Depends(get_user_service),
-        current_user: UserAuth = Depends(get_current_user),
 ) -> list[UserResponse]:
     """
     Get all Users basic information from the system using pagination.
@@ -39,9 +39,9 @@ async def get_users(
     - :rtype: list[UserResponse]
     \f
     :param user_service: Dependency method for user service layer
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     try:
         found_users: list[UserResponse] = await user_service.get_users(
@@ -56,9 +56,9 @@ async def get_users(
              status_code=status.HTTP_201_CREATED)
 async def create_user(
         background_tasks: BackgroundTasks,
+        user_service: ServiceUser,
         user: UserCreate = Body(..., title='New user',
-                                description='New user to register'),
-        user_service: UserService = Depends(get_user_service),
+                                description='New user to register')
 ) -> UserCreateResponse:
     """
     Register new user into the system.
@@ -74,7 +74,7 @@ async def create_user(
     :param background_tasks: Send email to confirm registration
     :type background_tasks: BackgroundTasks
     :param user_service: Dependency method for user service layer
-    :type user_service: UserService
+    :type user_service: ServiceUser
     """
     try:
         new_user = await user_service.register_user(user)
@@ -91,8 +91,8 @@ async def create_user(
 
 @router.get("/me", response_model=UserResponse)
 async def get_user_me(
-        user_service: UserService = Depends(get_user_service),
-        current_user: UserAuth = Depends(get_current_user),
+        current_user: CurrentUser,
+        user_service: ServiceUser
 ) -> UserResponse:
     """
     Get current user.
@@ -102,10 +102,10 @@ async def get_user_me(
        updated_at and analyses relationship.
     - :rtype: UserResponse
     \f
-    :param user_service: Dependency method for user service layer
-    :type user_service: UserService
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
+    :param user_service: Dependency method for user service layer
+    :type user_service: ServiceUser
     """
     try:
         user: UserResponse = await user_service.get_user_by_id(
@@ -120,11 +120,11 @@ async def get_user_me(
 
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user_by_id(
+        user_service: ServiceUser,
+        current_user: CurrentUser,
         user_id: PositiveInt = Path(
             ..., title='User ID', description='ID of the User to searched',
-            example=1),
-        user_service: UserService = Depends(get_user_service),
-        current_user: UserAuth = Depends(get_current_user),
+            example=1)
 ) -> UserResponse:
     """
     Get an existing user from the system given an ID.
@@ -137,9 +137,9 @@ async def get_user_by_id(
     - :rtype: UserResponse
     \f
     :param user_service: Dependency method for user service layer
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     try:
         user: UserResponse = await user_service.get_user_by_id(user_id)
@@ -153,13 +153,13 @@ async def get_user_by_id(
 
 @router.put("/{user_id}", response_model=UserUpdateResponse)
 async def update_user(
+        user_service: ServiceUser,
+        current_user: CurrentUser,
         user_id: PositiveInt = Path(
             ..., title='User ID', description='ID of the User to searched',
             example=1),
         user_in: UserUpdate = Body(
-            ..., title='User data', description='New user data to update'),
-        user_service: UserService = Depends(get_user_service),
-        current_user: UserAuth = Depends(get_current_user),
+            ..., title='User data', description='New user data to update')
 ) -> UserUpdateResponse:
     """
     Update an existing user from the system given an ID and new info.
@@ -176,9 +176,9 @@ async def update_user(
     - :rtype: UserUpdateResponse
     \f
     :param user_service: Dependency method for user service layer
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     try:
         user: UserUpdateResponse = await user_service.update_user(
@@ -194,10 +194,11 @@ async def update_user(
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
+        user_service: ServiceUser,
+        current_user: CurrentUser,
         user_id: PositiveInt = Path(
             ..., title='User ID', description='ID of the User to searched',
-            example=1), user_service: UserService = Depends(get_user_service),
-        current_user: UserAuth = Depends(get_current_user),
+            example=1)
 ) -> Response:
     """
     Delete an existing user from the system given an ID and new info.
@@ -207,9 +208,9 @@ async def delete_user(
     - :rtype: Response
     \f
     :param user_service: Dependency method for user service layer
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     try:
         data: dict = await user_service.delete_user(user_id)

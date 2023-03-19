@@ -1,15 +1,14 @@
 """
 Model router module for API endpoints.
 """
-from fastapi import APIRouter, Depends, status, Path, Body, Query
+from fastapi import APIRouter, status, Path, Body, Query
 from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
 
-from app.api.deps import get_current_user
+from app.api.deps import CurrentUser
 from app.core.security.exceptions import ServiceException
 from app.schemas.model import Model, ModelCreate
-from app.schemas.user import UserAuth
-from app.services.model import ModelService, get_model_service
+from app.services.model import ServiceModel
 
 router: APIRouter = APIRouter(prefix='/models', tags=['models'])
 
@@ -17,10 +16,10 @@ router: APIRouter = APIRouter(prefix='/models', tags=['models'])
 @router.post('', response_model=Model,
              status_code=status.HTTP_201_CREATED)
 async def create_model(
+        model_service: ServiceModel,
+        current_user: CurrentUser,
         model: ModelCreate = Body(
-            ..., title='New model', description='New model to create'),
-        model_service: ModelService = Depends(get_model_service),
-        current_user: UserAuth = Depends(get_current_user)
+            ..., title='New model', description='New model to create')
 ) -> Model:
     """
     Create a new model into the system.
@@ -34,9 +33,9 @@ async def create_model(
     - :rtype: Model
     \f
     :param model_service: Dependency method for Model service object
-    :type model_service: ModelService
+    :type model_service: ServiceModel
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     try:
         created_model: Model = await model_service.register_model(model)
@@ -50,11 +49,11 @@ async def create_model(
 
 @router.get('/{model_id}', response_model=Model)
 async def get_model(
+        model_service: ServiceModel,
+        current_user: CurrentUser,
         model_id: PositiveInt = Path(
             ..., title='Model ID',
-            description='ID of the Model to searched', example=1),
-        model_service: ModelService = Depends(get_model_service),
-        current_user: UserAuth = Depends(get_current_user)
+            description='ID of the Model to searched', example=1)
 ) -> Model:
     """
     Search for specific Model by ID from the system.
@@ -66,9 +65,9 @@ async def get_model(
     - :rtype: Model
     \f
     :param model_service: Dependency method for Model service object
-    :type model_service: ModelService
+    :type model_service: ServiceModel
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     found_model: Model = await model_service.get_model_by_id(model_id)
     if not found_model:
@@ -80,12 +79,13 @@ async def get_model(
 
 @router.get('', response_model=list[Model])
 async def get_models(
+        model_service: ServiceModel,
+        current_user: CurrentUser,
         skip: NonNegativeInt = Query(
             0, title='Skip', description='Skip users', example=0),
         limit: PositiveInt = Query(
-            100, title='Limit', description='Limit pagination', example=100),
-        model_service: ModelService = Depends(get_model_service),
-        current_user: UserAuth = Depends(get_current_user)) -> list[Model]:
+            100, title='Limit', description='Limit pagination', example=100)
+) -> list[Model]:
     """
     Retrieve all models from the system.
     - :param skip: Offset from where to start returning models
@@ -98,9 +98,9 @@ async def get_models(
     - :rtype: list[Model]
     \f
     :param model_service: Dependency method for Model Service
-    :type model_service: ModelService
+    :type model_service: ServiceModel
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     models: list[Model] = await model_service.get_models(skip, limit)
     if not models:

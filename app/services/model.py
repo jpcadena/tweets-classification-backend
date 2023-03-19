@@ -1,7 +1,7 @@
 """
 Model Service to handle business logic
 """
-from typing import Optional
+from typing import Optional, Annotated, Type
 
 from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
@@ -85,3 +85,7 @@ async def get_model_service(
     :rtype: ModelService
     """
     return ModelService(model_repo)
+
+
+ServiceModel: Type[ModelService] = Annotated[
+    ModelService, Depends(get_model_service)]

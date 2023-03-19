@@ -3,6 +3,7 @@ NLP Model Service to execute the model at the Data Science Project
 """
 import logging
 from datetime import datetime
+from typing import Type, Annotated
 
 import joblib
 import pandas as pd
@@ -100,3 +101,7 @@ async def get_nlp_model_service(
     :rtype: NLPService
     """
     return NLPService(nlp_model_repo)
+
+
+ServiceNLP: Type[NLPService] = Annotated[
+    NLPService, Depends(get_nlp_model_service)]

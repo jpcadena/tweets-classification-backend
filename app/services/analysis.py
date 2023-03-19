@@ -1,7 +1,7 @@
 """
 Analysis Service to handle business logic
 """
-from typing import Optional
+from typing import Optional, Annotated, Type
 
 from fastapi import Depends
 from pydantic import PositiveInt, NonNegativeInt
@@ -90,3 +90,7 @@ async def get_analysis_service(
     :rtype: AnalysisService
     """
     return AnalysisService(analysis_repo)
+
+
+ServiceAnalysis: Type[AnalysisService] = Annotated[
+    AnalysisService, Depends(get_analysis_service)]

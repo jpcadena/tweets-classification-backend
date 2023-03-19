@@ -2,13 +2,14 @@
 Login API Router
 """
 import logging
+from typing import Annotated
 
 from aioredis import Redis
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Path
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr, PositiveInt
 
-from app.api.deps import redis_dependency, get_current_user
+from app.api.deps import redis_dependency, CurrentUser
 from app.core import config
 from app.core.security.exceptions import ServiceException
 from app.core.security.password import verify_password
@@ -20,7 +21,7 @@ from app.schemas.user import UserAuth, UserResponse, UserUpdate, \
     UserUpdateResponse
 from app.services.auth import AuthService
 from app.services.token import TokenService
-from app.services.user import get_user_service, UserService
+from app.services.user import ServiceUser
 from app.utils.utils import generate_password_reset_token, \
     send_reset_password_email, verify_password_reset_token
 
@@ -30,9 +31,9 @@ router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=TokenResponse)
 async def login(
+        user_service: ServiceUser,
+        settings: Annotated[config.Settings, Depends(config.get_settings)],
         user: OAuth2PasswordRequestForm = Depends(),
-        user_service: UserService = Depends(get_user_service),
-        settings: config.Settings = Depends(config.get_settings),
         redis: Redis = Depends(redis_dependency)
 ) -> TokenResponse:
     """
@@ -47,7 +48,7 @@ async def login(
     - `rtype:` **TokenResponse**
     \f
     :param user_service: Dependency method for User Service
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     :param redis: Dependency method for async Redis connection
@@ -82,7 +83,7 @@ async def login(
 
 @router.post("/login/test-token", response_model=UserAuth)
 async def test_token(
-        current_user: UserAuth = Depends(get_current_user)) -> UserAuth:
+        current_user: CurrentUser) -> UserAuth:
     """
     Test access token.
     ## Response:
@@ -90,19 +91,19 @@ async def test_token(
     - `rtype:` **UserAuth**
     \f
     :param current_user: The current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     return current_user
 
 
 @router.post("/password-recovery/{email}", response_model=Msg)
 async def recover_password(
+        user_service: ServiceUser,
+        settings: Annotated[config.Settings, Depends(config.get_settings)],
         email: EmailStr = Path(
             ..., title='Email',
             description='The email used to recover the password',
-            example='someone@example.com'),
-        user_service: UserService = Depends(get_user_service),
-        settings: config.Settings = Depends(config.get_settings)
+            example='someone@example.com')
 ) -> Msg:
     """
     Recover password.
@@ -115,7 +116,7 @@ async def recover_password(
     - `rtype:` **Msg**
     \f
     :param user_service: Dependency method for User service object
-    :type user_service: UserService
+    :type user_service: ServiceUser
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
@@ -139,10 +140,10 @@ async def recover_password(
 
 @router.post("/reset-password/", response_model=Msg)
 async def reset_password(
+        user_service: ServiceUser,
         token_reset_password: TokenResetPassword = Body(
             ..., title='Body object',
-            description='Object with access token and new password'),
-        user_service: UserService = Depends(get_user_service),
+            description='Object with access token and new password')
 ) -> Msg:
     """
     Reset password.
@@ -153,9 +154,8 @@ async def reset_password(
     - `return:` **Message object**
     - `rtype:` **Msg**
     \f
-
-    :param user_service:
-    :type user_service:
+    :param user_service: Dependency method for User service object
+    :type user_service: ServiceUser
     """
     email: EmailStr = await verify_password_reset_token(
         token_reset_password.token)

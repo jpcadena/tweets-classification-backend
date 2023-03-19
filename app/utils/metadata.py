@@ -67,7 +67,7 @@ async def modify_json_data(data: dict) -> dict:
     for key, path_data in data["paths"].items():
         if key == '/':
             continue
-        for operation_id, operation in dict(path_data).items():
+        for _, operation in dict(path_data).items():
             await update_operation_id(operation)
     return data
 

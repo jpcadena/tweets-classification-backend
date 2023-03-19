@@ -1,18 +1,19 @@
 """
 Analysis router module for API endpoints.
 """
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, status, Path, Query
 from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
 
-from app.api.deps import get_current_user
+from app.api.deps import CurrentUser
 from app.core import config
 from app.core.security.exceptions import ServiceException
 from app.crud.specification import TwitterUsernameSpecification
 from app.schemas.analysis import Analysis, AnalysisCreate
-from app.schemas.user import UserAuth
-from app.services.analysis import AnalysisService, get_analysis_service
-from app.services.nlp_model import NLPService, get_nlp_model_service
+from app.services.analysis import ServiceAnalysis
+from app.services.nlp_model import ServiceNLP
 
 router: APIRouter = APIRouter(prefix='/analyses', tags=['analyses'])
 
@@ -20,14 +21,14 @@ router: APIRouter = APIRouter(prefix='/analyses', tags=['analyses'])
 @router.post('/{tweet_id}', response_model=Analysis,
              status_code=status.HTTP_201_CREATED)
 async def create_analysis(
+        analysis_service: ServiceAnalysis,
+        nlp_service: ServiceNLP,
+        current_user: CurrentUser,
+        settings: Annotated[config.Settings, Depends(config.get_settings)],
         tweet_id: PositiveInt = Path(
             ..., title='Tweet ID',
             description='Tweet ID to predict sentiment',
-            example=1627759518904885248),
-        analysis_service: AnalysisService = Depends(get_analysis_service),
-        nlp_service: NLPService = Depends(get_nlp_model_service),
-        current_user: UserAuth = Depends(get_current_user),
-        settings: config.Settings = Depends(config.get_settings)
+            example=1627759518904885248)
 ) -> Analysis:
     """
     Create a new analysis into the system.
@@ -40,11 +41,11 @@ async def create_analysis(
     - :rtype: Analysis
     \f
     :param analysis_service: Dependency method for Analysis service object
-    :type analysis_service: AnalysisService
+    :type analysis_service: ServiceAnalysis
     :param nlp_service: Dependency method for NLP model service object
-    :type nlp_service: NLPService
+    :type nlp_service: ServiceNLP
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
@@ -78,6 +79,10 @@ async def create_analysis(
 @router.post('/batch/{username}', response_model=list[Analysis],
              status_code=status.HTTP_201_CREATED)
 async def create_multiple_analysis(
+        analysis_service: ServiceAnalysis,
+        nlp_service: ServiceNLP,
+        current_user: CurrentUser,
+        settings: Annotated[config.Settings, Depends(config.get_settings)],
         username: str = Path(
             ..., title='Twitter username',
             description='Username to fetch tweets for analysis', min_length=4,
@@ -85,11 +90,7 @@ async def create_multiple_analysis(
         number_tweets: PositiveInt = Query(
             ..., title='Number of tweets'
             , description='Quantity of recent tweets to analyse for the'
-                          ' given user'),
-        analysis_service: AnalysisService = Depends(get_analysis_service),
-        nlp_service: NLPService = Depends(get_nlp_model_service),
-        current_user: UserAuth = Depends(get_current_user),
-        settings: config.Settings = Depends(config.get_settings)
+                          ' given user')
 ) -> list[Analysis]:
     """
     Create multiple analyses into the system.
@@ -104,11 +105,11 @@ async def create_multiple_analysis(
     - :rtype: list[Analysis]
     \f
     :param analysis_service: Dependency method for Analysis service object
-    :type analysis_service: AnalysisService
+    :type analysis_service: ServiceAnalysis
     :param nlp_service: Dependency method for NLP model service object
-    :type nlp_service: NLPService
+    :type nlp_service: ServiceNLP
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
@@ -139,11 +140,11 @@ async def create_multiple_analysis(
 
 @router.get('/{analysis_id}', response_model=Analysis)
 async def get_analysis(
+        analysis_service: ServiceAnalysis,
+        current_user: CurrentUser,
         analysis_id: PositiveInt = Path(
             ..., title='AnalysisCreate ID',
-            description='ID of the AnalysisCreate to searched', example=1),
-        analysis_service: AnalysisService = Depends(get_analysis_service),
-        current_user: UserAuth = Depends(get_current_user)
+            description='ID of the AnalysisCreate to searched', example=1)
 ) -> Analysis:
     """
     Search for specific Analysis by ID from the system.
@@ -155,9 +156,9 @@ async def get_analysis(
     - :rtype: Analysis
     \f
     :param analysis_service: Dependency method for Analysis service object
-    :type analysis_service: AnalysisService
+    :type analysis_service: ServiceAnalysis
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     found_analysis: Analysis = await analysis_service. \
         get_analysis_by_id(analysis_id)
@@ -170,12 +171,13 @@ async def get_analysis(
 
 @router.get('', response_model=list[Analysis])
 async def get_analyses(
+        analysis_service: ServiceAnalysis,
+        current_user: CurrentUser,
         skip: NonNegativeInt = Query(
             0, title='Skip', description='Skip users', example=0),
         limit: PositiveInt = Query(
-            100, title='Limit', description='Limit pagination', example=100),
-        analysis_service: AnalysisService = Depends(get_analysis_service),
-        current_user: UserAuth = Depends(get_current_user)) -> list[Analysis]:
+            100, title='Limit', description='Limit pagination', example=100)
+) -> list[Analysis]:
     """
     Retrieve all analyses from the system.
     - :param skip: Offset from where to start returning analyses
@@ -188,9 +190,9 @@ async def get_analyses(
     - :rtype: list[Analysis]
     \f
     :param analysis_service: Dependency method for Analysis Service
-    :type analysis_service: AnalysisService
+    :type analysis_service: ServiceAnalysis
     :param current_user: Dependency method for authorization by current user
-    :type current_user: UserAuth
+    :type current_user: CurrentUser
     """
     analyses: list[Analysis] = await analysis_service.get_analyses(skip, limit)
     if not analyses:
