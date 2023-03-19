@@ -72,13 +72,17 @@ async def init_db(
     :rtype: NoneType
     """
     await create_db_and_tables()
-    user: UserSuperCreate = UserSuperCreate(
-        username=settings.SUPERUSER_EMAIL.split("@")[0],
-        email=settings.SUPERUSER_EMAIL,
-        first_name=settings.SUPERUSER_FIRST_NAME,
-        last_name=settings.SUPERUSER_EMAIL.split("@")[0].capitalize(),
-        password=settings.SUPERUSER_PASSWORD,
-    )
-    superuser: User = await user_repo.create_user(user)
-    email: str = await hide_email(superuser.email)
-    logger.info('Superuser created with email %s', email)
+    # user: UserResponse = await user_repo.read_by_email(
+    #     EmailSpecification(settings.SUPERUSER_EMAIL))
+    # if not user:
+    # user: UserSuperCreate = UserSuperCreate(
+    #     username=settings.SUPERUSER_EMAIL.split("@")[0],
+    #     email=settings.SUPERUSER_EMAIL,
+    #     first_name=settings.SUPERUSER_FIRST_NAME,
+    #     last_name=settings.SUPERUSER_EMAIL.split("@")[0].capitalize(),
+    #     password=settings.SUPERUSER_PASSWORD,
+    # )
+    # superuser: User = await user_repo.create_user(user)
+    # email: str = await hide_email(superuser.email)
+    # logger.info('Superuser created with email %s', email)
+>>>>>>> 98315af (from DO)
