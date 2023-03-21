@@ -7,7 +7,8 @@ from typing import Optional, Union, Type, Annotated
 from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
 
-from app.core.security.exceptions import DatabaseException, ServiceException
+from app.core.security.exceptions import DatabaseException, ServiceException, \
+    NotFoundException
 from app.crud.specification import IdSpecification, UsernameSpecification, \
     EmailSpecification
 from app.crud.user import UserRepository, get_user_repository
@@ -25,7 +26,8 @@ class UserService:
     def __init__(self, user_repo: UserRepository):
         self.user_repo: UserRepository = user_repo
 
-    async def get_user_by_id(self, user_id: PositiveInt) -> UserResponse:
+    async def get_user_by_id(
+            self, user_id: PositiveInt) -> Optional[UserResponse]:
         """
         Get user information with the correct schema for response
         :param user_id: Unique identifier of the user
@@ -38,7 +40,12 @@ class UserService:
                 IdSpecification(user_id))
         except DatabaseException as db_exc:
             raise ServiceException(str(db_exc)) from db_exc
-        return await model_to_response(user, UserResponse)
+        if not user:
+            raise NotFoundException(
+                f"User with id {user_id} not found in the system.")
+        user_response: UserResponse = await model_to_response(
+            user, UserResponse)
+        return user_response
 
     async def get_login_user(self, username: str) -> User:
         """

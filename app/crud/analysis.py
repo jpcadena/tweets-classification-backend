@@ -37,14 +37,15 @@ class AnalysisRepository:
         :return:
         :rtype: Analysis
         """
-        try:
-            analysis: Analysis = await self.index_filter.filter(
-                _id, self.session, self.model)
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(
-                f'Error at reading analysis with id: {_id.value}.'
-                f'\n{str(db_exc)}') from db_exc
-        return analysis
+        async with self.session as session:
+            try:
+                analysis: Analysis = await self.index_filter.filter(
+                    _id, session, self.model)
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(
+                    f'Error at reading analysis with id: {_id.value}.'
+                    f'\n{str(db_exc)}') from db_exc
+            return analysis
 
     async def read_analyses(
             self, offset: NonNegativeInt, limit: PositiveInt,
@@ -59,14 +60,15 @@ class AnalysisRepository:
         :rtype: list[Analysis]
         """
         stmt: Select = select(self.model).offset(offset).limit(limit)
-        try:
-            results: ScalarResult = await self.session.scalars(stmt)
-            analyses: list[Analysis] = results.all()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(
-                f'Error at reading analyses.\n{str(sa_exc)}') from sa_exc
-        return analyses
+        async with self.session as session:
+            try:
+                results: ScalarResult = await session.scalars(stmt)
+                analyses: list[Analysis] = results.all()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(
+                    f'Error at reading analyses.\n{str(sa_exc)}') from sa_exc
+            return analyses
 
     async def create_analysis(
             self, analysis: AnalysisCreate) -> Optional[Analysis]:
@@ -79,20 +81,22 @@ class AnalysisRepository:
         :rtype: Analysis
         """
         analysis_create: Analysis = Analysis(**analysis.dict())
-        try:
-            self.session.add(analysis_create)
-            await self.session.commit()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(
-                f"Error at creating analysis with {analysis_create.id}"
-            ) from sa_exc
-        try:
-            created_analysis: Analysis = await self.read_by_id(IdSpecification(
-                analysis_create.id))
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return created_analysis
+        async with self.session as session:
+            try:
+                session.add(analysis_create)
+                await session.commit()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(
+                    f"Error at creating analysis with {analysis_create.id}"
+                ) from sa_exc
+            try:
+                created_analysis: Analysis = await self.read_by_id(
+                    IdSpecification(
+                        analysis_create.id))
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return created_analysis
 
 
 async def get_analysis_repository() -> AnalysisRepository:

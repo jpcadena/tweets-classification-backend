@@ -55,15 +55,16 @@ class IndexFilter(Filter):
     async def filter(
             self, spec: IdSpecification, session: AsyncSession,
             model: Union[User, Model, Analysis], field: str = None
-    ) -> Union[User, Model, Analysis]:
+    ) -> Optional[Union[User, Model, Analysis]]:
         _id: PositiveInt = spec.value
-        try:
-            db_obj = await session.get(model, _id)
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise sa_exc
-        logger.info('Row retrieved with id: %s', _id)
-        return db_obj
+        async with session as async_session:
+            try:
+                db_obj = await async_session.get(model, _id)
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise sa_exc
+            logger.info('Retrieving row with id: %s', _id)
+            return db_obj
 
 
 class UniqueFilter(Filter):
@@ -83,13 +84,14 @@ class UniqueFilter(Filter):
             stmt: Select = select(model).where(model.email == spec.value)
         else:
             raise ValueError("Invalid field specified for filtering")
-        try:
-            db_obj = (await session.scalars(stmt)).one()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise sa_exc
-        logger.info('Row retrieved with filter: %s', spec.value)
-        return db_obj
+        async with session as async_session:
+            try:
+                db_obj = (await async_session.scalars(stmt)).one()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise sa_exc
+            logger.info('Retrieving row with filter: %s', spec.value)
+            return db_obj
 
 
 async def get_index_filter() -> IndexFilter:

@@ -37,7 +37,7 @@ class UserRepository:
         self.unique_filter: UniqueFilter = unique_filter
         self.model: User = User
 
-    async def read_by_id(self, _id: IdSpecification) -> User:
+    async def read_by_id(self, _id: IdSpecification) -> Optional[User]:
         """
         Reads the user by its id
         :param _id:
@@ -45,12 +45,13 @@ class UserRepository:
         :return: User instance
         :rtype: User
         """
-        try:
-            user: User = await self.index_filter.filter(
-                _id, self.session, self.model)
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return user
+        async with self.session as session:
+            try:
+                user: User = await self.index_filter.filter(
+                    _id, session, self.model)
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return user
 
     async def read_by_username(
             self, username: UsernameSpecification) -> User:
@@ -61,12 +62,13 @@ class UserRepository:
         :return: User instance
         :rtype: User
         """
-        try:
-            user: User = await self.unique_filter.filter(
-                username, self.session, self.model, "username")
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return user
+        async with self.session as session:
+            try:
+                user: User = await self.unique_filter.filter(
+                    username, session, self.model, "username")
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return user
 
     async def read_by_email(self, email: EmailSpecification) -> Optional[User]:
         """
@@ -76,12 +78,13 @@ class UserRepository:
         :return: User instance
         :rtype: User
         """
-        try:
-            user: User = await self.unique_filter.filter(
-                email, self.session, self.model, "email")
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return user
+        async with self.session as session:
+            try:
+                user: User = await self.unique_filter.filter(
+                    email, session, self.model, "email")
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return user
 
     async def read_id_by_email(
             self, email: EmailSpecification) -> Optional[PositiveInt]:
@@ -92,14 +95,15 @@ class UserRepository:
         :return: User instance
         :rtype: PositiveInt
         """
-        try:
-            stmt: Select = select(User.id).where(
-                self.model.email == email.value)
-            result: Result = await self.session.execute(stmt)
-            user_id: PositiveInt = result.scalar()
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return user_id
+        async with self.session as session:
+            try:
+                stmt: Select = select(User.id).where(
+                    self.model.email == email.value)
+                result: Result = await session.execute(stmt)
+                user_id: PositiveInt = result.scalar()
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return user_id
 
     @with_logging
     @benchmark
@@ -116,13 +120,14 @@ class UserRepository:
         :rtype: User
         """
         stmt: Select = select(User).offset(offset).limit(limit)
-        try:
-            results: ScalarResult = await self.session.scalars(stmt)
-            users: list[User] = results.all()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(str(sa_exc)) from sa_exc
-        return users
+        async with self.session as session:
+            try:
+                results: ScalarResult = await session.scalars(stmt)
+                users: list[User] = results.all()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(str(sa_exc)) from sa_exc
+            return users
 
     @with_logging
     @benchmark
@@ -140,18 +145,19 @@ class UserRepository:
         hashed_password = await get_password_hash(user.password)
         user_in = user.copy(update={"password": hashed_password})
         user_create: User = User(**user_in.dict())
-        try:
-            self.session.add(user_create)
-            await self.session.commit()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(str(sa_exc)) from sa_exc
-        try:
-            created_user: User = await self.read_by_id(IdSpecification(
-                user_create.id))
-        except DatabaseException as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return created_user
+        async with self.session as session:
+            try:
+                session.add(user_create)
+                await session.commit()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(str(sa_exc)) from sa_exc
+            try:
+                created_user: User = await self.read_by_id(IdSpecification(
+                    user_create.id))
+            except DatabaseException as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return created_user
 
     @with_logging
     @benchmark
@@ -167,28 +173,29 @@ class UserRepository:
         :return: User information
         :rtype: User
         """
-        try:
-            found_user: User = await self.read_by_id(user_id)
-        except DatabaseException as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        obj_data: dict = jsonable_encoder(found_user)
-        update_data: dict = user.dict(exclude_unset=True)
-        for field in obj_data:
-            if field in update_data:
-                if field == 'password':
-                    setattr(found_user, field, await get_password_hash(
-                        update_data[field]))
-                else:
-                    setattr(found_user, field, update_data[field])
-            if field == 'updated_at':
-                setattr(found_user, field, datetime.utcnow())
-        self.session.add(found_user)
-        await self.session.commit()
-        try:
-            updated_user: User = await self.read_by_id(user_id)
-        except DatabaseException as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return updated_user
+        async with self.session as session:
+            try:
+                found_user: User = await self.read_by_id(user_id)
+            except DatabaseException as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            obj_data: dict = jsonable_encoder(found_user)
+            update_data: dict = user.dict(exclude_unset=True)
+            for field in obj_data:
+                if field in update_data:
+                    if field == 'password':
+                        setattr(found_user, field, await get_password_hash(
+                            update_data[field]))
+                    else:
+                        setattr(found_user, field, update_data[field])
+                if field == 'updated_at':
+                    setattr(found_user, field, datetime.utcnow())
+            session.add(found_user)
+            await session.commit()
+            try:
+                updated_user: User = await self.read_by_id(user_id)
+            except DatabaseException as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return updated_user
 
     @with_logging
     @benchmark
@@ -200,18 +207,19 @@ class UserRepository:
         :return: True if the user is deleted; otherwise False
         :rtype: bool
         """
-        try:
-            found_user: User = await self.read_by_id(user_id)
-        except DatabaseException as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        try:
-            await self.session.delete(found_user)
-            await self.session.commit()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            await self.session.rollback()
-            raise DatabaseException(str(sa_exc)) from sa_exc
-        return True
+        async with self.session as session:
+            try:
+                found_user: User = await self.read_by_id(user_id)
+            except DatabaseException as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            try:
+                await session.delete(found_user)
+                await session.commit()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                await session.rollback()
+                raise DatabaseException(str(sa_exc)) from sa_exc
+            return True
 
 
 async def get_user_repository() -> UserRepository:

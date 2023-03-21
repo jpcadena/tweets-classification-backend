@@ -3,6 +3,7 @@ DB Session script
 """
 from typing import Any, AsyncGenerator
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, \
     AsyncEngine
 
@@ -21,12 +22,14 @@ async def get_db() -> AsyncGenerator[AsyncSession, Any]:
     :return session: Async session for database connection
     :rtype session: AsyncSession
     """
-    async with AsyncSession(
-            bind=async_engine, expire_on_commit=False) as async_session:
-        try:
-            yield async_session
-        finally:
-            await async_session.close()
+    async_session: AsyncSession = AsyncSession(
+        bind=async_engine, expire_on_commit=False)
+    try:
+        yield async_session
+        await async_session.commit()
+    except SQLAlchemyError as exc:
+        await async_session.rollback()
+        raise exc
 
 
 @with_logging

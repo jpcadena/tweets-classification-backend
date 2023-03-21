@@ -8,7 +8,7 @@ from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.deps import CurrentUser
-from app.core.security.exceptions import ServiceException
+from app.core.security.exceptions import ServiceException, NotFoundException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserUpdate, UserUpdateResponse
 from app.services.user import ServiceUser
@@ -148,6 +148,10 @@ async def get_user_by_id(
             status.HTTP_404_NOT_FOUND,
             detail=f"User with id {user_id} not found in the system."
                    f"\n{str(serv_exc)}") from serv_exc
+    except NotFoundException as not_found_exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=str(not_found_exc)) from not_found_exc
     return user
 
 

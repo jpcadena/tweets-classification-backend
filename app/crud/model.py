@@ -37,13 +37,14 @@ class ModelRepository:
         :return:
         :rtype: Model
         """
-        try:
-            model: Model = await self.index_filter.filter(
-                _id, self.session, self.model)
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(
-                f'Error at reading model with id: {_id.value}') from db_exc
-        return model
+        async with self.session as session:
+            try:
+                model: Model = await self.index_filter.filter(
+                    _id, session, self.model)
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(
+                    f'Error at reading model with id: {_id.value}') from db_exc
+            return model
 
     async def read_models(
             self, offset: NonNegativeInt, limit: PositiveInt,
@@ -58,14 +59,15 @@ class ModelRepository:
         :rtype: Model
         """
         stmt: Select = select(self.model).offset(offset).limit(limit)
-        try:
-            results: ScalarResult = await self.session.scalars(stmt)
-            models: list[Model] = results.all()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(
-                f'Error at reading models.\n{str(sa_exc)}') from sa_exc
-        return models
+        async with self.session as session:
+            try:
+                results: ScalarResult = await session.scalars(stmt)
+                models: list[Model] = results.all()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(
+                    f'Error at reading models.\n{str(sa_exc)}') from sa_exc
+            return models
 
     async def create_model(self, model: ModelCreate) -> Optional[Model]:
         """
@@ -77,19 +79,20 @@ class ModelRepository:
         :rtype: Model
         """
         model_create: Model = Model(**model.dict())
-        try:
-            self.session.add(model_create)
-            await self.session.commit()
-        except SQLAlchemyError as sa_exc:
-            logger.error(sa_exc)
-            raise DatabaseException(
-                f"Error at creating model with {model_create.id}") from sa_exc
-        try:
-            created_model: Model = await self.read_by_id(IdSpecification(
-                model_create.id))
-        except SQLAlchemyError as db_exc:
-            raise DatabaseException(str(db_exc)) from db_exc
-        return created_model
+        async with self.session as session:
+            try:
+                session.add(model_create)
+                await session.commit()
+            except SQLAlchemyError as sa_exc:
+                logger.error(sa_exc)
+                raise DatabaseException(
+                    f"Error at creating model with {model_create.id}") from sa_exc
+            try:
+                created_model: Model = await self.read_by_id(IdSpecification(
+                    model_create.id))
+            except SQLAlchemyError as db_exc:
+                raise DatabaseException(str(db_exc)) from db_exc
+            return created_model
 
 
 async def get_model_repository() -> ModelRepository:
