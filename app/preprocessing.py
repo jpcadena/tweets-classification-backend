@@ -29,18 +29,18 @@ def remove_emoji(text: str) -> str:
     :rtype: str
     """
     emoji_pattern: re.Pattern[str] = re.compile(
-        "["u"\U0001f600-\U0001f64f"  # emoticons
-        u"\U0001f300-\U0001f5ff"  # symbols & pictographs
-        u"\U0001f680-\U0001f6ff"  # transport & map symbols
-        u"\U0001f1e0-\U0001f1ff"  # flags (iOS)
-        u"\U0001f900-\U0001f9ff"  # Unicode 9.0 emojis
-        u"\U0001f980-\U0001f9ff"  # Unicode 10.0 emojis
-        u"\U0001fa80-\U0001faff"  # Unicode 11.0 emojis
-        u"\U0001fbc0-\U0001fbc9"  # Unicode 12.0 emojis
-        u"\U0001fcc0-\U0001fcc9"  # Unicode 13.0 emojis
-        u"\U0001fcd0-\U0001fcd9"  # Unicode 14.0 emojis
-        u"\U0001fdd0-\U0001fdd9"  # Unicode 15.0 emojis
-        "]+", flags=re.UNICODE)
+        "[" + "\U0001f600-\U0001f64f"  # emoticons
+        + "\U0001f300-\U0001f5ff"  # symbols & pictographs
+        + "\U0001f680-\U0001f6ff"  # transport & map symbols
+        + "\U0001f1e0-\U0001f1ff"  # flags (iOS)
+        + "\U0001f900-\U0001f9ff"  # Unicode 9.0 emojis
+        + "\U0001f980-\U0001f9ff"  # Unicode 10.0 emojis
+        + "\U0001fa80-\U0001faff"  # Unicode 11.0 emojis
+        + "\U0001fbc0-\U0001fbc9"  # Unicode 12.0 emojis
+        + "\U0001fcc0-\U0001fcc9"  # Unicode 13.0 emojis
+        + "\U0001fcd0-\U0001fcd9"  # Unicode 14.0 emojis
+        + "\U0001fdd0-\U0001fdd9"  # Unicode 15.0 emojis
+          "]+", flags=re.UNICODE)
     return emoji_pattern.sub('', text)
 
 
