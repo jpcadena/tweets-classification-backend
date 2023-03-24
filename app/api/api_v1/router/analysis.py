@@ -32,13 +32,13 @@ async def create_analysis(
 ) -> Analysis:
     """
     Create a new analysis into the system.
-    - :param tweet_id: Path Parameter that identifies the tweet to be
-     analyzed
-    - :type tweet_id: PositiveInt
-    - :return: Analysis created with id, tweet_id, analysis_name, accuracy,
+    - `:param tweet_id:` **Path Parameter that identifies the tweet to be
+     analyzed**
+    - `:type tweet_id:` **PositiveInt**
+    - `:return:` **Analysis created with id, tweet_id, analysis_name, accuracy,
      precision, recall, f1_score, roc_auc, computing_time, relationship
-      with Analysis: analysis_id and its creation timestamp
-    - :rtype: Analysis
+      with Analysis: analysis_id and its creation timestamp**
+    - `:rtype:` **Analysis**
     \f
     :param analysis_service: Dependency method for Analysis service object
     :type analysis_service: ServiceAnalysis
@@ -94,15 +94,15 @@ async def create_multiple_analysis(
 ) -> list[Analysis]:
     """
     Create multiple analyses into the system.
-    - :param username: Path Parameter that identifies username to fetch
-     tweets
-    - :param number_tweets: Query parameter for the quantity of recent
-    tweets to analyse for the given user
-    - :type number_tweets: PositiveInt
-    - :return: Analysis created with id, tweet_id, analysis_name, accuracy,
+    - `:param username:` **Path Parameter that identifies username to fetch
+     tweets**
+    - `:param number_tweets:` **Query parameter for the quantity of recent
+    tweets to analyse for the given user**
+    - `:type number_tweets:` **PositiveInt**
+    - `:return:` **Analysis created with id, tweet_id, analysis_name, accuracy,
      precision, recall, f1_score, roc_auc, computing_time, relationship
-      with Analysis: analysis_id and its creation timestamp
-    - :rtype: list[Analysis]
+      with Analysis: analysis_id and its creation timestamp**
+    - `:rtype:` **list[Analysis]**
     \f
     :param analysis_service: Dependency method for Analysis service object
     :type analysis_service: ServiceAnalysis
@@ -148,12 +148,12 @@ async def get_analysis(
 ) -> Analysis:
     """
     Search for specific Analysis by ID from the system.
-    - :param analysis_id: Path Parameter of Analysis ID to search
-    - :type analysis_id: PydanticObjectId
-    - :return: Found Analysis from logged-in user with id, tweet_id,
+    - `:param analysis_id:` **Path Parameter of Analysis ID to search**
+    - `:type analysis_id:` **PydanticObjectId**
+    - `:return:` **Found Analysis from logged-in user with id, tweet_id,
      analysis_name, accuracy, precision, recall, f1_score, roc_auc,
-      computing_time, analysis_id and its creation timestamp
-    - :rtype: Analysis
+      computing_time, analysis_id and its creation timestamp**
+    - `:rtype:` **Analysis**
     \f
     :param analysis_service: Dependency method for Analysis service object
     :type analysis_service: ServiceAnalysis
@@ -180,14 +180,14 @@ async def get_analyses(
 ) -> list[Analysis]:
     """
     Retrieve all analyses from the system.
-    - :param skip: Offset from where to start returning analyses
-    - :type skip: NonNegativeInt
-    - :param limit: Limit the number of results from query
-    - :type limit: PositiveInt
-    - :return: All analyses from logged-in user with id, tweet_id,
+    - `:param skip:` **Offset from where to start returning analyses**
+    - `:type skip:` **NonNegativeInt**
+    - `:param limit:` **Limit the number of results from query**
+    - `:type limit:` **PositiveInt**
+    - `:return:` **All analyses from logged-in user with id, tweet_id,
      analysis_name, accuracy, precision, recall, f1_score, roc_auc,
-      computing_time, analysis_id and its creation timestamp
-    - :rtype: list[Analysis]
+      computing_time, analysis_id and its creation timestamp**
+    - `:rtype:` **list[Analysis]**
     \f
     :param analysis_service: Dependency method for Analysis Service
     :type analysis_service: ServiceAnalysis

@@ -28,15 +28,15 @@ async def get_users(
 ) -> list[UserResponse]:
     """
     Get all Users basic information from the system using pagination.
-    - :param skip: Offset from where to start returning users
-    - :type skip: NonNegativeInt
-    - :param limit: Limit the number of results from query
-    - :type limit: PositiveInt
-    - :return: List of Users retrieved from database with id, username,
+    - `:param skip:` **Offset from where to start returning users**
+    - `:type skip:` **NonNegativeInt**
+    - `:param limit:` **Limit the number of results from query**
+    - `:type limit:` **PositiveInt**
+    - `:return:` **List of Users retrieved from database with id, username,
      email, first_name, last_name, middle_name, gender, birthdate,
       phone_number, city, country, is_active, is_superuser, created_at,
-       updated_at and analyses relationship.
-    - :rtype: list[UserResponse]
+       updated_at and analyses relationship.**
+    - `:rtype:` **list[UserResponse]**
     \f
     :param user_service: Dependency method for user service layer
     :type user_service: ServiceUser
@@ -62,14 +62,14 @@ async def create_user(
 ) -> UserCreateResponse:
     """
     Register new user into the system.
-    - :param user: Body Object with username, email, first name,
+    - `:param user:` **Body Object with username, email, first name,
     middle name [OPTIONAL], last name, password, gender [OPTIONAL],
     birthdate [OPTIONAL], phone_number [OPTIONAL], address [OPTIONAL],
-    city [OPTIONAL], state [OPTIONAL] and country [OPTIONAL].
-    - :type user: UserCreate
-    - :return: User created with its id, username, email, first name
-     and middle name.
-    - :rtype: UserCreateResponse
+    city [OPTIONAL], state [OPTIONAL] and country [OPTIONAL].**
+    - `:type user:` **UserCreate**
+    - `:return:` **User created with its id, username, email, first name
+     and middle name.**
+    - `:rtype:` **UserCreateResponse**
     \f
     :param background_tasks: Send email to confirm registration
     :type background_tasks: BackgroundTasks
@@ -96,11 +96,11 @@ async def get_user_me(
 ) -> UserResponse:
     """
     Get current user.
-    - :return: Response object for current user with id, username,
+    - `:return:` **Response object for current user with id, username,
      email, first_name, last_name, middle_name, gender, birthdate,
       phone_number, city, country, is_active, is_superuser, created_at,
-       updated_at and analyses relationship.
-    - :rtype: UserResponse
+       updated_at and analyses relationship.**
+    - `:rtype:` **UserResponse**
     \f
     :param current_user: Dependency method for authorization by current user
     :type current_user: CurrentUser
@@ -128,13 +128,13 @@ async def get_user_by_id(
 ) -> UserResponse:
     """
     Get an existing user from the system given an ID.
-    - :param user_id: Unique identifier of the user
-    - :type user_id: PositiveInt
-    - :return: Found user with the given ID including its username,
+    - `:param user_id:` **Unique identifier of the user**
+    - `:type user_id:` **PositiveInt**
+    - `:return:` **Found user with the given ID including its username,
      email, first_name, last_name, middle_name, gender, birthdate,
       phone_number, city, country, is_active, is_superuser, created_at,
-       updated_at and analyses relationship.
-    - :rtype: UserResponse
+       updated_at and analyses relationship.**
+    - `:rtype:` **UserResponse**
     \f
     :param user_service: Dependency method for user service layer
     :type user_service: ServiceUser
@@ -167,17 +167,17 @@ async def update_user(
 ) -> UserUpdateResponse:
     """
     Update an existing user from the system given an ID and new info.
-    - :param user_id: Unique identifier of the user
-    - :type user_id: PositiveInt
-    - :param user_in: New user data to update that can include:
+    - `:param user_id:` **Unique identifier of the user**
+    - `:type user_id:` **PositiveInt**
+    - `:param user_in:` **New user data to update that can include:
      username, email, first_name, middle_name, last_name, password,
-      gender, birthdate, phone_number, city and country.
-    - :type user_in: UserUpdate
-    - :return: Updated user with the given ID and its username, email,
+      gender, birthdate, phone_number, city and country.**
+    - `:type user_in:` **UserUpdate**
+    - `:return:` **Updated user with the given ID and its username, email,
      first_name, last_name, middle_name, hashed password, gender,
       birthdate, phone_number, city, country, is_active, is_superuser,
-       created_at and updated_at.
-    - :rtype: UserUpdateResponse
+       created_at and updated_at.**
+    - `:rtype:` **UserUpdateResponse**
     \f
     :param user_service: Dependency method for user service layer
     :type user_service: ServiceUser
@@ -206,10 +206,10 @@ async def delete_user(
 ) -> Response:
     """
     Delete an existing user from the system given an ID and new info.
-    - :param user_id: Unique identifier of the user
-    - :type user_id: PositiveInt
-    - :return: Json Response object with the deleted information
-    - :rtype: Response
+    - `:param user_id:` **Unique identifier of the user**
+    - `:type user_id:` **PositiveInt**
+    - `:return:` **Json Response object with the deleted information**
+    - `:rtype:` **Response**
     \f
     :param user_service: Dependency method for user service layer
     :type user_service: ServiceUser

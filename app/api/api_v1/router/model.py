@@ -23,14 +23,14 @@ async def create_model(
 ) -> Model:
     """
     Create a new model into the system.
-    - :param model: Body Object with tweet_id, model_name, accuracy,
+    - `:param model:` **Body Object with tweet_id, model_name, accuracy,
      precision, recall, f1_score, roc_auc, computing_time and
-      relationship with Analysis: analysis_id (OPTIONAL)
-    - :type model: ModelCreate
-    - :return: Model created with id, tweet_id, model_name, accuracy,
+      relationship with Analysis: analysis_id (OPTIONAL)**
+    - `:type model:` **ModelCreate**
+    - `:return:` **Model created with id, tweet_id, model_name, accuracy,
      precision, recall, f1_score, roc_auc, computing_time, relationship
-      with Analysis: analysis_id and its creation timestamp
-    - :rtype: Model
+      with Analysis: analysis_id and its creation timestamp**
+    - `:rtype:` **Model**
     \f
     :param model_service: Dependency method for Model service object
     :type model_service: ServiceModel
@@ -57,12 +57,12 @@ async def get_model(
 ) -> Model:
     """
     Search for specific Model by ID from the system.
-    - :param model_id: Path Parameter of Model ID to search
-    - :type model_id: PositiveInt
-    - :return: Found Model from logged-in user with id, tweet_id,
+    - `:param model_id:` **Path Parameter of Model ID to search**
+    - `:type model_id:` **PositiveInt**
+    - `:return:` **Found Model from logged-in user with id, tweet_id,
      model_name, accuracy, precision, recall, f1_score, roc_auc,
-      computing_time, analysis_id and its creation timestamp
-    - :rtype: Model
+      computing_time, analysis_id and its creation timestamp**
+    - `:rtype:` **Model**
     \f
     :param model_service: Dependency method for Model service object
     :type model_service: ServiceModel
@@ -88,14 +88,14 @@ async def get_models(
 ) -> list[Model]:
     """
     Retrieve all models from the system.
-    - :param skip: Offset from where to start returning models
-    - :type skip: NonNegativeInt
-    - :param limit: Limit the number of results from query
-    - :type limit: PositiveInt
-    - :return: All models from logged-in user with id, tweet_id,
+    - `:param skip:` **Offset from where to start returning models**
+    - `:type skip:` **NonNegativeInt**
+    - `:param limit:` **Limit the number of results from query**
+    - `:type limit:` **PositiveInt**
+    - `:return:` **All models from logged-in user with id, tweet_id,
      model_name, accuracy, precision, recall, f1_score, roc_auc,
-      computing_time, analysis_id and its creation timestamp
-    - :rtype: list[Model]
+      computing_time, analysis_id and its creation timestamp**
+    - `:rtype:` **list[Model]**
     \f
     :param model_service: Dependency method for Model Service
     :type model_service: ServiceModel
