@@ -22,8 +22,8 @@ class Model(Base):
     id: PositiveInt = Column(
         Integer, index=True, unique=True, nullable=False, primary_key=True,
         comment='ID of the Model')
-    tweet_id: PositiveInt = Column(BIGINT, nullable=False,
-                                   comment='ID of the Tweet')
+    tweet_id: PositiveInt = Column(
+        BIGINT, nullable=False, comment='ID of the Tweet')
     model_name: str = Column(
         String, nullable=False, comment='Name of the model')
     accuracy: NonNegativeFloat = Column(
