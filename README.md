@@ -59,7 +59,6 @@
 
 ## About the project
 
-IN PROGRESS...
 [![Project][project-screenshot]](https://example.com)
 
 This project is the Python backend for the Tweets Classification ML project

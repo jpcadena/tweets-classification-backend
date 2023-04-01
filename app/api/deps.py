@@ -1,5 +1,5 @@
 """
-API v1 Dependencies script
+API Dependencies script
 """
 from abc import ABC
 from typing import Optional, Annotated, Type
@@ -11,14 +11,16 @@ from jose import jwt, JWTError
 from pydantic import ValidationError
 
 from app.core import config
+from app.core.config import Settings, get_settings
 from app.schemas.user import UserAuth
 from app.services.user import UserService, get_user_service
 
+setting: Settings = get_settings()
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
-    tokenUrl="api/v1/auth/login", scheme_name="JWT")
+    tokenUrl=setting.TOKEN_URL, scheme_name="JWT")
 
 
-async def validate_token(token: str, settings: config.Settings) -> dict:
+async def validate_token(token: str, settings: Settings) -> dict:
     """
     Validate the token.
     :param token: The token to validate
@@ -121,8 +123,7 @@ class RedisDependency:
         :return: None
         :rtype: NoneType
         """
-        settings: config.Settings = config.get_settings()
-        url: str = settings.AIOREDIS_DATABASE_URI
+        url: str = setting.AIOREDIS_DATABASE_URI
         self.redis = await Redis.from_url(url, decode_responses=True)
 
 

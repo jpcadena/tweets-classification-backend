@@ -60,25 +60,30 @@ def _setup_mail_handler(
         logger.addHandler(mail_handler)
 
 
-def _setup_file_handler(logger: logging.Logger, log_level: int) -> None:
+def _setup_file_handler(
+        logger: logging.Logger, log_level: int,
+        settings: config.Settings = config.get_settings()) -> None:
     """
     Setup file handler
     :param logger: The logger instance
     :type logger: logging.Logger
     :param log_level: The log level
     :type log_level: int
+
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
     :return: None
     :rtype: NoneType
     """
     formatter: logging.Formatter = logging.Formatter(
         '[%(name)s][%(asctime)s][%(levelname)s][%(module)s][%(funcName)s][%('
-        'lineno)d]: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        'lineno)d]: %(message)s', datefmt=settings.DATE_FORMAT)
 
     current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
     project_root: str = current_file_directory
-    while os.path.basename(project_root) != "tweets-classification-backend":
+    while os.path.basename(project_root) != settings.PROJECT_NAME:
         project_root = os.path.dirname(project_root)
-    current_date: str = datetime.today().strftime('%d-%b-%Y-%H-%M-%S')
+    current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
     log_filename: str = f'log-{current_date}.log'
     filename_path: str = f'{project_root}/logs/{log_filename}'
 
@@ -108,4 +113,4 @@ def setup_logging(
 
     _setup_console_handler(logger, log_level)
     _setup_mail_handler(logger, log_level, settings)
-    _setup_file_handler(logger, log_level)
+    _setup_file_handler(logger, log_level, settings)

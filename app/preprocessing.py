@@ -105,8 +105,7 @@ async def get_stopwords(
     :rtype: list[str]
     """
     async with aiofiles.open(
-            '/app/assets/static/related_words_users.json',
-            encoding=settings.ENCODING) as file:
+            settings.STOP_WORDS_FILE_PATH, encoding=settings.ENCODING) as file:
         content: str = await file.read()
     stopwords_file: dict = json.loads(content)
     exclude_words: list[str] = stopwords_file.get('spanish')

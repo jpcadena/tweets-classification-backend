@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     OPENAPI_FILE_PATH: str
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
     AUDIENCE: Optional[str] = None
+    TOKEN_URL: str
+    DATE_FORMAT: str
+    FILE_DATE_FORMAT: str
+    STOP_WORDS_FILE_PATH: str
 
     @validator('AUDIENCE', pre=True)
     def assemble_audience(
