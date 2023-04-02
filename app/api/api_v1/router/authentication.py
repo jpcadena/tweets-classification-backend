@@ -59,24 +59,24 @@ async def login(
     except ServiceException as s_exc:
         logger.error(s_exc)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Invalid credentials') from s_exc
+                            detail="Invalid credentials") from s_exc
     if not await verify_password(found_user.password, user.password):
-        logger.warning('Incorrect password')
+        logger.warning("Incorrect password")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Incorrect password')
+                            detail="Incorrect password")
     if not found_user.is_active:
-        logger.warning('Inactive user')
+        logger.warning("Inactive user")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Inactive user')
+                            detail="Inactive user")
     access_token, refresh_token, name = await AuthService.auth_token(
         found_user, settings)
     token: Token = Token(key=name, token=refresh_token)
     token_set: bool = await TokenService.create_token(token, settings, redis)
     if not token_set:
-        logger.warning('Could not insert data in Authorization database')
+        logger.warning("Could not insert data in Authorization database")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Could not insert data in Authorization database')
+            detail="Could not insert data in Authorization database")
     return TokenResponse(access_token=access_token, token_type="bearer",
                          refresh_token=refresh_token)
 
@@ -101,9 +101,9 @@ async def recover_password(
         user_service: ServiceUser,
         settings: Annotated[config.Settings, Depends(config.get_settings)],
         email: EmailStr = Path(
-            ..., title='Email',
-            description='The email used to recover the password',
-            example='someone@example.com')
+            ..., title="Email",
+            description="The email used to recover the password",
+            example="someone@example.com")
 ) -> Msg:
     """
     Recover password.
@@ -126,7 +126,7 @@ async def recover_password(
         logger.error(s_exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='There was an issue with the request') from s_exc
+            detail="There was an issue with the request") from s_exc
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -142,8 +142,8 @@ async def recover_password(
 async def reset_password(
         user_service: ServiceUser,
         token_reset_password: TokenResetPassword = Body(
-            ..., title='Body object',
-            description='Object with access token and new password')
+            ..., title="Body object",
+            description="Object with access token and new password")
 ) -> Msg:
     """
     Reset password.
@@ -168,7 +168,7 @@ async def reset_password(
         logger.error(s_exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail='There was an issue with the request') from s_exc
+            detail="There was an issue with the request") from s_exc
     if not user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

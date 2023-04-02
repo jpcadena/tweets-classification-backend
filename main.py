@@ -30,15 +30,15 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     :return: new ID based on tag and route name
     :rtype: str
     """
-    if route.name == 'welcome_message':
-        return ''
+    if route.name == "welcome_message":
+        return ""
     return f"{route.tags[0]}-{route.name}"
 
 
 app: FastAPI = FastAPI(
     title=settings.PROJECT_NAME, description=settings.DESCRIPTION,
     version=settings.VERSION,
-    openapi_url=f'{settings.API_V1_STR}{settings.OPENAPI_FILE_PATH}',
+    openapi_url=f"{settings.API_V1_STR}{settings.OPENAPI_FILE_PATH}",
     openapi_tags=settings.TAGS_METADATA, contact=settings.CONTACT,
     license_info=settings.LICENSE_INFO,
     generate_unique_id_function=custom_generate_unique_id)
@@ -49,20 +49,21 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_origins=[str(origin) for origin in
                        settings.BACKEND_CORS_ORIGINS],
         allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-app.mount('/./app/assets/images', StaticFiles(directory='./app/assets/images'),
-          name='images')
+app.mount(
+    settings.IMAGES_PATH, StaticFiles(directory=settings.IMAGES_DIRECTORY),
+    name="images")
 
 
 @with_logging
 @benchmark
-@app.on_event('startup')
+@app.on_event("startup")
 async def startup_event() -> None:
     """
     Startup API.
     :return: None
     :rtype: NoneType
     """
-    logger.info('Starting API...')
+    logger.info("Starting API...")
     await update_json(settings)
     await init_db(await get_user_repository(), settings)
     await init_auth_db(settings)

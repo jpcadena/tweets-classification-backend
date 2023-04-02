@@ -81,4 +81,4 @@ async def init_db(
     # )
     # superuser: User = await user_repo.create_user(user)
     # email: str = await hide_email(superuser.email)
-    # logger.info('Superuser created with email %s', email)
+    # logger.info("Superuser created with email %s", email)

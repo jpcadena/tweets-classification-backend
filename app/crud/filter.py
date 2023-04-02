@@ -63,7 +63,7 @@ class IndexFilter(Filter):
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise sa_exc
-            logger.info('Retrieving row with id: %s', _id)
+            logger.info("Retrieving row with id: %s", _id)
             return db_obj
 
 
@@ -90,7 +90,7 @@ class UniqueFilter(Filter):
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise sa_exc
-            logger.info('Retrieving row with filter: %s', spec.value)
+            logger.info("Retrieving row with filter: %s", spec.value)
             return db_obj
 
 

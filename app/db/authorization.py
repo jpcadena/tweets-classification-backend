@@ -28,7 +28,7 @@ async def init_auth_db(
     """
     url: str = settings.AIOREDIS_DATABASE_URI
     await aioredis.from_url(url, decode_responses=True)
-    logger.info('Redis Database initialized')
+    logger.info("Redis Database initialized")
 
 
 def handle_redis_exceptions(func: callable) -> callable:

@@ -15,7 +15,7 @@ class UserID(BaseModel):
     """
     Core class for User based on Pydantic Base Model.
     """
-    id: PositiveInt = Field(..., title='ID', description='ID of the User')
+    id: PositiveInt = Field(..., title="ID", description="ID of the User")
 
 
 class UserRelationship(BaseModel):
@@ -24,7 +24,7 @@ class UserRelationship(BaseModel):
      Model.
     """
     analyses: Optional[list[Analysis]] = Field(
-        default=[], title='Analyses', description='List of related analyses',
+        default=[], title="Analyses", description="List of related analyses",
         unique_items=True)
 
 
@@ -33,8 +33,8 @@ class UserUpdatedAt(BaseModel):
     UpdatedAt class for User based on Pydantic Base Model.
     """
     updated_at: Optional[datetime] = Field(
-        default=None, title='Updated at',
-        description='Time the User was updated')
+        default=None, title="Updated at",
+        description="Time the User was updated")
 
 
 class UserBaseAuth(BaseModel):
@@ -42,10 +42,10 @@ class UserBaseAuth(BaseModel):
     User Base Auth class based on Pydantic Base Model
     """
     username: str = Field(
-        ..., title='Username', description='Username to identify the user',
+        ..., title="Username", description="Username to identify the user",
         min_length=4, max_length=15)
     email: EmailStr = Field(
-        ..., title='Email', description='Preferred e-mail address of the User')
+        ..., title="Email", description="Preferred e-mail address of the User")
 
 
 class UserFilter(UserBaseAuth, UserID):
@@ -59,9 +59,9 @@ class UserName(BaseModel):
     User class for names attributes based on Pydantic Base Model.
     """
     first_name: str = Field(
-        ..., title='First name', description='First name(s) of the User')
+        ..., title="First name", description="First name(s) of the User")
     last_name: str = Field(
-        ..., title='Last name', description='Last name(s) of the User')
+        ..., title="Last name", description="Last name(s) of the User")
 
 
 class UserBase(UserName, UserBaseAuth):
@@ -91,22 +91,22 @@ class UserOptional(BaseModel):
     User class with optional attributes based on Pydantic Base Model.
     """
     middle_name: Optional[str] = Field(
-        default=None, title='Middle Name',
-        description='Middle name(s) of the User')
+        default=None, title="Middle Name",
+        description="Middle name(s) of the User")
     gender: Optional[Gender] = Field(
-        default=None, title='Gender', description='Gender of the User')
+        default=None, title="Gender", description="Gender of the User")
     birthdate: Optional[date] = Field(
-        default=None, title='Birthdate', description='Birthday of the User')
+        default=None, title="Birthdate", description="Birthday of the User")
     phone_number: Optional[str] = Field(
-        default=None, title='Phone number',
-        description='Preferred telephone number of the User',
+        default=None, title="Phone number",
+        description="Preferred telephone number of the User",
         regex=telephone_regex)
     city: Optional[str] = Field(
-        default='Guayaquil', title='City',
-        description='City for address of the User')
+        default="Guayaquil", title="City",
+        description="City for address of the User")
     country: Optional[str] = Field(
-        default='Ecuador', title='Country',
-        description='Country for address of the User')
+        default="Ecuador", title="Country",
+        description="Country for address of the User")
 
 
 class UserCreate(UserOptional, UserBase):
@@ -115,7 +115,7 @@ class UserCreate(UserOptional, UserBase):
      and UserBase.
     """
     password: str = Field(
-        ..., title='Password', description='Password of the User',
+        ..., title="Password", description="Password of the User",
         min_length=8, max_length=14, regex=password_regex)
 
     class Config:
@@ -142,8 +142,8 @@ class UserSuperCreate(UserCreate):
     Class to create a super_user that inherits from UserCreate.
     """
     is_superuser: bool = Field(
-        default=True, title='Is super user?',
-        description='True if the user is super user; otherwise false')
+        default=True, title="Is super user?",
+        description="True if the user is super user; otherwise false")
 
     class Config:
         """
@@ -190,36 +190,36 @@ class UserUpdate(BaseModel):
     Request class for updating User based on Pydantic Base Model.
     """
     username: Optional[str] = Field(
-        default=None, title='Username',
-        description='Username to identify the user',
-        min_length=4, max_length=15)
+        default=None, title="Username",
+        description="Username to identify the user", min_length=4,
+        max_length=15)
     email: Optional[EmailStr] = Field(
-        default=None, title='Email',
-        description='Preferred e-mail address of the User')
+        default=None, title="Email",
+        description="Preferred e-mail address of the User")
     first_name: Optional[str] = Field(
-        default=None, title='First name',
-        description='First name(s) of the User')
+        default=None, title="First name",
+        description="First name(s) of the User")
     middle_name: Optional[str] = Field(
-        default=None, title='Middle Name',
-        description='Middle name(s) of the User')
+        default=None, title="Middle Name",
+        description="Middle name(s) of the User")
     last_name: str = Field(
-        default=None, title='Last name',
-        description='Last name(s) of the User')
+        default=None, title="Last name",
+        description="Last name(s) of the User")
     password: Optional[str] = Field(
-        default=None, title='New Password', min_length=8, max_length=14,
-        description='New Password of the User', regex=password_regex)
+        default=None, title="New Password", min_length=8, max_length=14,
+        description="New Password of the User", regex=password_regex)
     gender: Optional[Gender] = Field(
-        default=None, title='Gender', description='Gender of the User')
+        default=None, title="Gender", description="Gender of the User")
     birthdate: Optional[date] = Field(
-        default=None, title='Birthdate', description='Birthday of the User')
+        default=None, title="Birthdate", description="Birthday of the User")
     phone_number: Optional[str] = Field(
-        default=None, title='Phone number', regex=telephone_regex,
-        description='Preferred telephone number of the User')
+        default=None, title="Phone number", regex=telephone_regex,
+        description="Preferred telephone number of the User")
     city: Optional[str] = Field(
-        default=None, title='City', description='City for address of the User')
+        default=None, title="City", description="City for address of the User")
     country: Optional[str] = Field(
-        default=None, title='Country',
-        description='Country for address of the User')
+        default=None, title="Country",
+        description="Country for address of the User")
 
     class Config:
         """
@@ -246,14 +246,14 @@ class UserInDB(UserUpdatedAt, BaseModel):
      database based on Pydantic Base Model.
     """
     is_active: bool = Field(
-        ..., title='Is active?',
-        description='True if the user is active; otherwise false')
+        ..., title="Is active?",
+        description="True if the user is active; otherwise false")
     is_superuser: bool = Field(
-        ..., title='Is super user?',
-        description='True if the user is super user; otherwise false')
+        ..., title="Is super user?",
+        description="True if the user is super user; otherwise false")
     created_at: datetime = Field(
-        default_factory=datetime.now(), title='Created at',
-        description='Time the User was created')
+        default_factory=datetime.now, title="Created at",
+        description="Time the User was created")
 
 
 class UserPassword(BaseModel):
@@ -261,8 +261,8 @@ class UserPassword(BaseModel):
     User Password class that inherits from Pydantic Base Model.
     """
     password: str = Field(
-        ..., title='Hashed Password', min_length=40,
-        description='Hashed Password of the User')
+        ..., title="Hashed Password", min_length=40,
+        description="Hashed Password of the User")
 
 
 class UserUpdateResponse(UserInDB, UserOptional, UserPassword, UserName,
@@ -303,17 +303,17 @@ class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
      UserCreate and UserID.
     """
     password: str = Field(
-        ..., title='Hashed Password', min_length=40,
-        description='Hashed Password of the User')
+        ..., title="Hashed Password", min_length=40,
+        description="Hashed Password of the User")
     is_active: bool = Field(
-        default=True, title='Is active?',
-        description='True if the user is active; otherwise false')
+        default=True, title="Is active?",
+        description="True if the user is active; otherwise false")
     is_superuser: bool = Field(
-        default=False, title='Is super user?',
-        description='True if the user is super user; otherwise false')
+        default=False, title="Is super user?",
+        description="True if the user is super user; otherwise false")
     created_at: datetime = Field(
-        default_factory=datetime.now(), title='Created at',
-        description='Time the User was created')
+        default_factory=datetime.now, title="Created at",
+        description="Time the User was created")
 
     class Config:
         """

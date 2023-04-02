@@ -19,8 +19,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def _generate_expiration_time(
-        expires_delta: Optional[timedelta],
-        minutes: Optional[int] = None,
+        expires_delta: Optional[timedelta], minutes: Optional[int] = None
 ) -> datetime:
     """
     Generates expiration time
@@ -39,8 +38,7 @@ async def _generate_expiration_time(
 @with_logging
 @benchmark
 async def create_access_token(
-        payload: dict,
-        scope: Scope = Scope.ACCESS_TOKEN,
+        payload: dict, scope: Scope = Scope.ACCESS_TOKEN,
         expires_delta: Optional[timedelta] = None,
         settings: config.Settings = Depends(config.get_settings),
 ) -> str:
@@ -59,18 +57,15 @@ async def create_access_token(
     """
     expire_time: datetime = await _generate_expiration_time(
         expires_delta, settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload.update({'exp': int(expire_time.timestamp())})
-    payload['scope'] = scope
+    payload.update({"exp": int(expire_time.timestamp())})
+    payload["scope"] = scope
     claims: dict = jsonable_encoder(payload)
     encoded_jwt: str = jwt.encode(
-        claims=claims, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM
-    )
+        claims=claims, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     logger.info(
         "JWT created with JTI: %s for sub: %s. Expires in %s.",
-        payload.get("jti"),
-        payload.get("sub"),
-        expire_time - datetime.utcnow(),
-    )
+        payload.get("jti"), payload.get("sub"),
+        expire_time - datetime.utcnow())
     return encoded_jwt
 
 

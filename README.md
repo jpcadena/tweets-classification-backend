@@ -20,7 +20,7 @@
 <h3 align="center">tweets-classification-backend</h3>
 
   <p align="center">
-    Description for tweets-classification-backend
+    Backend for Tweets Classification project.
     <br />
     <a href="https://github.com/jpcadena/tweets-classification-backend"><strong>Explore the docs »</strong></a>
     <br />
@@ -61,8 +61,8 @@
 
 [![Project][project-screenshot]](https://example.com)
 
-This project is the Python backend for the Tweets Classification ML project
-developed using FastAPI, PostgreSQL and Redis...
+This project is the Python backend for the Tweets Classification Machine
+Learning project developed using FastAPI, PostgreSQL and Redis.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

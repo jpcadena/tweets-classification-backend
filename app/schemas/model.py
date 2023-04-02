@@ -13,7 +13,7 @@ class ModelID(BaseModel):
     Model ID class that inherits from Pydantic Base Model.
     """
     id: PositiveInt = Field(
-        ..., title='Model ID', description='ID of the Model')
+        ..., title="Model ID", description="ID of the Model")
 
 
 class ModelBase(BaseModel):
@@ -21,24 +21,24 @@ class ModelBase(BaseModel):
     Base Model class that inherits from Pydantic Base Model.
     """
     tweet_id: PositiveInt = Field(
-        ..., title='Tweet ID', description='ID of the Tweet')
+        ..., title="Tweet ID", description="ID of the Tweet")
     model_name: str = Field(
-        ..., title='Model Name', description='Name of the model')
+        ..., title="Model Name", description="Name of the model")
     accuracy: NonNegativeFloat = Field(
-        ..., title='Accuracy', description='Accuracy score of the model')
+        ..., title="Accuracy", description="Accuracy score of the model")
     precision: NonNegativeFloat = Field(
-        ..., title='Precision', description='Precision score of the model')
+        ..., title="Precision", description="Precision score of the model")
     recall: NonNegativeFloat = Field(
-        ..., title='Recall', description='Recall score of the model')
+        ..., title="Recall", description="Recall score of the model")
     f1_score: NonNegativeFloat = Field(
-        ..., title='F1 Score', description='F1 score of the model')
+        ..., title="F1 Score", description="F1 score of the model")
     roc_auc: NonNegativeFloat = Field(
-        ..., title='ROC AUC',
-        description='Area Under the Receiver Operating Characteristic Curve'
-                    ' for the model')
+        ..., title="ROC AUC",
+        description="Area Under the Receiver Operating Characteristic Curve"
+                    " for the model")
     computing_time: PositiveFloat = Field(
-        ..., title='Computing Time',
-        description='The time it took to classify the tweet')
+        ..., title="Computing Time",
+        description="The time it took to classify the tweet")
 
 
 class ModelCreatedAt(BaseModel):
@@ -46,8 +46,8 @@ class ModelCreatedAt(BaseModel):
     Model Created At class that inherits from Pydantic Base Model.
     """
     created_at: Optional[datetime] = Field(
-        default_factory=datetime.now, title='Created At',
-        description='Time the Model was executed')
+        default_factory=datetime.now, title="Created At",
+        description="Time the Model was executed")
 
 
 class ModelCreate(ModelCreatedAt, ModelBase):
@@ -55,8 +55,8 @@ class ModelCreate(ModelCreatedAt, ModelBase):
     Class for creating Model that inherits from ModelBase.
     """
     analysis_id: Optional[PositiveInt] = Field(
-        default=None, title='Analysis ID',
-        description='ID of the Analysis where the model was executed')
+        default=None, title="Analysis ID",
+        description="ID of the Analysis where the model was executed")
 
     class Config:
         """

@@ -41,7 +41,7 @@ class TokenService:
             inserted: bool = await redis.setex(
                 token.key, settings.REFRESH_TOKEN_EXPIRE_MINUTES, token.token)
         except RedisError as r_exc:
-            logger.error('Error at creating token. %s', r_exc)
+            logger.error("Error at creating token. %s", r_exc)
             raise r_exc
         return inserted
 
@@ -62,6 +62,6 @@ class TokenService:
         try:
             value: str = await redis.get(key)
         except RedisError as r_exc:
-            logger.error('Error at getting token. %s', r_exc)
+            logger.error("Error at getting token. %s", r_exc)
             raise r_exc
         return value

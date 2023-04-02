@@ -177,7 +177,7 @@ class UserService:
                 IdSpecification(user_id))
         except DatabaseException as db_exc:
             raise ServiceException(str(db_exc)) from db_exc
-        return {"ok": deleted, 'deleted_at': datetime.now()}
+        return {"ok": deleted, "deleted_at": datetime.now()}
 
 
 async def get_user_service(

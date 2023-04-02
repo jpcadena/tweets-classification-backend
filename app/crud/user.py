@@ -182,12 +182,12 @@ class UserRepository:
             update_data: dict = user.dict(exclude_unset=True)
             for field in obj_data:
                 if field in update_data:
-                    if field == 'password':
+                    if field == "password":
                         setattr(found_user, field, await get_password_hash(
                             update_data[field]))
                     else:
                         setattr(found_user, field, update_data[field])
-                if field == 'updated_at':
+                if field == "updated_at":
                     setattr(found_user, field, datetime.utcnow())
             session.add(found_user)
             await session.commit()

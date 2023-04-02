@@ -23,7 +23,7 @@ telephone_regex: str = r"\(?\+[0-9]{1,3}\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?" \
                        r"[0-9]{4}( ?-?[0-9]{3})? ?(\w{1,10}\s?\d{1,6})?"
 password_regex: str = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?" \
                       r"[#?!@$%^&*-]).{8,14}$"
-sub_regex: str = r'username:(?!0)\d+'
+sub_regex: str = r"username:(?!0)\d+"
 
 
 async def send_test_email(
@@ -202,12 +202,12 @@ async def hide_email(email: EmailStr) -> str:
     domain_first_section = domain_sections[0]
     domain_count: int = max(math.ceil(len(domain_first_section) / 2), 1)
     replaced_title: str = email_title.replace(
-        email_title[title_count * -1:], '*' * title_count)
+        email_title[title_count * -1:], "*" * title_count)
     replaced_domain_first: str = domain_first_section.replace(
-        domain_first_section[domain_count * -1:], '*' * domain_count)
-    replaced_domain: str = replaced_domain_first + '.' + '.'.join(
+        domain_first_section[domain_count * -1:], "*" * domain_count)
+    replaced_domain: str = replaced_domain_first + "." + ".".join(
         domain_sections[1:])
-    hidden_email: str = f'{replaced_title}@{replaced_domain}'
+    hidden_email: str = f"{replaced_title}@{replaced_domain}"
     return hidden_email
 
 

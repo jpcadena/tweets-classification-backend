@@ -57,7 +57,7 @@ class NLPService:
         :rtype: dict
         """
         preprocessed_text: str = await preprocess_tweet_text(
-            tweet.get('raw_content'), settings)
+            tweet.get("raw_content"), settings)
         vocabulary: list[tuple[str, NonNegativeInt]] = await get_ngram_counts(
             preprocessed_text, settings)
         ngrams: list[str] = []
@@ -68,9 +68,8 @@ class NLPService:
         hour: NonNegativeInt = datetime.strptime(
             tweet.get("date"), "%Y-%m-%d %H:%M:%S").hour
         logger.info("Data for testing, ready")
-        return {
-            'preprocessed_text': preprocessed_text, 'ngram': ngrams,
-            'count': counts, 'hour': hour}
+        return {"preprocessed_text": preprocessed_text, "ngram": ngrams,
+                "count": counts, "hour": hour}
 
     @with_logging
     @benchmark

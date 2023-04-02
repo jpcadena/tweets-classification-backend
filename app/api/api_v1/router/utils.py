@@ -15,10 +15,7 @@ router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 
 # @router.post(
 #     "/test-celery/", response_model=Msg, status_code=status.HTTP_201_CREATED)
-# def test_celery(
-#         msg: Msg,
-#         current_user: CurrentUser,
-# ) -> Msg:
+# def test_celery(msg: Msg, current_user: CurrentUser) -> Msg:
 #     """
 #     Test Celery worker
 #     - :param msg: Message to send
@@ -35,10 +32,7 @@ router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 
 @router.post(
     "/test-email/", response_model=Msg, status_code=status.HTTP_201_CREATED)
-async def test_email(
-        email_to: EmailStr,
-        current_user: CurrentUser,
-) -> Msg:
+async def test_email(email_to: EmailStr, current_user: CurrentUser) -> Msg:
     """
     Test emails.
     - :param email_to: The email to send

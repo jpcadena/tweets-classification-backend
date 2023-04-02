@@ -19,7 +19,7 @@ async def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def verify_password(hashed_password, plain_password) -> bool:
+async def verify_password(hashed_password: str, plain_password: str) -> bool:
     """
     Verifies if a plain password matches a hashed password
     :param plain_password: the plain text password to check

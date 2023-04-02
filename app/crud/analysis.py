@@ -43,8 +43,8 @@ class AnalysisRepository:
                     _id, session, self.model)
             except SQLAlchemyError as db_exc:
                 raise DatabaseException(
-                    f'Error at reading analysis with id: {_id.value}.'
-                    f'\n{str(db_exc)}') from db_exc
+                    f"Error at reading analysis with id: {_id.value}."
+                    f"\n{str(db_exc)}") from db_exc
             return analysis
 
     async def read_analyses(
@@ -67,7 +67,7 @@ class AnalysisRepository:
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise DatabaseException(
-                    f'Error at reading analyses.\n{str(sa_exc)}') from sa_exc
+                    f"Error at reading analyses.\n{str(sa_exc)}") from sa_exc
             return analyses
 
     async def create_analysis(

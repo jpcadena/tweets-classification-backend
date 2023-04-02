@@ -18,9 +18,9 @@ async def read_json_file(
     :return: JSON data
     :rtype: dict
     """
-    file_path: str = '.' + settings.OPENAPI_FILE_PATH
+    file_path: str = "." + settings.OPENAPI_FILE_PATH
     async with aiofiles.open(
-            file_path, mode='r', encoding=settings.ENCODING) as file:
+            file_path, mode="r", encoding=settings.ENCODING) as file:
         content: str = await file.read()
     data: dict = json.loads(content)
     return data
@@ -65,7 +65,7 @@ async def modify_json_data(data: dict) -> dict:
     :rtype: dict
     """
     for key, path_data in data["paths"].items():
-        if key == '/':
+        if key == "/":
             continue
         for _, operation in dict(path_data).items():
             await update_operation_id(operation)
@@ -84,7 +84,7 @@ async def write_json_file(
     :return: None
     :rtype: NoneType
     """
-    file_path: str = '.' + settings.OPENAPI_FILE_PATH
+    file_path: str = "." + settings.OPENAPI_FILE_PATH
     async with aiofiles.open(
-            file_path, mode='w', encoding=settings.ENCODING) as out_file:
+            file_path, mode="w", encoding=settings.ENCODING) as out_file:
         await out_file.write(json.dumps(data, indent=4))

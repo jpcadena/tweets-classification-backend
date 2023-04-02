@@ -11,7 +11,7 @@ from app.schemas.model import ModelCreate, Model as ModelResponse
 from app.schemas.user import UserResponse, UserCreateResponse, \
     UserUpdateResponse
 
-T = TypeVar('T', UserResponse, UserCreateResponse, UserUpdateResponse,
+T = TypeVar("T", UserResponse, UserCreateResponse, UserUpdateResponse,
             AnalysisCreate, AnalysisResponse, ModelCreate, ModelResponse)
 
 

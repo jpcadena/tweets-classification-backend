@@ -495,7 +495,6 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -1061,7 +1060,6 @@ tags
 [._]*.un~
 ### Node template
 # Logs
-!logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -1182,4 +1180,6 @@ dist
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-.pnp.*
+.pnp.*!/logs/
+!/logs/log-02-Apr-2023-11-05-27.log
+!/logs/

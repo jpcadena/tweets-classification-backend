@@ -9,18 +9,18 @@ from typing import Any, Optional, Union
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
     validator, RedisDsn, root_validator
 
-img_path: Path = Path('./app/assets/images/api-docs.png')
-img_b64: str = base64.b64encode(img_path.read_bytes()).decode('utf-8')
+img_path: Path = Path("./app/assets/images/api-docs.png")
+img_b64: str = base64.b64encode(img_path.read_bytes()).decode("utf-8")
 
-users_path: Path = Path('./app/assets/images/users.png')
-users_b64: str = base64.b64encode(users_path.read_bytes()).decode('utf-8')
-analyses_path: Path = Path('./app/assets/images/analyses.png')
+users_path: Path = Path("./app/assets/images/users.png")
+users_b64: str = base64.b64encode(users_path.read_bytes()).decode("utf-8")
+analyses_path: Path = Path("./app/assets/images/analyses.png")
 analyses_b64: str = base64.b64encode(analyses_path.read_bytes()).decode(
-    'utf-8')
-models_path: Path = Path('./app/assets/images/models.png')
-models_b64: str = base64.b64encode(models_path.read_bytes()).decode('utf-8')
-auth_path: Path = Path('./app/assets/images/auth.png')
-auth_b64: str = base64.b64encode(auth_path.read_bytes()).decode('utf-8')
+    "utf-8")
+models_path: Path = Path("./app/assets/images/models.png")
+models_b64: str = base64.b64encode(models_path.read_bytes()).decode("utf-8")
+auth_path: Path = Path("./app/assets/images/auth.png")
+auth_b64: str = base64.b64encode(auth_path.read_bytes()).decode("utf-8")
 
 
 class Settings(BaseSettings):
@@ -44,8 +44,10 @@ class Settings(BaseSettings):
     DATE_FORMAT: str
     FILE_DATE_FORMAT: str
     STOP_WORDS_FILE_PATH: str
+    IMAGES_PATH: str
+    IMAGES_DIRECTORY: str
 
-    @validator('AUDIENCE', pre=True)
+    @validator("AUDIENCE", pre=True)
     def assemble_audience(
             cls, v: Optional[str], values: dict[str, Any]) -> str:
         """
@@ -57,7 +59,7 @@ class Settings(BaseSettings):
         :return: The AUDIENCE attribute
         :rtype: str
         """
-        return f'{values["SERVER_HOST"]}{values["API_V1_STR"]}/auth/login'
+        return f"{values['SERVER_HOST']}{values['API_V1_STR']}/auth/login"
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
@@ -71,7 +73,7 @@ class Settings(BaseSettings):
         """
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
+        if isinstance(v, (list, str)):
             return v
         raise ValueError(v)
 
@@ -89,7 +91,7 @@ class Settings(BaseSettings):
         Assemble the database connection as URI string
         :param v: Variables to consider
         :type v: str
-        :param values: Variables names and its values'
+        :param values: Variables names and its values"
         :type values: dict[str, Any]
         :return: SQLAlchemy URI
         :rtype: PostgresDsn
@@ -140,7 +142,7 @@ class Settings(BaseSettings):
         Assemble the cache database connection as URI string
         :param v: Variables to consider
         :type v: str
-        :param values: Variables names and its values'
+        :param values: Variables names and its values"
         :type values: dict[str, Any]
         :return: Redis URI
         :rtype: RedisDsn
@@ -152,7 +154,7 @@ class Settings(BaseSettings):
             user=values.get("REDIS_USERNAME"),
             password=values.get("REDIS_PASSWORD"),
             host=values.get("REDIS_HOST"),
-            port=str(values.get('REDIS_PORT')),
+            port=str(values.get("REDIS_PORT")),
         )
 
     CONTACT_NAME: str = None
@@ -170,18 +172,18 @@ class Settings(BaseSettings):
         :rtype: dict
         """
         contact: dict[str, Any] = {}
-        if values.get('CONTACT_NAME'):
-            contact['name'] = values['CONTACT_NAME']
-        if values.get('CONTACT_URL'):
-            contact['url'] = values['CONTACT_URL']
-        if values.get('CONTACT_EMAIL'):
-            contact['email'] = values['CONTACT_EMAIL']
-        values['CONTACT'] = contact
+        if values.get("CONTACT_NAME"):
+            contact["name"] = values["CONTACT_NAME"]
+        if values.get("CONTACT_URL"):
+            contact["url"] = values["CONTACT_URL"]
+        if values.get("CONTACT_EMAIL"):
+            contact["email"] = values["CONTACT_EMAIL"]
+        values["CONTACT"] = contact
         return {k: v for k, v in values.items() if
-                k not in ('CONTACT_NAME', 'CONTACT_URL', 'CONTACT_EMAIL')}
+                k not in ("CONTACT_NAME", "CONTACT_URL", "CONTACT_EMAIL")}
 
     DESCRIPTION: str = f"""**FastAPI**, **SQLAlchemy** and **Redis** helps you
-     do awesome stuff. 🚀\n\n<img src='data:image/png;base64,{img_b64}'/>"""
+     do awesome stuff. 🚀\n\n<img src="data:image/png;base64,{img_b64}"/>"""
     LICENSE_INFO: dict[str, str] = {
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html"}
@@ -189,36 +191,36 @@ class Settings(BaseSettings):
         {
             "name": "users",
             "description": f"""Operations with users, such as register, get,
-             update and delete.\n\n<img src='data:image/png;base64,
-             {users_b64}' width='300' height='200'/>"""
+             update and delete.\n\n<img src="data:image/png;base64,
+             {users_b64}" width="300" height="200"/>"""
         },
         {
             "name": "analyses",
             "description": f"""Manage analyses with creation and get a specific
              analysis on a single or multiple tweets from an specific username.
-             \n\n<img src='data:image/png;base64,{analyses_b64}' width='400'
-              height='200'/>"""
+             \n\n<img src="data:image/png;base64,{analyses_b64}" width="400"
+              height="200"/>"""
         },
         {
             "name": "models",
             "description": f"""Manage Machine Learning model with creation and
              get a specific model performance information.
-             \n\n<img src='data:image/png;base64,{models_b64}' width='500' 
-             height='200'/>"""
+             \n\n<img src="data:image/png;base64,{models_b64}" width="500" 
+             height="200"/>"""
         },
         {
             "name": "auth",
             "description": f"""The authentication logic is here as well as
              password recovery and reset.
-             \n\n<img src='data:image/png;base64,{auth_b64}' width='150' 
-             height='150'/>"""}]
+             \n\n<img src="data:image/png;base64,{auth_b64}" width="150" 
+             height="150"/>"""}]
 
     class Config:
         """
         Config class for Settings
         """
         env_file: str = ".env"
-        env_file_encoding: str = 'utf-8'
+        env_file_encoding: str = "utf-8"
         case_sensitive = True
 
 

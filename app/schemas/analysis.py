@@ -14,7 +14,7 @@ class AnalysisId(BaseModel):
     Analysis ID class that inherits from Pydantic Base Model.
     """
     id: PositiveInt = Field(
-        ..., title='Analysis ID', description='ID of the Analysis')
+        ..., title="Analysis ID", description="ID of the Analysis")
 
 
 class AnalysisTarget(BaseModel):
@@ -22,8 +22,8 @@ class AnalysisTarget(BaseModel):
     Analysis Target class that inherits from Pydantic Base Model.
     """
     target: bool = Field(
-        ..., title='Target (Insecurity)',
-        description='True if the user is active; otherwise false')
+        ..., title="Target (Insecurity)",
+        description="True if the user is active; otherwise false")
 
 
 class AnalysisBase(BaseModel):
@@ -31,23 +31,23 @@ class AnalysisBase(BaseModel):
     Base Analysis class that inherits from AnalysisTarget.
     """
     tweet_id: PositiveInt = Field(
-        ..., title='Tweet ID', description='ID of the Tweet')
+        ..., title="Tweet ID", description="ID of the Tweet")
     content: str = Field(
-        ..., title='Content',
-        description='The actual UTF-8 text of the status update',
+        ..., title="Content",
+        description="The actual UTF-8 text of the status update",
         max_length=280)
     tweet_username: str = Field(
-        ..., title='Tweet Username',
-        description='Username to identify the user', min_length=4,
+        ..., title="Tweet Username",
+        description="Username to identify the user", min_length=4,
         max_length=15)
     created_at: datetime = Field(
-        default_factory=datetime.now, title='Created At',
-        description='Time the Analysis was performed')
+        default_factory=datetime.now, title="Created At",
+        description="Time the Analysis was performed")
     user_id: PositiveInt = Field(
-        ..., title='User ID',
-        description='ID of the User who performed the Analysis')
+        ..., title="User ID",
+        description="ID of the User who performed the Analysis")
     models: Optional[list[Model]] = Field(
-        default=[], title='Models', description='List of performed model',
+        default=[], title="Models", description="List of performed model",
         unique_items=True)
 
 

@@ -19,12 +19,11 @@ router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("", response_model=list[UserResponse])
 async def get_users(
-        current_user: CurrentUser,
-        user_service: ServiceUser,
+        current_user: CurrentUser, user_service: ServiceUser,
         skip: NonNegativeInt = Query(
-            0, title='Skip', description='Skip users', example=0),
+            0, title="Skip", description="Skip users", example=0),
         limit: PositiveInt = Query(
-            100, title='Limit', description='Limit pagination', example=100),
+            100, title="Limit", description="Limit pagination", example=100),
 ) -> list[UserResponse]:
     """
     Get all Users basic information from the system using pagination.
@@ -48,17 +47,17 @@ async def get_users(
             skip, limit)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND, detail=str(serv_exc)) from serv_exc
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(serv_exc)
+        ) from serv_exc
     return found_users
 
 
-@router.post('', response_model=UserCreateResponse,
+@router.post("", response_model=UserCreateResponse,
              status_code=status.HTTP_201_CREATED)
 async def create_user(
-        background_tasks: BackgroundTasks,
-        user_service: ServiceUser,
-        user: UserCreate = Body(..., title='New user',
-                                description='New user to register')
+        background_tasks: BackgroundTasks, user_service: ServiceUser,
+        user: UserCreate = Body(
+            ..., title="New user", description="New user to register")
 ) -> UserCreateResponse:
     """
     Register new user into the system.
@@ -80,8 +79,8 @@ async def create_user(
         new_user = await user_service.register_user(user)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            detail=f'Error at creating user.\n{str(serv_exc)}') from serv_exc
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error at creating user.\n{str(serv_exc)}") from serv_exc
     if new_user:
         if user.email:
             background_tasks.add_task(
@@ -91,8 +90,7 @@ async def create_user(
 
 @router.get("/me", response_model=UserResponse)
 async def get_user_me(
-        current_user: CurrentUser,
-        user_service: ServiceUser
+        current_user: CurrentUser, user_service: ServiceUser
 ) -> UserResponse:
     """
     Get current user.
@@ -112,7 +110,7 @@ async def get_user_me(
             current_user.id)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Can't not found user information.\n{str(serv_exc)}"
         ) from serv_exc
     return user
@@ -120,10 +118,9 @@ async def get_user_me(
 
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user_by_id(
-        user_service: ServiceUser,
-        current_user: CurrentUser,
+        user_service: ServiceUser, current_user: CurrentUser,
         user_id: PositiveInt = Path(
-            ..., title='User ID', description='ID of the User to searched',
+            ..., title="User ID", description="ID of the User to searched",
             example=1)
 ) -> UserResponse:
     """
@@ -145,25 +142,24 @@ async def get_user_by_id(
         user: UserResponse = await user_service.get_user_by_id(user_id)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with id {user_id} not found in the system."
                    f"\n{str(serv_exc)}") from serv_exc
     except NotFoundException as not_found_exc:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail=str(not_found_exc)) from not_found_exc
     return user
 
 
 @router.put("/{user_id}", response_model=UserUpdateResponse)
 async def update_user(
-        user_service: ServiceUser,
-        current_user: CurrentUser,
+        user_service: ServiceUser, current_user: CurrentUser,
         user_id: PositiveInt = Path(
-            ..., title='User ID', description='ID of the User to searched',
+            ..., title="User ID", description="ID of the User to searched",
             example=1),
         user_in: UserUpdate = Body(
-            ..., title='User data', description='New user data to update')
+            ..., title="User data", description="New user data to update")
 ) -> UserUpdateResponse:
     """
     Update an existing user from the system given an ID and new info.
@@ -189,7 +185,7 @@ async def update_user(
             user_id, user_in)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"User with id {user_id} not found in the system."
                    f"\n{str(serv_exc)}") from serv_exc
 
@@ -198,10 +194,9 @@ async def update_user(
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-        user_service: ServiceUser,
-        current_user: CurrentUser,
+        user_service: ServiceUser, current_user: CurrentUser,
         user_id: PositiveInt = Path(
-            ..., title='User ID', description='ID of the User to searched',
+            ..., title="User ID", description="ID of the User to searched",
             example=1)
 ) -> Response:
     """
@@ -226,7 +221,7 @@ async def delete_user(
         ) from sa_err
     response: Response = Response(
         status_code=status.HTTP_204_NO_CONTENT,
-        media_type='application/json')
-    response.headers['deleted'] = str(data['ok']).lower()
-    response.headers['deleted_at'] = str(data['deleted_at'])
+        media_type="application/json")
+    response.headers["deleted"] = str(data["ok"]).lower()
+    response.headers["deleted_at"] = str(data["deleted_at"])
     return response

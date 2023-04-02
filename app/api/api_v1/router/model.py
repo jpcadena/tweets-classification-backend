@@ -10,16 +10,14 @@ from app.core.security.exceptions import ServiceException
 from app.schemas.model import Model, ModelCreate
 from app.services.model import ServiceModel
 
-router: APIRouter = APIRouter(prefix='/models', tags=['models'])
+router: APIRouter = APIRouter(prefix="/models", tags=["models"])
 
 
-@router.post('', response_model=Model,
-             status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=Model, status_code=status.HTTP_201_CREATED)
 async def create_model(
-        model_service: ServiceModel,
-        current_user: CurrentUser,
+        model_service: ServiceModel, current_user: CurrentUser,
         model: ModelCreate = Body(
-            ..., title='New model', description='New model to create')
+            ..., title="New model", description="New model to create")
 ) -> Model:
     """
     Create a new model into the system.
@@ -41,19 +39,18 @@ async def create_model(
         created_model: Model = await model_service.register_model(model)
     except ServiceException as serv_exc:
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            detail=f'Error at creating model.\n{str(serv_exc)}'
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error at creating model.\n{str(serv_exc)}"
         ) from serv_exc
     return created_model
 
 
-@router.get('/{model_id}', response_model=Model)
+@router.get("/{model_id}", response_model=Model)
 async def get_model(
-        model_service: ServiceModel,
-        current_user: CurrentUser,
+        model_service: ServiceModel, current_user: CurrentUser,
         model_id: PositiveInt = Path(
-            ..., title='Model ID',
-            description='ID of the Model to searched', example=1)
+            ..., title="Model ID", description="ID of the Model to searched",
+            example=1)
 ) -> Model:
     """
     Search for specific Model by ID from the system.
@@ -73,18 +70,18 @@ async def get_model(
     if not found_model:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f'Model with ID {model_id} not found in the system.')
+            detail=f"Model with ID {model_id} not found in the system.")
     return found_model
 
 
-@router.get('', response_model=list[Model])
+@router.get("", response_model=list[Model])
 async def get_models(
-        model_service: ServiceModel,
-        current_user: CurrentUser,
+        model_service: ServiceModel, current_user: CurrentUser,
         skip: NonNegativeInt = Query(
-            0, title='Skip', description='Skip users', example=0),
+            default=0, title="Skip", description="Skip users", example=0),
         limit: PositiveInt = Query(
-            100, title='Limit', description='Limit pagination', example=100)
+            default=100, title="Limit", description="Limit pagination",
+            example=100)
 ) -> list[Model]:
     """
     Retrieve all models from the system.
@@ -105,5 +102,5 @@ async def get_models(
     models: list[Model] = await model_service.get_models(skip, limit)
     if not models:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='This user has no models in the system.')
+                            detail="This user has no models in the system.")
     return models

@@ -39,9 +39,8 @@ class AuthService:
             "jti": jti, "nickname": user.username,
             "preferred_username": user.username, "email": user.email}
         access_token: str = await create_access_token(
-            payload=payload,
-            settings=settings)
+            payload=payload, settings=settings)
         refresh_token: str = await create_refresh_token(
             payload=payload, settings=settings)
-        name: str = str(user.id) + ':' + str(jti)
+        name: str = str(user.id) + ":" + str(jti)
         return access_token, refresh_token, name

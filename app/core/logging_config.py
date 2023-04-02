@@ -49,12 +49,9 @@ def _setup_mail_handler(
     creds: list = [settings.SMTP_USER, settings.SMTP_PASSWORD]
     if log_level == logging.CRITICAL:
         mail_handler = SMTPHandler(
-            mailhost=settings.SMTP_USER,
-            fromaddr=settings.EMAILS_FROM_EMAIL,
-            toaddrs=settings.SMTP_USER,
-            subject=settings.MAIL_SUBJECT,
-            credentials=tuple(creds),
-            timeout=settings.MAIL_TIMEOUT
+            mailhost=settings.SMTP_USER, fromaddr=settings.EMAILS_FROM_EMAIL,
+            toaddrs=settings.SMTP_USER, subject=settings.MAIL_SUBJECT,
+            credentials=tuple(creds), timeout=settings.MAIL_TIMEOUT
         )
         mail_handler.setLevel(log_level)
         logger.addHandler(mail_handler)
@@ -76,17 +73,15 @@ def _setup_file_handler(
     :rtype: NoneType
     """
     formatter: logging.Formatter = logging.Formatter(
-        '[%(name)s][%(asctime)s][%(levelname)s][%(module)s][%(funcName)s][%('
-        'lineno)d]: %(message)s', datefmt=settings.DATE_FORMAT)
-
+        "[%(name)s][%(asctime)s][%(levelname)s][%(module)s][%(funcName)s][%("
+        "lineno)d]: %(message)s", datefmt=settings.DATE_FORMAT)
     current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
     project_root: str = current_file_directory
     while os.path.basename(project_root) != settings.PROJECT_NAME:
         project_root = os.path.dirname(project_root)
     current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
-    log_filename: str = f'log-{current_date}.log'
-    filename_path: str = f'{project_root}/logs/{log_filename}'
-
+    log_filename: str = f"log-{current_date}.log"
+    filename_path: str = f"{project_root}/logs/{log_filename}"
     file_handler: logging.FileHandler = logging.FileHandler(filename_path)
     file_handler.setLevel(log_level)
     file_handler.setFormatter(formatter)
@@ -110,7 +105,6 @@ def setup_logging(
     logger.handlers.clear()
     logger.propagate = False
     logger.setLevel(log_level)
-
     _setup_console_handler(logger, log_level)
     _setup_mail_handler(logger, log_level, settings)
     _setup_file_handler(logger, log_level, settings)

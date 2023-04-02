@@ -41,7 +41,7 @@ def remove_emoji(text: str) -> str:
         + "\U0001fcd0-\U0001fcd9"  # Unicode 14.0 emojis
         + "\U0001fdd0-\U0001fdd9"  # Unicode 15.0 emojis
           "]+", flags=re.UNICODE)
-    return emoji_pattern.sub('', text)
+    return emoji_pattern.sub("", text)
 
 
 def twitter_text_cleaning(text: str) -> str:
@@ -76,7 +76,7 @@ def remove_punc(message) -> str:
     :return: Message without punctuations
     :rtype: str
     """
-    return ''.join(
+    return "".join(
         [char for char in message if char not in string.punctuation])
 
 
@@ -108,8 +108,8 @@ async def get_stopwords(
             settings.STOP_WORDS_FILE_PATH, encoding=settings.ENCODING) as file:
         content: str = await file.read()
     stopwords_file: dict = json.loads(content)
-    exclude_words: list[str] = stopwords_file.get('spanish')
-    stop_words: list[str] = nltk.corpus.stopwords.words('spanish')
+    exclude_words: list[str] = stopwords_file.get("spanish")
+    stop_words: list[str] = nltk.corpus.stopwords.words("spanish")
     stop_words.extend(exclude_words)
     stop_words = list(set(stop_words))
     return stop_words
@@ -156,7 +156,7 @@ async def get_ngram_counts(
     token_counts_matrix: CountVectorizer = CountVectorizer(
         stop_words=stop_words, ngram_range=(1, 3))
     try:
-        doc_term_matrix = token_counts_matrix.fit_transform(tweet.split('\n'))
+        doc_term_matrix = token_counts_matrix.fit_transform(tweet.split("\n"))
         vocabulary: dict = token_counts_matrix.vocabulary_
         ngrams_count = dict(zip(vocabulary.keys(),
                                 doc_term_matrix.sum(axis=0).tolist()[0]))

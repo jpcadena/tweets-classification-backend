@@ -43,7 +43,7 @@ class ModelRepository:
                     _id, session, self.model)
             except SQLAlchemyError as db_exc:
                 raise DatabaseException(
-                    f'Error at reading model with id: {_id.value}') from db_exc
+                    f"Error at reading model with id: {_id.value}") from db_exc
             return model
 
     async def read_models(
@@ -66,7 +66,7 @@ class ModelRepository:
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise DatabaseException(
-                    f'Error at reading models.\n{str(sa_exc)}') from sa_exc
+                    f"Error at reading models.\n{str(sa_exc)}") from sa_exc
             return models
 
     async def create_model(self, model: ModelCreate) -> Optional[Model]:
@@ -86,7 +86,8 @@ class ModelRepository:
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise DatabaseException(
-                    f"Error at creating model with {model_create.id}") from sa_exc
+                    f"Error at creating model with {model_create.id}"
+                ) from sa_exc
             try:
                 created_model: Model = await self.read_by_id(IdSpecification(
                     model_create.id))
