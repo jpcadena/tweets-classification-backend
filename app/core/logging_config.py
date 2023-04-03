@@ -66,7 +66,6 @@ def _setup_file_handler(
     :type logger: logging.Logger
     :param log_level: The log level
     :type log_level: int
-
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: None
