@@ -137,7 +137,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 
 ### Usage
 
-1. If found **sample.env**, rename it with to **.env**.
+1. If found **sample.env**, rename it to **.env**.
 2. Replace your **credentials** into the *.env* file.
 3. Execute with console
     ```

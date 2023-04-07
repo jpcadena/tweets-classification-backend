@@ -19,3 +19,5 @@ async def test_welcome_message():
         response: Response = await async_client.get("/")
     assert response.status_code == 200
     assert response.json() == {"msg": "Hello, world!"}
+
+# TODO: Add tests for the whole packages.
