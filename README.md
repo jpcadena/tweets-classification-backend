@@ -141,7 +141,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 2. Replace your **credentials** into the *.env* file.
 3. Execute with console
     ```
-    python main.py
+    uvicorn main:app --host 0.0.0.0 --port 80 --reload
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
