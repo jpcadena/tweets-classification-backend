@@ -18,6 +18,8 @@ from app.services.user import UserService, get_user_service
 setting: Settings = get_settings()
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
     tokenUrl=setting.TOKEN_URL, scheme_name="JWT")
+headers: dict[str, str] = {"WWW-Authenticate": "Bearer"}
+detail: str = "Could not validate credentials"
 
 
 async def validate_token(token: str, settings: Settings) -> dict:
@@ -32,32 +34,22 @@ async def validate_token(token: str, settings: Settings) -> dict:
     """
     try:
         return jwt.decode(
-            token=token,
-            key=settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM],
-            options={"verify_subject": False},
-            audience=settings.AUDIENCE,
-            issuer=settings.SERVER_HOST
-        )
+            token=token, key=settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM], options={"verify_subject": False},
+            audience=settings.AUDIENCE, issuer=settings.SERVER_HOST)
     except jwt.ExpiredSignatureError as es_exc:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token expired",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from es_exc
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired",
+            headers=headers) from es_exc
     except jwt.JWTClaimsError as jwtc_exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authorization claim is incorrect,"
-                   " please check audience and issuer",
-            headers={"WWW-Authenticate": "Bearer"},
+                   " please check audience and issuer", headers=headers
         ) from jwtc_exc
     except (JWTError, ValidationError) as exc:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from exc
+            status.HTTP_403_FORBIDDEN, detail, headers) from exc
 
 
 async def get_current_user(
@@ -80,18 +72,10 @@ async def get_current_user(
         payload = await validate_token(token, settings)
         username = payload.get("preferred_username")
         if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail, headers)
         user = await user_service.get_login_user(username)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail, headers)
         user_auth = UserAuth(
             id=user.id, username=user.username, email=user.email)
         return user_auth
@@ -99,10 +83,7 @@ async def get_current_user(
         raise
     except Exception as exc:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from exc
+            status.HTTP_401_UNAUTHORIZED, detail, headers) from exc
 
 
 class RedisDependency:

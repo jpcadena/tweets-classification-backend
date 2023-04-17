@@ -111,7 +111,7 @@ async def get_user_me(
     except ServiceException as serv_exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can't not found user information.\n{str(serv_exc)}"
+            detail=f"Can not found user information.\n{str(serv_exc)}"
         ) from serv_exc
     return user
 

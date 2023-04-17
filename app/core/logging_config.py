@@ -71,9 +71,9 @@ def _setup_file_handler(
     :return: None
     :rtype: NoneType
     """
-    formatter: logging.Formatter = logging.Formatter(
-        "[%(name)s][%(asctime)s][%(levelname)s][%(module)s][%(funcName)s][%("
-        "lineno)d]: %(message)s", datefmt=settings.DATE_FORMAT)
+    fmt: str = "[%(name)s][%(asctime)s][%(levelname)s][%(module)s]" \
+               "[%(funcName)s][%(lineno)d]: %(message)s"
+    formatter: logging.Formatter = logging.Formatter(fmt, settings.DATE_FORMAT)
     current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
     project_root: str = current_file_directory
     while os.path.basename(project_root) != settings.PROJECT_NAME:

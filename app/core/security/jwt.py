@@ -8,14 +8,12 @@ from typing import Optional
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from jose import jwt
-from passlib.context import CryptContext
 
 from app.core import config
 from app.core.decorators import with_logging, benchmark
 from app.schemas.scope import Scope
 
 logger: logging.Logger = logging.getLogger(__name__)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def _generate_expiration_time(

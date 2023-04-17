@@ -11,7 +11,6 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
 
 img_path: Path = Path("./app/assets/images/api-docs.png")
 img_b64: str = base64.b64encode(img_path.read_bytes()).decode("utf-8")
-
 users_path: Path = Path("./app/assets/images/users.png")
 users_b64: str = base64.b64encode(users_path.read_bytes()).decode("utf-8")
 analyses_path: Path = Path("./app/assets/images/analyses.png")

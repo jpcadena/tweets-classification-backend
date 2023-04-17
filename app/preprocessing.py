@@ -53,18 +53,18 @@ def twitter_text_cleaning(text: str) -> str:
     :rtype: str
     """
     text = text.lower()
-    text = re.sub(r'@[A-Za-z0-9]+', '', text)
-    text = re.sub(r'@[A-Za-zA-Z0-9]+', '', text)
-    text = re.sub(r'@[A-Za-z0-9_]+', '', text)
-    text = re.sub(r'@[A-Za-z]+', '', text)
-    text = re.sub(r'@[-)]+', '', text)
-    text = re.sub(r'#', '', text)
+    text = re.sub(r"@[A-Za-z0-9]+", "", text)
+    text = re.sub(r"@[A-Za-zA-Z0-9]+", "", text)
+    text = re.sub(r"@[A-Za-z0-9_]+", "", text)
+    text = re.sub(r"@[A-Za-z]+", "", text)
+    text = re.sub(r"@[-)]+", "", text)
+    text = re.sub(r"#", "", text)
     text = re.sub(r"http\S+", "", text)
-    text = re.sub(r'https?\/\/\S+', '', text)
-    text = re.sub(r'http?\/\/\S+', '', text)
-    text = re.sub(r'https?\/\/.*[\r\n]*', '', text)
-    text = re.sub(r'^https?\/\/.*[\r\n]*', '', text)
-    text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text)
+    text = re.sub(r"https?\/\/\S+", "", text)
+    text = re.sub(r"http?\/\/\S+", "", text)
+    text = re.sub(r"https?\/\/.*[\r\n]*", "", text)
+    text = re.sub(r"^https?\/\/.*[\r\n]*", "", text)
+    text = re.sub(r"^https?:\/\/.*[\r\n]*", "", text)
     return text
 
 

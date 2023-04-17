@@ -20,6 +20,15 @@ def with_logging(func: Callable[..., Any]) -> Callable[..., Any]:
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
+        """
+        Wrapper function for Logging decorator
+        :param args: Arguments to be logged
+        :type args: Any
+        :param kwargs: Keyword arguments to be called
+        :type kwargs: Any
+        :return: The returned value from func
+        :rtype: Any
+        """
         logger.info("Calling %s", func.__name__)
         value = func(*args, **kwargs)
         logger.info("Finished %s", func.__name__)
@@ -39,10 +48,19 @@ def benchmark(func: Callable[..., Any]) -> Callable[..., Any]:
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        start_time = perf_counter()
+        """
+        Wrapper function for benchmark decorator
+        :param args: Arguments to be benchmarked
+        :type args: Any
+        :param kwargs: Keyword arguments to be called
+        :type kwargs: Any
+        :return: The returned value from func
+        :rtype: Any
+        """
+        start_time: float = perf_counter()
         value = func(*args, **kwargs)
-        end_time = perf_counter()
-        run_time = end_time - start_time
+        end_time: float = perf_counter()
+        run_time: float = end_time - start_time
         logger.info("Execution of %s took %s seconds.",
                     func.__name__, run_time)
         return value

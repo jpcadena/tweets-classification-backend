@@ -3,7 +3,8 @@ Password security script
 """
 from passlib.context import CryptContext
 
-pwd_context: CryptContext = CryptContext(schemes=["bcrypt"], deprecated="auto")
+crypt_context: CryptContext = CryptContext(
+    schemes=["bcrypt"], deprecated="auto")
 
 
 async def get_password_hash(password: str) -> str:
@@ -16,7 +17,7 @@ async def get_password_hash(password: str) -> str:
     """
     if not password:
         raise ValueError("Password cannot be empty or None")
-    return pwd_context.hash(password)
+    return crypt_context.hash(password)
 
 
 async def verify_password(hashed_password: str, plain_password: str) -> bool:
@@ -33,4 +34,4 @@ async def verify_password(hashed_password: str, plain_password: str) -> bool:
         raise ValueError("Plain password cannot be empty or None")
     if not hashed_password:
         raise ValueError("Hashed password cannot be empty or None")
-    return pwd_context.verify(plain_password, hashed_password)
+    return crypt_context.verify(plain_password, hashed_password)
