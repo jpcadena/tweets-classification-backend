@@ -79,8 +79,11 @@ def _setup_file_handler(
     while os.path.basename(project_root) != settings.PROJECT_NAME:
         project_root = os.path.dirname(project_root)
     current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
+    logs_folder_path: str = f"{project_root}/logs"
+    if not os.path.exists(logs_folder_path):
+        os.makedirs(logs_folder_path, exist_ok=True)
     log_filename: str = f"log-{current_date}.log"
-    filename_path: str = f"{project_root}/logs/{log_filename}"
+    filename_path: str = f"{logs_folder_path}/{log_filename}"
     file_handler: logging.FileHandler = logging.FileHandler(filename_path)
     file_handler.setLevel(log_level)
     file_handler.setFormatter(formatter)

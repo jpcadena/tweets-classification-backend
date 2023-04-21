@@ -120,7 +120,7 @@ class Settings(BaseSettings):
 
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
-    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int
     EMAIL_TEMPLATES_DIR: str
     EMAILS_ENABLED: bool
 
