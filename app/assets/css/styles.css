@@ -1,0 +1,183 @@
+/* Reset styles */
+#outlook a {
+    padding: 0;
+}
+
+.ExternalClass * {
+    line-height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+table, td {
+    border-collapse: collapse;
+}
+
+img {
+    border: 0;
+    height: auto;
+    line-height: 100%;
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: bicubic;
+}
+
+p {
+    display: block;
+    margin: 13px 0;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 480px) {
+    @-ms-viewport {
+        width: 320px;
+    }
+    @viewport {
+        width: 320px;
+    }
+}
+
+/* Custom styles */
+body {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+}
+
+.main-table-centered {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.inner-table {
+    width: 100%;
+    vertical-align: top;
+}
+
+.center {
+    text-align: center;
+}
+
+.mj-column {
+    font-size: 13px;
+    text-align: left;
+    direction: ltr;
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+}
+
+.separator {
+    border-top: solid 4px #555555;
+    font-size: 2px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.separator-sm {
+    border-top: solid 2px #555555;
+    font-size: 2px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.heading {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    text-align: left;
+    color: #555555;
+}
+
+.content {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1;
+    text-align: left;
+    color: #555555;
+}
+
+.footer {
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1;
+    text-align: left;
+    color: #555555;
+}
+
+.button {
+    border: none;
+    border-radius: 3px;
+    cursor: auto;
+    padding: 10px 25px;
+    background: #414141;
+    text-align: center;
+}
+
+.button a {
+    background: #414141;
+    color: #ffffff;
+    font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 120%;
+    margin: 0;
+    text-decoration: none;
+    text-transform: none;
+}
+
+.main-table {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+.main-table td {
+    padding: 0;
+    vertical-align: top;
+}
+
+.main-table tr {
+    border: none;
+}
+
+.table-center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table-collapse {
+    border-collapse: collapse;
+}
+
+.border-none {
+    border: none;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+.px-25 {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.pb-10 {
+    padding-bottom: 10px;
+}
+
+.table-full-width {
+    width: 100%;
+}
+
+.border-top {
+    border-top: solid 4px #555555;
+}
+
+.text-left {
+    text-align: left;
+}

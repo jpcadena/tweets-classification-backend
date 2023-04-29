@@ -26,6 +26,22 @@ password_regex: str = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?" \
 sub_regex: str = r"username:(?!0)\d+"
 
 
+async def build_email_template(
+        template_file: str, settings: config.Settings) -> str:
+    """
+    Builds the email template
+    :param template_file: The template file
+    :type template_file: str
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
+    :return: The template read
+    :rtype: str
+    """
+    template_path: Path = Path(settings.EMAIL_TEMPLATES_DIR) / template_file
+    template_str: str = await read_template_file(template_path, settings)
+    return template_str
+
+
 async def send_test_email(
         email_to: EmailStr,
         settings: config.Settings = Depends(config.get_settings)) -> bool:
@@ -39,8 +55,7 @@ async def send_test_email(
     :rtype: bool
     """
     subject: str = f"{settings.PROJECT_NAME} - Test email"
-    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "test_email.html"
-    template_str: str = await read_template_file(template_path, settings)
+    template_str: str = await build_email_template("test_email.html", settings)
     is_sent: bool = await send_email(
         email_to=email_to, subject_template=subject,
         html_template=template_str,
@@ -67,8 +82,8 @@ async def send_reset_password_email(
     """
     subject: str = f"{settings.PROJECT_NAME} - Password recovery for user " \
                    f"{username}"
-    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "reset_password.html"
-    template_str: str = await read_template_file(template_path, settings)
+    template_str: str = await build_email_template(
+        "reset_password.html", settings)
     server_host: AnyHttpUrl = settings.SERVER_HOST
     link: str = f"{server_host}/reset-password?token={token}"
     is_sent: bool = await send_email(
@@ -99,8 +114,7 @@ async def send_new_account_email(
     :rtype: bool
     """
     subject: str = f"{settings.PROJECT_NAME} - New account for user {username}"
-    template_path = Path(settings.EMAIL_TEMPLATES_DIR) / "new_account.html"
-    template_str: str = await read_template_file(template_path, settings)
+    template_str: str = await build_email_template("new_account.html", settings)
     link = settings.SERVER_HOST
     is_sent: bool = await send_email(
         email_to=email_to, subject_template=subject,
@@ -113,7 +127,8 @@ async def send_new_account_email(
 
 async def encode_jwt(
         payload: dict,
-        settings: config.Settings = Depends(config.get_settings)) -> str:
+        settings: config.Settings = Depends(config.get_settings)
+) -> str:
     """
     Encode a JSON Web Token (JWT) with the given payload.
     :param payload: The payload to encode
@@ -149,9 +164,30 @@ async def decode_jwt(
         return None
 
 
+async def generate_password_reset_payload(
+        email: EmailStr, settings: config.Settings
+) -> dict:
+    """
+    Generate a password reset payload
+    :param email: The email to generate the reset token for
+    :type email: EmailStr
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
+    :return: The payload to be used
+    :rtype: dict
+    """
+    delta: timedelta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
+    now: datetime = datetime.utcnow()
+    expires: datetime = now + delta
+    exp: float = expires.timestamp()
+    payload: dict = {"exp": exp, "nbf": now, "sub": email}
+    return payload
+
+
 async def generate_password_reset_token(
         email: EmailStr,
-        settings: config.Settings = Depends(config.get_settings)) -> str:
+        settings: config.Settings = Depends(config.get_settings)
+) -> str:
     """
     Generate a password reset token for the given email address.
     :param email: The email to generate the reset token for
@@ -161,11 +197,7 @@ async def generate_password_reset_token(
     :return: The password reset token
     :rtype: str
     """
-    delta: timedelta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
-    now: datetime = datetime.utcnow()
-    expires: datetime = now + delta
-    exp: float = expires.timestamp()
-    payload: dict = {"exp": exp, "nbf": now, "sub": email}
+    payload: dict = await generate_password_reset_payload(email, settings)
     return await encode_jwt(payload, settings)
 
 
@@ -223,6 +255,6 @@ async def update_json(
     :rtype: NoneType
     """
     data: dict = await read_json_file(settings)
-    data: dict = await modify_json_data(data)
+    data = await modify_json_data(data)
     await write_json_file(data, settings)
     logger.info("Updated OpenAPI JSON file")

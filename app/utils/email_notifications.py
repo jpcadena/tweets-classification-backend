@@ -54,11 +54,33 @@ async def create_message(
     return message
 
 
+async def login_to_smtp(
+        smtp_conn: smtplib.SMTP, setting: config.Settings
+) -> bool:
+    """
+    Logs in the SMTP server with the given credentials.
+    :param smtp_conn: SMTP connection object
+    :type smtp_conn: SMTP
+    :param setting: Dependency method for cached setting object
+    :type setting: config.Settings
+    :return: True if the login was successful, otherwise False
+    :rtype: bool
+    """
+    try:
+        if setting.SMTP_USER and setting.SMTP_PASSWORD:
+            smtp_conn.login(setting.SMTP_USER, setting.SMTP_PASSWORD)
+        return True
+    except smtplib.SMTPException as exc:
+        logger.error("SMTP login error.\n%s", exc)
+        return False
+
+
 @with_logging
 @benchmark
 async def send_message(
         email_to: EmailStr, message: MIMEText,
-        settings: config.Settings = Depends(config.get_settings)) -> bool:
+        settings: config.Settings = Depends(config.get_settings)
+) -> Union[bool, str]:
     """
     Sends the message to the given email address.
     :param email_to: The email address of the recipient
@@ -67,8 +89,8 @@ async def send_message(
     :type message: MIMEText
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: True if the email was sent; otherwise false
-    :rtype: bool
+    :return: True if the email was sent; otherwise an error message
+    :rtype: Union[bool, str]
     """
     smtp_options: dict = {"host": settings.SMTP_HOST,
                           "port": settings.SMTP_PORT}
@@ -78,22 +100,21 @@ async def send_message(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-    is_sent: bool = False
     try:
-        smtp_conn: smtplib.SMTP = smtplib.SMTP(
-            settings.SMTP_HOST, settings.SMTP_PORT)
-        if settings.SMTP_TLS:
-            smtp_conn.starttls()
-        if settings.SMTP_USER:
-            smtp_conn.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-        smtp_conn.sendmail(
-            settings.EMAILS_FROM_EMAIL, [email_to], message.as_string())
-        smtp_conn.quit()
-        is_sent = True
+        with smtplib.SMTP(
+                smtp_options["host"], smtp_options["port"],
+                timeout=settings.MAIL_TIMEOUT) as smtp_conn:
+            if smtp_options.get("starttls"):
+                smtp_conn.starttls()
+            await login_to_smtp(smtp_conn, settings)
+            smtp_conn.sendmail(
+                settings.EMAILS_FROM_EMAIL, [email_to], message.as_string())
         logger.info("sent email to %s", email_to)
+        return True
     except smtplib.SMTPException as exc:
-        logger.error("error sending email to %s.\n%s", email_to, exc)
-    return is_sent
+        error_msg = f"error sending email to {email_to}.\n{exc}"
+        logger.error(error_msg)
+        return error_msg
 
 
 async def send_email(

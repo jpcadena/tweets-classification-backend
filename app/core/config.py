@@ -90,7 +90,7 @@ class Settings(BaseSettings):
         Assemble the database connection as URI string
         :param v: Variables to consider
         :type v: str
-        :param values: Variables names and its values"
+        :param values: Variables names and its values
         :type values: dict[str, Any]
         :return: SQLAlchemy URI
         :rtype: PostgresDsn
@@ -141,7 +141,7 @@ class Settings(BaseSettings):
         Assemble the cache database connection as URI string
         :param v: Variables to consider
         :type v: str
-        :param values: Variables names and its values"
+        :param values: Variables names and its values
         :type values: dict[str, Any]
         :return: Redis URI
         :rtype: RedisDsn

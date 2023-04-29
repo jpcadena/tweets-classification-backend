@@ -17,6 +17,29 @@ class AuthService:
     """
 
     @staticmethod
+    def _build_payload(
+            user: User, settings: config.Settings
+    ) -> dict[str, any]:
+        """
+        Build JWT payload for authentication
+        :param user: User to authenticate
+        :type user: User
+        :param settings: Dependency method for cached setting object
+        :type settings: config.Settings
+        :return: Payload dictionary for JWT
+        :rtype: dict[str, any]
+        """
+        jti: uuid.UUID = uuid.uuid4()
+        payload: dict[str, any] = {
+            "iss": settings.SERVER_HOST, "sub": "username:" + str(user.id),
+            "aud": settings.AUDIENCE,
+            "exp": int(time.time()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+            "nbf": int(time.time()) - 1, "iat": int(time.time()), "jti": jti,
+            "nickname": user.username, "preferred_username": user.username,
+            "email": user.email}
+        return payload
+
+    @staticmethod
     async def auth_token(
             user: User,
             settings: config.Settings = Depends(config.get_settings)
@@ -28,19 +51,12 @@ class AuthService:
         :param settings: Dependency method for cached setting object
         :type settings: config.Settings
         :return: Tuple with tokens and name for token
-        :rtype: tuple[str, str, str]
+        :rtype: Tuple[str, str, str]
         """
-        jti: uuid.UUID = uuid.uuid4()
-        payload: dict = {
-            "iss": settings.SERVER_HOST, "sub": "username:" + str(user.id),
-            "aud": settings.AUDIENCE,
-            "exp": int(time.time()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES,
-            "nbf": int(time.time()) - 1, "iat": int(time.time()),
-            "jti": jti, "nickname": user.username,
-            "preferred_username": user.username, "email": user.email}
+        payload: dict = AuthService._build_payload(user, settings)
         access_token: str = await create_access_token(
             payload=payload, settings=settings)
         refresh_token: str = await create_refresh_token(
             payload=payload, settings=settings)
-        name: str = str(user.id) + ":" + str(jti)
+        name: str = str(user.id) + ":" + str(payload["jti"])
         return access_token, refresh_token, name

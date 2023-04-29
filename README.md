@@ -64,7 +64,7 @@
 This project is the Python backend for the Tweets Classification Machine
 Learning project developed using FastAPI, PostgreSQL and Redis.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 ### Built with
@@ -72,26 +72,25 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 * [![Python][Python]][python-url]
 * [![FastAPI][FastAPI]][fastapi-url]
 * [![Pydantic][Pydantic]][pydantic-url]
-* [![Starlette][starlette]][starlette-url]
-* [![Uvicorn][uvicorn]][uvicorn-url]
-* [![Gunicorn][gunicorn]][gunicorn-url]
-* [![PostgreSQL][postgresql]][postgresql-url]
-* [![Redis][redis]][redis-url]
-* [![jwt][jwt]][jwt-url]
-* [![MJML][mjml]][mjml-url]
+* [![Starlette][Starlette]][starlette-url]
+* [![Uvicorn][Uvicorn]][uvicorn-url]
+* [![Gunicorn][Gunicorn]][gunicorn-url]
+* [![PostgreSQL][PostgreSQL]][postgresql-url]
+* [![Redis][Redis]][redis-url]
+* [![jwt][JWT]][jwt-url]
 * [![HTML5][html5]][html5-url]
-* [![Pandas][pandas]][pandas-url]
-* [![numpy][numpy]][numpy-url]
-* [![scikit-learn][scikit-learn]][scikit-learn-url]
-* [![Pytest][pytest]][pytest-url]
-* [![Pylint][pylint]][pylint-url]
+* [![Pandas][Pandas]][pandas-url]
+* [![numpy][NumPy]][numpy-url]
+* [![scikit-learn][Scikit-Learn]][scikit-learn-url]
+* [![Pytest][Pytest]][pytest-url]
+* [![Pylint][Pylint]][pylint-url]
 * [![DigitalOcean][DigitalOcean]][DigitalOcean-url]
 * [![Nginx][Nginx]][Nginx-url]
-* [![Pycharm][Pycharm]][Pycharm-url]
+* [![Pycharm][PyCharm]][Pycharm-url]
 * [![Markdown][Markdown]][Markdown-url]
 * [![Swagger][Swagger]][Swagger-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 <!-- GETTING STARTED -->
@@ -129,7 +128,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
     pip install -r requirements.txt
     ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 
@@ -144,7 +143,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
     uvicorn main:app --host 0.0.0.0 --port 80 --reload
     ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 
@@ -152,7 +151,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 
 ## Contributing
 
-[![GitHub][GitHub]][github-url]
+[![GitHub][GitHub]][GitHub-url]
 
 If you have a suggestion that would make this better, please fork the repo and
 create a pull request.
@@ -175,7 +174,7 @@ or [Jetbrains Pycharm](https://github.com/leinardi/pylint-pycharm/blob/master/RE
 Recommended plugin for
 autocompletion: [Tabnine](https://www.tabnine.com/install)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 
@@ -185,7 +184,7 @@ autocompletion: [Tabnine](https://www.tabnine.com/install)
 
 Distributed under the MIT License.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 
@@ -197,7 +196,7 @@ Distributed under the MIT License.
 
 - [![Outlook][Outlook]](mailto:jpcadena@espol.edu.ec?subject=[GitHub]tweets-classification-backend)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
 
 
@@ -242,8 +241,6 @@ Distributed under the MIT License.
 
 [html5]: https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white
 
-[MJML]: https://img.shields.io/badge/MJML-EB5F3F?style=for-the-badge&logo=mjml&logoColor=white
-
 [JWT]: https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens
 
 [DigitalOcean]: https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white
@@ -283,8 +280,6 @@ Distributed under the MIT License.
 [scikit-learn-url]: https://scikit-learn.org/stable/
 
 [html5-url]: https://developer.mozilla.org/en-US/docs/Glossary/HTML5
-
-[mjml-url]: https://mjml.io/
 
 [jwt-url]: https://jwt.io/
 

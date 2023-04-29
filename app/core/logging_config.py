@@ -57,9 +57,64 @@ def _setup_mail_handler(
         logger.addHandler(mail_handler)
 
 
+def _create_logs_folder(settings: config.Settings) -> str:
+    """
+    Create a log folder
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
+    :return: The logs folder path
+    :rtype: str
+    """
+    current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
+    project_root: str = current_file_directory
+    while os.path.basename(project_root) != settings.PROJECT_NAME:
+        project_root = os.path.dirname(project_root)
+    logs_folder_path: str = f"{project_root}/logs"
+    if not os.path.exists(logs_folder_path):
+        os.makedirs(logs_folder_path, exist_ok=True)
+    return logs_folder_path
+
+
+def _build_log_filename(settings: config.Settings) -> str:
+    """
+    Build the log filename
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
+    :return: The log filename
+    :rtype: str
+    """
+    current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
+    log_filename: str = f"log-{current_date}.log"
+    return log_filename
+
+
+def _configure_file_handler(
+        log_filename: str, log_level: int, settings: config.Settings
+) -> logging.FileHandler:
+    """
+    Configure the file handler
+    :param log_filename: The log filename
+    :type log_filename: str
+    :param log_level: The log level
+    :type log_level: int
+    :param settings: Dependency method for cached setting object
+    :type settings: config.Settings
+    :return: The logger file handler object
+    :rtype: logging.FileHandle
+    """
+    fmt: str = "[%(name)s][%(asctime)s][%(levelname)s][%(module)s]" \
+               "[%(funcName)s][%(lineno)d]: %(message)s"
+    formatter: logging.Formatter = logging.Formatter(fmt, settings.DATE_FORMAT)
+    file_handler: logging.FileHandler = logging.FileHandler(log_filename)
+    file_handler.setLevel(log_level)
+    file_handler.setFormatter(formatter)
+    return file_handler
+
+
 def _setup_file_handler(
         logger: logging.Logger, log_level: int,
-        settings: config.Settings = config.get_settings()) -> None:
+        settings: config.Settings = config.get_settings()
+) -> None:
     """
     Setup file handler
     :param logger: The logger instance
@@ -71,22 +126,10 @@ def _setup_file_handler(
     :return: None
     :rtype: NoneType
     """
-    fmt: str = "[%(name)s][%(asctime)s][%(levelname)s][%(module)s]" \
-               "[%(funcName)s][%(lineno)d]: %(message)s"
-    formatter: logging.Formatter = logging.Formatter(fmt, settings.DATE_FORMAT)
-    current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
-    project_root: str = current_file_directory
-    while os.path.basename(project_root) != settings.PROJECT_NAME:
-        project_root = os.path.dirname(project_root)
-    current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
-    logs_folder_path: str = f"{project_root}/logs"
-    if not os.path.exists(logs_folder_path):
-        os.makedirs(logs_folder_path, exist_ok=True)
-    log_filename: str = f"log-{current_date}.log"
+    logs_folder_path = _create_logs_folder(settings)
+    log_filename = _build_log_filename(settings)
     filename_path: str = f"{logs_folder_path}/{log_filename}"
-    file_handler: logging.FileHandler = logging.FileHandler(filename_path)
-    file_handler.setLevel(log_level)
-    file_handler.setFormatter(formatter)
+    file_handler = _configure_file_handler(filename_path, log_level, settings)
     logger.addHandler(file_handler)
     file_handler.flush()
 
