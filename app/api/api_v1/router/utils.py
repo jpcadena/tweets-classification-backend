@@ -8,7 +8,7 @@ from pydantic.networks import EmailStr
 from app.api.deps import CurrentUser
 # from app.core.celery_app import celery_app
 from app.schemas.msg import Msg
-from app.utils.utils import send_test_email
+from app.utils.email_utils.email_utils import send_test_email
 
 router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 

@@ -22,8 +22,9 @@ from app.schemas.user import UserAuth, UserResponse, UserUpdate, \
 from app.services.auth import AuthService
 from app.services.token import TokenService
 from app.services.user import ServiceUser
-from app.utils.utils import generate_password_reset_token, \
-    send_reset_password_email, verify_password_reset_token
+from app.utils.email_utils.email_utils import send_reset_password_email
+from app.utils.security.password import generate_password_reset_token, \
+    verify_password_reset_token
 
 logger: logging.Logger = logging.getLogger(__name__)
 router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])

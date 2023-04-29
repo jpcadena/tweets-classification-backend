@@ -13,7 +13,8 @@ from pydantic import NonNegativeInt
 from app.core import config
 from app.core.decorators import with_logging, benchmark
 from app.crud.nlp_model import get_nlp_model_repository, NLPModelRepository
-from app.preprocessing import preprocess_tweet_text, get_ngram_counts
+from app.utils.ml_utils.ml_utils import preprocess_tweet_text
+from app.utils.ml_utils.ngram_counting.ngram_counting import get_ngram_counts
 
 logger: logging.Logger = logging.getLogger(__name__)
 

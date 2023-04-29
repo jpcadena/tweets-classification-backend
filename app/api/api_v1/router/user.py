@@ -12,7 +12,7 @@ from app.core.security.exceptions import ServiceException, NotFoundException
 from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
     UserUpdate, UserUpdateResponse
 from app.services.user import ServiceUser
-from app.utils.utils import send_new_account_email
+from app.utils.email_utils.email_utils import send_new_account_email
 
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 

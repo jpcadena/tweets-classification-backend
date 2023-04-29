@@ -41,12 +41,12 @@ async def validate_token(token: str, settings: Settings) -> dict:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired",
             headers=headers) from es_exc
-    except jwt.JWTClaimsError as jwtc_exc:
+    except jwt.JWTClaimsError as c_exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authorization claim is incorrect,"
                    " please check audience and issuer", headers=headers
-        ) from jwtc_exc
+        ) from c_exc
     except (JWTError, ValidationError) as exc:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail, headers) from exc
