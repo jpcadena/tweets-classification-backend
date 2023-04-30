@@ -64,7 +64,7 @@
 This project is the Python backend for the Tweets Classification Machine
 Learning project developed using FastAPI, PostgreSQL and Redis.
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ### Built with
@@ -91,7 +91,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 * [![Markdown][Markdown]][Markdown-url]
 * [![Swagger][Swagger]][Swagger-url]
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- GETTING STARTED -->
@@ -129,7 +129,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
     pip install -r requirements.txt
     ```
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -145,7 +145,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
     ```
 4. Visit http://localhost:8000/docs for Swagger UI documentation.
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -176,7 +176,7 @@ or [Jetbrains Pycharm](https://github.com/leinardi/pylint-pycharm/blob/master/RE
 Recommended plugin for
 autocompletion: [Tabnine](https://www.tabnine.com/install)
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -186,7 +186,7 @@ autocompletion: [Tabnine](https://www.tabnine.com/install)
 
 Distributed under the MIT License.
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -198,7 +198,7 @@ Distributed under the MIT License.
 
 - [![Outlook][Outlook]](mailto:jpcadena@espol.edu.ec?subject=[GitHub]tweets-classification-backend)
 
-<p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
