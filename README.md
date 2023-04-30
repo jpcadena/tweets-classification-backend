@@ -87,6 +87,7 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 * [![DigitalOcean][DigitalOcean]][DigitalOcean-url]
 * [![Nginx][Nginx]][Nginx-url]
 * [![Pycharm][PyCharm]][Pycharm-url]
+* [![visual-studio-code][visual-studio-code]][visual-studio-code-url]
 * [![Markdown][Markdown]][Markdown-url]
 * [![Swagger][Swagger]][Swagger-url]
 
@@ -140,8 +141,9 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 2. Replace your **credentials** into the *.env* file.
 3. Execute with console
     ```
-    uvicorn main:app --host 0.0.0.0 --port 80 --reload
+    uvicorn main:app --reload
     ```
+4. Visit http://localhost:8000/docs for Swagger UI documentation.
 
 <p style="text-align: right;"><a href="#readme-top">(back to top)</a></p>
 
@@ -253,6 +255,8 @@ Distributed under the MIT License.
 
 [Swagger]: https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white
 
+[visual-studio-code]: https://img.shields.io/badge/Visual_Studio_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white
+
 [python-url]: https://www.python.org/
 
 [fastapi-url]: https://fastapi.tiangolo.com
@@ -292,6 +296,8 @@ Distributed under the MIT License.
 [Markdown-url]: https://daringfireball.net/projects/markdown/
 
 [Swagger-url]: https://swagger.io/
+
+[visual-studio-code-url]: https://code.visualstudio.com/
 
 [GitHub]: https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white
 

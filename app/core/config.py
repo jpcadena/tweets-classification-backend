@@ -9,17 +9,23 @@ from typing import Any, Optional, Union
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
     validator, RedisDsn, root_validator
 
-img_path: Path = Path("./app/assets/images/api-docs.png")
-img_b64: str = base64.b64encode(img_path.read_bytes()).decode("utf-8")
-users_path: Path = Path("./app/assets/images/users.png")
-users_b64: str = base64.b64encode(users_path.read_bytes()).decode("utf-8")
-analyses_path: Path = Path("./app/assets/images/analyses.png")
-analyses_b64: str = base64.b64encode(analyses_path.read_bytes()).decode(
-    "utf-8")
-models_path: Path = Path("./app/assets/images/models.png")
-models_b64: str = base64.b64encode(models_path.read_bytes()).decode("utf-8")
-auth_path: Path = Path("./app/assets/images/auth.png")
-auth_b64: str = base64.b64encode(auth_path.read_bytes()).decode("utf-8")
+
+def get_image_b64(image_path: str) -> str:
+    """
+    Get the image in 64-bytes format
+    :param image_path: The path to the image
+    :type image_path: str
+    :return: The image in 64-bytes format
+    :rtype: str
+    """
+    return base64.b64encode(Path(image_path).read_bytes()).decode("utf")
+
+
+img_b64: str = get_image_b64("./app/assets/images/api-docs.png")
+users_b64: str = get_image_b64("./app/assets/images/users.png")
+analyses_b64: str = get_image_b64("./app/assets/images/analyses.png")
+models_b64: str = get_image_b64("./app/assets/images/models.png")
+auth_b64: str = get_image_b64("./app/assets/images/auth.png")
 
 
 class Settings(BaseSettings):
@@ -106,10 +112,9 @@ class Settings(BaseSettings):
         )
 
     TS_PRECISION: int
-    EMAIL_CONSTRAINT: str = r"email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\." \
-                            r"[A-Z|a-z]{2,}$'"
-    PHONE_CONSTRAINT: str = r"phone_number ~* '^\+[0-9]{1,15}$'"
-    USERNAME_CONSTRAINT: str = r"tweet_username ~* '^[a-zA-Z0-9_]+$'"
+    EMAIL_CONSTRAINT: str
+    PHONE_CONSTRAINT: str
+    USERNAME_CONSTRAINT: str
     SMTP_TLS: bool
     SMTP_PORT: Optional[int] = None
     SMTP_HOST: Optional[str] = None
