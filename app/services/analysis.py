@@ -22,8 +22,7 @@ class AnalysisService:
     def __init__(self, analysis_repo: AnalysisRepository):
         self.analysis_repo: AnalysisRepository = analysis_repo
 
-    async def get_analysis_by_id(
-            self, analysis_id: PositiveInt) -> Analysis:
+    async def get_analysis_by_id(self, analysis_id: PositiveInt) -> Analysis:
         """
         Get analysis information with the correct schema for response
         :param analysis_id: Unique identifier of the analysis
@@ -38,8 +37,7 @@ class AnalysisService:
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(analysis, Analysis)
 
-    async def register_analysis(
-            self, analysis: AnalysisCreate) -> Analysis:
+    async def register_analysis(self, analysis: AnalysisCreate) -> Analysis:
         """
         Create analysis into the database
         :param analysis: Request object representing the analysis
@@ -81,7 +79,8 @@ class AnalysisService:
 
 async def get_analysis_service(
         analysis_repo: AnalysisRepository = Depends(
-            get_analysis_repository)) -> AnalysisService:
+            get_analysis_repository)
+) -> AnalysisService:
     """
     Get an instance of the analysis service with the given repository.
     :param analysis_repo: Analysis repository object for database connection

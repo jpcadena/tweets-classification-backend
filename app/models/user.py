@@ -10,10 +10,10 @@ from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, \
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import relationship, Mapped
 
+from app.core.config import settings
 from app.db.base_class import Base
-from .analysis import Analysis
-from ..core.config import settings
-from ..schemas.gender import Gender
+from app.models.analysis import Analysis
+from app.schemas import Gender
 
 
 class User(Base):
@@ -67,6 +67,7 @@ class User(Base):
     analyses: Mapped[list[Analysis]] = relationship(lazy="selectin")
 
     __table_args__ = (
-        CheckConstraint(settings.EMAIL_CONSTRAINT, name="email_format"),
-        CheckConstraint(settings.PHONE_CONSTRAINT, name="phone_number_format")
+        CheckConstraint(settings.DB_EMAIL_CONSTRAINT, name="email_format"),
+        CheckConstraint(
+            settings.DB_TELEPHONE_CONSTRAINT, name="phone_number_format")
     )

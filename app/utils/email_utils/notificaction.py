@@ -18,7 +18,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 async def send_email(
         email_to: EmailStr, subject_template: str = "",
         html_template: str = "", environment: dict[str, Any] = None,
-        settings: config.Settings = Depends(config.get_settings)) -> bool:
+        settings: config.Settings = Depends(config.get_settings)
+) -> bool:
     """
     Send an e-mail to a recipient.
     :param settings:

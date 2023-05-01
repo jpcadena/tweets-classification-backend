@@ -13,9 +13,7 @@ async def remove_tag_from_operation_id(tag: str, operation_id: str) -> str:
     :return: Updated operation ID
     :rtype: str
     """
-    to_remove: str = f"{tag}-"
-    new_operation_id: str = operation_id.removeprefix(to_remove)
-    return new_operation_id
+    return operation_id.removeprefix(f"{tag}-")
 
 
 async def update_operation_id(operation: dict) -> None:

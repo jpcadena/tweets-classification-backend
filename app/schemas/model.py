@@ -1,5 +1,5 @@
 """
-Model schema
+Machine Learning Model schema
 """
 from datetime import datetime
 from typing import Optional

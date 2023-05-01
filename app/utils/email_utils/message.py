@@ -17,7 +17,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 async def create_message(
         html: str, subject: str,
-        settings: config.Settings = Depends(config.get_settings)) -> MIMEText:
+        settings: config.Settings = Depends(config.get_settings)
+) -> MIMEText:
     """
     Creates an email message with the given HTML content and subject
     :param html: Rendered template with environment variables

@@ -14,17 +14,12 @@ from app.utils.files_utils.openapi_utils import modify_json_data
 
 logger: logging.Logger = logging.getLogger(__name__)
 
-telephone_regex: str = r"\(?\+[0-9]{1,3}\)? ?-?[0-9]{1,3} ?-?[0-9]{3,5}?-?" \
-                       r"[0-9]{4}( ?-?[0-9]{3})? ?(\w{1,10}\s?\d{1,6})?"
-password_regex: str = r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?" \
-                      r"[#?!@$%^&*-]).{8,14}$"
-sub_regex: str = r"username:(?!0)\d+"
-
 
 @with_logging
 @benchmark
 async def update_json(
-        settings: config.Settings = Depends(config.get_settings)) -> None:
+        settings: config.Settings = Depends(config.get_settings)
+) -> None:
     """
     Update JSON file for client
     :param settings: Dependency method for cached setting object

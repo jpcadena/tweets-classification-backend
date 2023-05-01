@@ -6,9 +6,9 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, PositiveInt
 
+from app.core.config import settings
 from app.schemas.analysis import Analysis
 from app.schemas.gender import Gender
-from app.utils.utils import telephone_regex, password_regex
 
 
 class UserID(BaseModel):
@@ -100,7 +100,7 @@ class UserOptional(BaseModel):
     phone_number: Optional[str] = Field(
         default=None, title="Phone number",
         description="Preferred telephone number of the User",
-        regex=telephone_regex)
+        regex=settings.TELEPHONE_REGEX)
     city: Optional[str] = Field(
         default="Guayaquil", title="City",
         description="City for address of the User")
@@ -116,7 +116,7 @@ class UserCreate(UserOptional, UserBase):
     """
     password: str = Field(
         ..., title="Password", description="Password of the User",
-        min_length=8, max_length=14, regex=password_regex)
+        min_length=8, max_length=14, regex=settings.PASSWORD_REGEX)
 
     class Config:
         """
@@ -207,13 +207,13 @@ class UserUpdate(BaseModel):
         description="Last name(s) of the User")
     password: Optional[str] = Field(
         default=None, title="New Password", min_length=8, max_length=14,
-        description="New Password of the User", regex=password_regex)
+        description="New Password of the User", regex=settings.PASSWORD_REGEX)
     gender: Optional[Gender] = Field(
         default=None, title="Gender", description="Gender of the User")
     birthdate: Optional[date] = Field(
         default=None, title="Birthdate", description="Birthday of the User")
     phone_number: Optional[str] = Field(
-        default=None, title="Phone number", regex=telephone_regex,
+        default=None, title="Phone number", regex=settings.TELEPHONE_REGEX,
         description="Preferred telephone number of the User")
     city: Optional[str] = Field(
         default=None, title="City", description="City for address of the User")

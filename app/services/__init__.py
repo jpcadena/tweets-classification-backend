@@ -16,7 +16,8 @@ T = TypeVar("T", UserResponse, UserCreateResponse, UserUpdateResponse,
 
 
 async def model_to_response(
-        model: Union[User, Analysis, Model], response_model: T) -> Optional[T]:
+        model: Union[User, Analysis, Model], response_model: T
+) -> Optional[T]:
     """
     Converts a User object to a Pydantic response model
     :param model: Object from Pydantic Base Model class

@@ -1,5 +1,5 @@
 """
-Authorization database script
+Authentication database script
 """
 import logging
 
@@ -18,7 +18,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 @with_logging
 @benchmark
 async def init_auth_db(
-        settings: config.Settings = Depends(config.get_settings)) -> None:
+        settings: config.Settings = Depends(config.get_settings)
+) -> None:
     """
     Init connection to Redis Database
     :param settings: Dependency method for cached setting object
@@ -26,8 +27,8 @@ async def init_auth_db(
     :return: None
     :rtype: NoneType
     """
-    url: str = settings.AIOREDIS_DATABASE_URI
-    await aioredis.from_url(url, decode_responses=True)
+    await aioredis.from_url(
+        settings.AIOREDIS_DATABASE_URI, decode_responses=True)
     logger.info("Redis Database initialized")
 
 

@@ -4,7 +4,7 @@ A module for email utilities in the app.utils package.
 from pathlib import Path
 
 from fastapi import Depends
-from pydantic import EmailStr, AnyHttpUrl
+from pydantic import EmailStr
 
 from app.core import config
 from app.utils.email_utils.notificaction import send_email
@@ -12,7 +12,8 @@ from app.utils.email_utils.template import read_template_file
 
 
 async def build_email_template(
-        template_file: str, settings: config.Settings) -> str:
+        template_file: str, settings: config.Settings
+) -> str:
     """
     Builds the email template
     :param template_file: The template file
@@ -29,7 +30,8 @@ async def build_email_template(
 
 async def send_test_email(
         email_to: EmailStr,
-        settings: config.Settings = Depends(config.get_settings)) -> bool:
+        settings: config.Settings = Depends(config.get_settings)
+) -> bool:
     """
     Send test email
     :param email_to: The email address of the recipient
@@ -51,7 +53,8 @@ async def send_test_email(
 
 async def send_reset_password_email(
         email_to: EmailStr, username: str, token: str,
-        settings: config.Settings = Depends(config.get_settings)) -> bool:
+        settings: config.Settings = Depends(config.get_settings)
+) -> bool:
     """
     Sends a password reset email to a user with the given email address
     :param email_to: The email address of the user
@@ -69,8 +72,7 @@ async def send_reset_password_email(
                    f"{username}"
     template_str: str = await build_email_template(
         "reset_password.html", settings)
-    server_host: AnyHttpUrl = settings.SERVER_HOST
-    link: str = f"{server_host}/reset-password?token={token}"
+    link: str = f"{settings.SERVER_HOST}/reset-password?token={token}"
     is_sent: bool = await send_email(
         email_to=email_to,
         subject_template=subject,
@@ -85,7 +87,8 @@ async def send_reset_password_email(
 
 async def send_new_account_email(
         email_to: EmailStr, username: str,
-        settings: config.Settings = Depends(config.get_settings)) -> bool:
+        settings: config.Settings = Depends(config.get_settings)
+) -> bool:
     """
     Send a new account email
     :param email_to: The email address of the recipient with new
@@ -100,11 +103,10 @@ async def send_new_account_email(
     """
     subject: str = f"{settings.PROJECT_NAME} - New account for user {username}"
     template_str: str = await build_email_template("new_account.html", settings)
-    link = settings.SERVER_HOST
     is_sent: bool = await send_email(
         email_to=email_to, subject_template=subject,
         html_template=template_str,
         environment={
             "project_name": settings.PROJECT_NAME, "username": username,
-            "email": email_to, "link": link}, settings=settings)
+            "email": email_to, "link": settings.SERVER_HOST}, settings=settings)
     return is_sent

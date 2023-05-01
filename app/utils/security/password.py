@@ -23,9 +23,9 @@ async def generate_password_reset_payload(
     :return: The payload to be used
     :rtype: dict
     """
-    delta: timedelta = timedelta(hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     now: datetime = datetime.utcnow()
-    expires: datetime = now + delta
+    expires: datetime = now + timedelta(
+        hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     exp: float = expires.timestamp()
     payload: dict = {"exp": exp, "nbf": now, "sub": email}
     return payload

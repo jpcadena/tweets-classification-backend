@@ -9,7 +9,7 @@ from fastapi import Depends
 
 from app.api.deps import redis_dependency
 from app.core import config
-from app.db.authorization import handle_redis_exceptions
+from app.db.authentication import handle_redis_exceptions
 from app.models.token import Token
 
 logger: logging.Logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class TokenService:
     """
-    Token services for authorization database
+    Token services for authentication database
     """
 
     @staticmethod
@@ -25,9 +25,10 @@ class TokenService:
     async def create_token(
             token: Token,
             settings: config.Settings = Depends(config.get_settings),
-            redis: Redis = Depends(redis_dependency)) -> bool:
+            redis: Redis = Depends(redis_dependency)
+    ) -> bool:
         """
-        Create token in authorization database
+        Create token in authentication database
         :param token: Token object with key and value
         :type token: Token
         :param settings: Dependency method for cached setting object
@@ -51,7 +52,7 @@ class TokenService:
             key: str,
             redis: Redis = Depends(redis_dependency)) -> Optional[str]:
         """
-        Read token from authorization database
+        Read token from authentication database
         :param key: key to search for
         :type key: str
         :param redis: Dependency method for async Redis connection

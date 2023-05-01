@@ -1,5 +1,5 @@
 """
-Message schema
+Token schema
 """
 from uuid import UUID, uuid4
 
@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field, EmailStr, AnyUrl
 from app.core import config
 from app.core.config import settings
 from app.schemas.scope import Scope
-from app.utils.utils import sub_regex, password_regex
 
 
 class PublicClaimsToken(BaseModel):
@@ -40,7 +39,7 @@ class RegisteredClaimsToken(BaseModel):
     sub: str = Field(
         ..., title="Subject",
         description="Subject of JWT starting with username: followed"
-                    " by User ID", min_length=1, regex=sub_regex)
+                    " by User ID", min_length=1, regex=settings.SUB_REGEX)
     aud: str = Field(
         default=settings.AUDIENCE,
         title="Audience", description="Recipient of JWT", const=True,
@@ -124,7 +123,7 @@ class TokenResetPassword(BaseModel):
         ..., title="Token", description="Access token", min_length=30)
     password: str = Field(
         ..., title="New password", description="New password to reset",
-        min_length=8, max_length=14, regex=password_regex)
+        min_length=8, max_length=14, regex=settings.PASSWORD_REGEX)
 
     class Config:
         """

@@ -13,7 +13,7 @@ from app.core import logging_config
 from app.core.config import settings
 from app.core.decorators import with_logging, benchmark
 from app.crud.user import get_user_repository
-from app.db.authorization import init_auth_db
+from app.db.authentication import init_auth_db
 from app.db.init_db import init_db
 from app.schemas.msg import Msg
 from app.utils.utils import update_json

@@ -26,7 +26,8 @@ def _setup_console_handler(logger: logging.Logger, log_level: int) -> None:
 
 def _setup_mail_handler(
         logger: logging.Logger, log_level: int,
-        settings: config.Settings = config.get_settings()) -> None:
+        settings: config.Settings = config.get_settings()
+) -> None:
     """
     Setup mail handler
     :param logger: Logger instance
@@ -65,8 +66,7 @@ def _create_logs_folder(settings: config.Settings) -> str:
     :return: The logs folder path
     :rtype: str
     """
-    current_file_directory: str = os.path.dirname(os.path.abspath(__file__))
-    project_root: str = current_file_directory
+    project_root: str = os.path.dirname(os.path.abspath(__file__))
     while os.path.basename(project_root) != settings.PROJECT_NAME:
         project_root = os.path.dirname(project_root)
     logs_folder_path: str = f"{project_root}/logs"
@@ -83,9 +83,7 @@ def _build_log_filename(settings: config.Settings) -> str:
     :return: The log filename
     :rtype: str
     """
-    current_date: str = datetime.today().strftime(settings.FILE_DATE_FORMAT)
-    log_filename: str = f"log-{current_date}.log"
-    return log_filename
+    return f"log-{datetime.today().strftime(settings.FILE_DATE_FORMAT)}.log"
 
 
 def _configure_file_handler(
@@ -102,9 +100,8 @@ def _configure_file_handler(
     :return: The logger file handler object
     :rtype: logging.FileHandle
     """
-    fmt: str = "[%(name)s][%(asctime)s][%(levelname)s][%(module)s]" \
-               "[%(funcName)s][%(lineno)d]: %(message)s"
-    formatter: logging.Formatter = logging.Formatter(fmt, settings.DATE_FORMAT)
+    formatter: logging.Formatter = logging.Formatter(
+        settings.LOG_FORMAT, settings.DATE_FORMAT)
     file_handler: logging.FileHandler = logging.FileHandler(log_filename)
     file_handler.setLevel(log_level)
     file_handler.setFormatter(formatter)
@@ -136,7 +133,8 @@ def _setup_file_handler(
 
 def setup_logging(
         log_level: int = logging.DEBUG,
-        settings: config.Settings = config.get_settings()) -> None:
+        settings: config.Settings = config.get_settings()
+) -> None:
     """
     Setup logging
     :param log_level: Level of logging

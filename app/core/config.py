@@ -32,39 +32,29 @@ class Settings(BaseSettings):
     """
     Settings class based on Pydantic Base Settings
     """
-    API_V1_STR: str
     SECRET_KEY: str
-    ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
-    REFRESH_TOKEN_EXPIRE_MINUTES: int
     SERVER_NAME: str
     SERVER_HOST: AnyHttpUrl
     PROJECT_NAME: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_MINUTES: int
     VERSION: str
     ENCODING: str
-    OPENAPI_FILE_PATH: str
-    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
-    AUDIENCE: Optional[str] = None
-    TOKEN_URL: str
     DATE_FORMAT: str
     FILE_DATE_FORMAT: str
+    LOG_FORMAT: str
+    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
+
+    API_V1_STR: str
+    OPENAPI_FILE_PATH: str
+    TOKEN_URL: str
     STOP_WORDS_FILE_PATH: str
     IMAGES_PATH: str
     IMAGES_DIRECTORY: str
+    EMAIL_TEMPLATES_DIR: str
 
-    @validator("AUDIENCE", pre=True)
-    def assemble_audience(
-            cls, v: Optional[str], values: dict[str, Any]) -> str:
-        """
-        Combine server host and API_V1_STR to create the audience string.
-        :param v: The value of audience attribute
-        :type v: Optional[str]
-        :param values: The values to assemble the audience string
-        :type values: dict[str, Any]
-        :return: The AUDIENCE attribute
-        :rtype: str
-        """
-        return f"{values['SERVER_HOST']}{values['API_V1_STR']}/auth/login"
+    AUDIENCE: Optional[str] = None
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
@@ -82,11 +72,30 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
+    @validator("AUDIENCE", pre=True)
+    def assemble_audience(
+            cls, v: Optional[str], values: dict[str, Any]) -> str:
+        """
+        Combine server host and API_V1_STR to create the audience string.
+        :param v: The value of audience attribute
+        :type v: Optional[str]
+        :param values: The values to assemble the audience string
+        :type values: dict[str, Any]
+        :return: The AUDIENCE attribute
+        :rtype: str
+        """
+        return f"{values['SERVER_HOST']}{values['API_V1_STR']}/auth/login"
+
+    TELEPHONE_REGEX: str
+    PASSWORD_REGEX: str
+    SUB_REGEX: str
+
     POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
     POSTGRES_PORT: int
+    TS_PRECISION: int
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
@@ -111,10 +120,10 @@ class Settings(BaseSettings):
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
-    TS_PRECISION: int
-    EMAIL_CONSTRAINT: str
-    PHONE_CONSTRAINT: str
-    USERNAME_CONSTRAINT: str
+    DB_EMAIL_CONSTRAINT: str
+    DB_TELEPHONE_CONSTRAINT: str
+    DB_TW_USERNAME_CONSTRAINT: str
+
     SMTP_TLS: bool
     SMTP_PORT: Optional[int] = None
     SMTP_HOST: Optional[str] = None
@@ -126,7 +135,6 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int
-    EMAIL_TEMPLATES_DIR: str
     EMAILS_ENABLED: bool
 
     SUPERUSER_EMAIL: EmailStr

@@ -23,7 +23,7 @@ router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 #     - :return: Msg object
 #     - :rtype: Msg
 #     \f
-#     :param current_user: Dependency method for authorization by current user
+#     :param current_user: Dependency method for authentication by current user
 #     :type current_user: CurrentUser
 #     """
 #     celery_app.send_task("app.worker.test_celery", args=[msg.msg])
@@ -40,7 +40,7 @@ async def test_email(email_to: EmailStr, current_user: CurrentUser) -> Msg:
     - :return: Msg object
     - :rtype: Msg
     \f
-    :param current_user: Dependency method for authorization by current user
+    :param current_user: Dependency method for authentication by current user
     :type current_user: CurrentUser
     """
     await send_test_email(email_to)

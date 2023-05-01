@@ -30,7 +30,8 @@ def remove_stopwords_and_tokenize(
 
 
 async def get_stopwords(
-        settings: config.Settings = Depends(config.get_settings)) -> list[str]:
+        settings: config.Settings = Depends(config.get_settings)
+) -> list[str]:
     """
     Get stopwords from file and NLTK
     :param settings: Dependency method for cached setting object
@@ -41,9 +42,7 @@ async def get_stopwords(
     async with aiofiles.open(
             settings.STOP_WORDS_FILE_PATH, encoding=settings.ENCODING) as file:
         content: str = await file.read()
-    stopwords_file: dict = json.loads(content)
-    exclude_words: list[str] = stopwords_file.get("spanish")
+        exclude_words: list[str] = json.loads(content).get("spanish")
     stop_words: list[str] = nltk.corpus.stopwords.words("spanish")
     stop_words.extend(exclude_words)
-    stop_words = list(set(stop_words))
-    return stop_words
+    return list(set(stop_words))

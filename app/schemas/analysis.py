@@ -1,5 +1,5 @@
 """
-Tweet schema
+Analysis of Tweet schema
 """
 from datetime import datetime
 from typing import Optional

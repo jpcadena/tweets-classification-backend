@@ -17,9 +17,7 @@ class AuthService:
     """
 
     @staticmethod
-    def _build_payload(
-            user: User, settings: config.Settings
-    ) -> dict[str, any]:
+    def _build_payload(user: User, settings: config.Settings) -> dict[str, any]:
         """
         Build JWT payload for authentication
         :param user: User to authenticate

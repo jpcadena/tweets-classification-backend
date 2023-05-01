@@ -74,10 +74,10 @@ async def login(
     token: Token = Token(key=name, token=refresh_token)
     token_set: bool = await TokenService.create_token(token, settings, redis)
     if not token_set:
-        logger.warning("Could not insert data in Authorization database")
+        logger.warning("Could not insert data in Authentication database")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Could not insert data in Authorization database")
+            detail="Could not insert data in Authentication database")
     return TokenResponse(access_token=access_token, token_type="bearer",
                          refresh_token=refresh_token)
 

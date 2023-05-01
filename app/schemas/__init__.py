@@ -7,7 +7,7 @@ from typing import Optional
 from pydantic import BaseModel, Field, PastDate
 
 from .gender import Gender
-from ..utils.utils import telephone_regex
+from ..core.config import settings
 
 
 class EditableData(BaseModel):
@@ -18,7 +18,7 @@ class EditableData(BaseModel):
     phone_number: Optional[str] = Field(
         default=None, title="Telephone",
         description="Preferred telephone number of the User",
-        regex=telephone_regex)
+        regex=settings.TELEPHONE_REGEX)
     address: Optional[str] = Field(
         default=None, title="Address",
         description="Preferred postal address of the User")

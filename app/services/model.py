@@ -76,7 +76,8 @@ class ModelService:
 
 async def get_model_service(
         model_repo: ModelRepository = Depends(
-            get_model_repository)) -> ModelService:
+            get_model_repository)
+) -> ModelService:
     """
     Get an instance of the model service with the given repository.
     :param model_repo: Model repository object for database connection

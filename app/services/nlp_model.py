@@ -47,7 +47,8 @@ class NLPService:
 
     async def create_analysis_dict(
             self, tweet: dict,
-            settings: config.Settings = Depends(config.get_settings)) -> dict:
+            settings: config.Settings = Depends(config.get_settings)
+    ) -> dict:
         """
         Create the analysis dictionary base object
         :param tweet: The Tweet object from Twitter

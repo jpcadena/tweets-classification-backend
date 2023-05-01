@@ -22,9 +22,8 @@ async def encode_jwt(
     :return: The JSON Web Token
     :rtype: str
     """
-    encoded_jwt: str = jwt.encode(
+    return jwt.encode(
         payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
 
 
 async def decode_jwt(

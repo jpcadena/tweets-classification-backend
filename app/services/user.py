@@ -27,7 +27,8 @@ class UserService:
         self.user_repo: UserRepository = user_repo
 
     async def get_user_by_id(
-            self, user_id: PositiveInt) -> Optional[UserResponse]:
+            self, user_id: PositiveInt
+    ) -> Optional[UserResponse]:
         """
         Get user information with the correct schema for response
         :param user_id: Unique identifier of the user
@@ -77,7 +78,8 @@ class UserService:
         return await model_to_response(user, UserResponse)
 
     async def get_user_by_email(
-            self, email: EmailStr) -> Optional[UserResponse]:
+            self, email: EmailStr
+    ) -> Optional[UserResponse]:
         """
         Read the user from the database with unique email.
         :param email: Email to retrieve User from
@@ -93,7 +95,8 @@ class UserService:
         return await model_to_response(user, UserResponse)
 
     async def get_user_id_by_email(
-            self, email: EmailStr) -> Optional[PositiveInt]:
+            self, email: EmailStr
+    ) -> Optional[PositiveInt]:
         """
         Read the user ID from the database with unique email.
         :param email: Email to retrieve User from
@@ -182,7 +185,8 @@ class UserService:
 
 async def get_user_service(
         user_repo: UserRepository = Depends(
-            get_user_repository)) -> UserService:
+            get_user_repository)
+) -> UserService:
     """
     Get an instance of the user service with the given repository.
     :param user_repo: User repository object for database connection

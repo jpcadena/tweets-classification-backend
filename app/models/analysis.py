@@ -45,5 +45,5 @@ class Analysis(Base):
 
     __table_args__ = (
         CheckConstraint(
-            settings.USERNAME_CONSTRAINT, name="tweet_username_format"),
+            settings.DB_TW_USERNAME_CONSTRAINT, name="tweet_username_format"),
     )
