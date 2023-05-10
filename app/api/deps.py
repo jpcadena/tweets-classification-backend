@@ -7,7 +7,7 @@ from typing import Optional, Annotated, Type
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from jose import jwt, exceptions
 from pydantic import ValidationError
 
 from app.core import config
@@ -37,17 +37,17 @@ async def validate_token(token: str, settings: Settings) -> dict:
             token=token, key=settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM], options={"verify_subject": False},
             audience=settings.AUDIENCE, issuer=settings.SERVER_HOST)
-    except jwt.ExpiredSignatureError as es_exc:
+    except exceptions.ExpiredSignatureError as es_exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired",
             headers=headers) from es_exc
-    except jwt.JWTClaimsError as c_exc:
+    except exceptions.JWTClaimsError as c_exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authorization claim is incorrect,"
                    " please check audience and issuer", headers=headers
         ) from c_exc
-    except (JWTError, ValidationError) as exc:
+    except (exceptions.JWTError, ValidationError) as exc:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail, headers) from exc
 

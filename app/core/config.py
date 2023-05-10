@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     SERVER_HOST: AnyHttpUrl
     PROJECT_NAME: str
     ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    ACCESS_TOKEN_EXPIRE_MINUTES: float
     REFRESH_TOKEN_EXPIRE_MINUTES: int
     VERSION: str
     ENCODING: str

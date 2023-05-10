@@ -78,10 +78,11 @@ class UniqueFilter(Filter):
             self, spec: Union[UsernameSpecification, EmailSpecification],
             session: AsyncSession, model: User, field: str = "email"
     ) -> Union[User, Model, Analysis]:
+        stmt: Select
         if field == "username":
-            stmt: Select = select(model).where(model.username == spec.value)
+            stmt = select(model).where(model.username == spec.value)
         elif field == "email":
-            stmt: Select = select(model).where(model.email == spec.value)
+            stmt = select(model).where(model.email == spec.value)
         else:
             raise ValueError("Invalid field specified for filtering")
         async with session as async_session:

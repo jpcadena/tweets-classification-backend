@@ -4,7 +4,7 @@ A module for jwt in the app.utils package.
 from typing import Optional
 
 from fastapi import Depends
-from jose import jwt
+from jose import jwt, exceptions
 
 from app.core import config
 
@@ -43,5 +43,5 @@ async def decode_jwt(
         decoded_token: dict = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return decoded_token
-    except jwt.JWTError:
+    except exceptions.JWTError:
         return None

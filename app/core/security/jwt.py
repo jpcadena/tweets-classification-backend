@@ -17,20 +17,22 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 async def _generate_expiration_time(
-        expires_delta: Optional[timedelta], minutes: Optional[int] = None
+        expires_delta: Optional[timedelta], minutes: Optional[float] = None
 ) -> datetime:
     """
     Generates expiration time
     :param expires_delta: The expiration delta
     :type expires_delta: timedelta
     :param minutes: The minutes to add
-    :type minutes: int
+    :type minutes: float
     :return: The expiration time
     :rtype: datetime
     """
     if expires_delta:
         return datetime.utcnow() + expires_delta
-    return datetime.utcnow() + timedelta(minutes=minutes)
+    if minutes is not None:
+        return datetime.utcnow() + timedelta(minutes=minutes)
+    raise ValueError("Either 'expires_delta' or 'minutes' must be provided.")
 
 
 @with_logging

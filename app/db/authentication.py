@@ -2,6 +2,7 @@
 Authentication database script
 """
 import logging
+from typing import Callable
 
 import aioredis
 from aioredis.exceptions import DataError, AuthenticationError, \
@@ -32,14 +33,14 @@ async def init_auth_db(
     logger.info("Redis Database initialized")
 
 
-def handle_redis_exceptions(func: callable) -> callable:
+def handle_redis_exceptions(func: Callable) -> Callable:
     """
     Decorator for Redis Exceptions
     :param func: function to be decorated
     :return: return from func or exception raised
     """
 
-    async def inner(*args, **kwargs) -> callable:
+    async def inner(*args, **kwargs) -> Callable:
         try:
             return await func(*args, **kwargs)
         except AuthenticationError as a_exc:

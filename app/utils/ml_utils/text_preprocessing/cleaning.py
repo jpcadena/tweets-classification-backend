@@ -56,7 +56,7 @@ def twitter_text_cleaning(text: str) -> str:
     return text
 
 
-def remove_punc(message) -> str:
+def remove_punc(message: str) -> str:
     """
     Remove punctuation from the given message.
     :param message: Text message that might have punctuations

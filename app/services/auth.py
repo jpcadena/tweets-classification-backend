@@ -31,7 +31,7 @@ class AuthService:
         payload: dict[str, any] = {
             "iss": settings.SERVER_HOST, "sub": "username:" + str(user.id),
             "aud": settings.AUDIENCE,
-            "exp": int(time.time()) + settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+            "exp": int(time.time()) + int(settings.ACCESS_TOKEN_EXPIRE_MINUTES),
             "nbf": int(time.time()) - 1, "iat": int(time.time()), "jti": jti,
             "nickname": user.username, "preferred_username": user.username,
             "email": user.email}
