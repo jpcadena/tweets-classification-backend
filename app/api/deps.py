@@ -98,13 +98,13 @@ class RedisDependency:
             await self.init()
         return self.redis
 
-    async def init(self):
+    async def init(self) -> None:
         """
         Initialises the Redis Dependency.
         :return: None
         :rtype: NoneType
         """
-        url: str = setting.AIOREDIS_DATABASE_URI
+        url: str = str(setting.AIOREDIS_DATABASE_URI)
         self.redis = await Redis.from_url(url, decode_responses=True)
 
 

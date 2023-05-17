@@ -13,8 +13,8 @@ from app.utils.email_utils.email_utils import send_test_email
 router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 
 
-# @router.post(
-#     "/test-celery/", response_model=Msg, status_code=status.HTTP_201_CREATED)
+# @router.post("/test-celery/", response_model=Msg,
+#              status_code=status.HTTP_201_CREATED)
 # def test_celery(msg: Msg, current_user: CurrentUser) -> Msg:
 #     """
 #     Test Celery worker

@@ -3,3 +3,18 @@ line-length = 80
 target-version = ["py310"]
 exclude = ["**/venv/*", "**/.mypy_cache/*", "**/tests/*"]
 skip-string-normalization = true
+
+[tool.mypy]
+strict = true
+# --strict
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_return_any = true
+implicit_reexport = false
+strict_equality = true
+# --strict end
