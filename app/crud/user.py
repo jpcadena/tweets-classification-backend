@@ -3,7 +3,7 @@ User CRUD script
 """
 import logging
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import NonNegativeInt, PositiveInt
@@ -178,8 +178,8 @@ class UserRepository:
                 found_user: User = await self.read_by_id(user_id)
             except DatabaseException as db_exc:
                 raise DatabaseException(str(db_exc)) from db_exc
-            obj_data: dict = jsonable_encoder(found_user)
-            update_data: dict = user.dict(exclude_unset=True)
+            obj_data: dict[str, Any] = jsonable_encoder(found_user)
+            update_data: dict[str, Any] = user.dict(exclude_unset=True)
             for field in obj_data:
                 if field in update_data:
                     if field == "password":

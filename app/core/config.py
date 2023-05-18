@@ -58,7 +58,8 @@ class Settings(BaseSettings):
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
-            cls, v: Union[str, list[str]]) -> Union[list[str], str]:
+            cls, v: Union[str, list[str]]
+    ) -> Union[list[str], str]:
         """
         Assemble Backend CORS origins validator.
         :param v:
@@ -66,6 +67,7 @@ class Settings(BaseSettings):
         :return: List of Backend CORS origins to be accepted
         :rtype: Union[list[str], str]
         """
+        # pylint: disable=unused-argument,no-self-argument,invalid-name
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         if isinstance(v, (list, str)):
@@ -84,6 +86,7 @@ class Settings(BaseSettings):
         :return: The AUDIENCE attribute
         :rtype: str
         """
+        # pylint: disable=unused-argument,no-self-argument,invalid-name
         return f"{values['SERVER_HOST']}{values['API_V1_STR']}/auth/login"
 
     TELEPHONE_REGEX: str
@@ -100,7 +103,8 @@ class Settings(BaseSettings):
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
-            cls, v: Optional[str], values: dict[str, Any]) -> Any:
+            cls, v: Optional[str], values: dict[str, Any]
+    ) -> Any:
         """
         Assemble the database connection as URI string
         :param v: Variables to consider
@@ -110,6 +114,7 @@ class Settings(BaseSettings):
         :return: SQLAlchemy URI
         :rtype: PostgresDsn
         """
+        # pylint: disable=unused-argument,no-self-argument,invalid-name
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -149,7 +154,8 @@ class Settings(BaseSettings):
 
     @validator("AIOREDIS_DATABASE_URI", pre=True)
     def assemble_jwt_db_connection(
-            cls, v: Optional[str], values: dict[str, Any]) -> Any:
+            cls, v: Optional[str], values: dict[str, Any]
+    ) -> Any:
         """
         Assemble the cache database connection as URI string
         :param v: Variables to consider
@@ -159,6 +165,7 @@ class Settings(BaseSettings):
         :return: Redis URI
         :rtype: RedisDsn
         """
+        # pylint: disable=unused-argument,no-self-argument,invalid-name
         if isinstance(v, str):
             return v
         return RedisDsn.build(
@@ -175,14 +182,15 @@ class Settings(BaseSettings):
     CONTACT: dict[str, Any]
 
     @root_validator(pre=True)
-    def assemble_contact(cls, values: dict) -> dict:
+    def assemble_contact(cls, values: dict[str, Any]) -> dict[str, Any]:
         """
         Assemble contact information
         :param values: Values of the environment variables
-        :type values: dict
+        :type values: dict[str, Any]
         :return: The contact attribute
-        :rtype: dict
+        :rtype: dict[str, Any]
         """
+        # pylint: disable=unused-argument,no-self-argument
         contact: dict[str, Any] = {}
         if values.get("CONTACT_NAME"):
             contact["name"] = values["CONTACT_NAME"]

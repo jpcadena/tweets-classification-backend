@@ -2,7 +2,7 @@
 A module for password in the app.utils package.
 """
 from datetime import timedelta, datetime
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import Depends
 from pydantic import EmailStr
@@ -13,7 +13,7 @@ from app.utils.security.jwt import encode_jwt, decode_jwt
 
 async def generate_password_reset_payload(
         email: EmailStr, settings: config.Settings
-) -> dict:
+) -> dict[str, Any]:
     """
     Generate a password reset payload
     :param email: The email to generate the reset token for
@@ -21,13 +21,13 @@ async def generate_password_reset_payload(
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: The payload to be used
-    :rtype: dict
+    :rtype: dict[str, Any]
     """
     now: datetime = datetime.utcnow()
     expires: datetime = now + timedelta(
         hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     exp: float = expires.timestamp()
-    payload: dict = {"exp": exp, "nbf": now, "sub": email}
+    payload: dict[str, Any] = {"exp": exp, "nbf": now, "sub": email}
     return payload
 
 
@@ -44,7 +44,8 @@ async def generate_password_reset_token(
     :return: The password reset token
     :rtype: str
     """
-    payload: dict = await generate_password_reset_payload(email, settings)
+    payload: dict[str, Any] = await generate_password_reset_payload(
+        email, settings)
     return await encode_jwt(payload, settings)
 
 
@@ -61,7 +62,7 @@ async def verify_password_reset_token(
     :return: The email address
     :rtype: EmailStr
     """
-    decoded_token: dict = await decode_jwt(token, settings)
+    decoded_token: dict[str, Any] = await decode_jwt(token, settings)
     if decoded_token:
         return decoded_token.get("sub")
     return None

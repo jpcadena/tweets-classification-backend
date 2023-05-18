@@ -2,7 +2,7 @@
 Analysis of Tweet schema
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, Field, PositiveInt
 
@@ -61,7 +61,7 @@ class AnalysisCreate(AnalysisTarget, AnalysisBase):
         Config class for AnalysisCreate
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "tweet_id": 1,
                 "content": "Hello, world",
@@ -83,7 +83,7 @@ class Analysis(AnalysisTarget, AnalysisBase, AnalysisId):
         Config class for Analysis
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 2,
                 "tweet_id": 242312391,

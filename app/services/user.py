@@ -2,7 +2,7 @@
 User Service to handle business logic
 """
 from datetime import datetime
-from typing import Optional, Union, Type, Annotated
+from typing import Optional, Union, Type, Annotated, Any
 
 from fastapi import Depends
 from pydantic import EmailStr, PositiveInt, NonNegativeInt
@@ -167,13 +167,13 @@ class UserService:
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(updated_user, UserUpdateResponse)
 
-    async def delete_user(self, user_id: PositiveInt) -> dict:
+    async def delete_user(self, user_id: PositiveInt) -> dict[str, Any]:
         """
         Deletes a user by its id
         :param user_id: Unique identifier of the user
         :type user_id: PositiveInt
         :return: Data to confirmation info about the delete process
-        :rtype: dict
+        :rtype: dict[str, Any]
         """
         try:
             deleted: bool = await self.user_repo.delete_user(

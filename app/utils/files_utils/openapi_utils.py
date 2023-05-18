@@ -1,6 +1,7 @@
 """
 Metadata script
 """
+from typing import Any
 
 
 async def remove_tag_from_operation_id(tag: str, operation_id: str) -> str:
@@ -16,7 +17,7 @@ async def remove_tag_from_operation_id(tag: str, operation_id: str) -> str:
     return operation_id.removeprefix(f"{tag}-")
 
 
-async def update_operation_id(operation: dict) -> None:
+async def update_operation_id(operation: dict[str, Any]) -> None:
     """
     Update the operation ID of a single operation.
     :param operation: Operation object
@@ -31,7 +32,7 @@ async def update_operation_id(operation: dict) -> None:
     operation["operationId"] = new_operation_id
 
 
-async def modify_json_data(data: dict) -> dict:
+async def modify_json_data(data: dict[str, Any]) -> dict[str, Any]:
     """
     Modify the JSON data
     :param data: JSON data to modify

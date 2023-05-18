@@ -3,6 +3,7 @@ A module for general utilities in the app.utils package.
 """
 import logging
 import math
+from typing import Any
 
 from fastapi import Depends
 from pydantic import EmailStr
@@ -27,7 +28,7 @@ async def update_json(
     :return: None
     :rtype: NoneType
     """
-    data: dict = await read_json_file(settings)
+    data: dict[str, Any] = await read_json_file(settings)
     data = await modify_json_data(data)
     await write_json_file(data, settings)
     logger.info("Updated OpenAPI JSON file")

@@ -14,6 +14,7 @@ from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
 from app.services.user import ServiceUser
 from app.utils.email_utils.email_utils import send_new_account_email
 
+# pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 
 

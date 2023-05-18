@@ -2,7 +2,7 @@
 User schema
 """
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, EmailStr, Field, PositiveInt
 
@@ -79,7 +79,7 @@ class UserAuth(UserBaseAuth, UserID):
         """
         Config class for UserAuth
         """
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 1,
                 "username": "username",
@@ -122,7 +122,7 @@ class UserCreate(UserOptional, UserBase):
         """
         Config class for UserCreate
         """
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "username": "username",
                 "email": "example@mail.com",
@@ -149,7 +149,7 @@ class UserSuperCreate(UserCreate):
         """
         Config class for UserSuperCreate
         """
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "username": "username",
                 "email": "example@mail.com",
@@ -176,7 +176,7 @@ class UserCreateResponse(UserBase, UserID):
         Config class for UserCreateResponse
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 1,
                 "username": "username",
@@ -225,7 +225,7 @@ class UserUpdate(BaseModel):
         """
         Config class for UserUpdate
         """
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "username": "username",
                 "email": "example@mail.com",
@@ -277,7 +277,7 @@ class UserUpdateResponse(UserInDB, UserOptional, UserPassword, UserName,
         Config class for UserUpdateResponse
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 1,
                 "username": "username",
@@ -320,7 +320,7 @@ class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
         Config class for User
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 1,
                 "username": "username",
@@ -352,7 +352,7 @@ class UserResponse(UserRelationship, UserInDB, UserOptional, UserBase, UserID):
         Config class for UserResponse
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 1,
                 "username": "username",

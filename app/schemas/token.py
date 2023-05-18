@@ -1,6 +1,7 @@
 """
 Token schema
 """
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, EmailStr, AnyUrl
@@ -68,21 +69,24 @@ class TokenPayload(PublicClaimsToken, RegisteredClaimsToken):
     """
 
     @classmethod
-    def get_field_names(cls, alias: bool = False) -> list:
+    def get_field_names(cls, alias: bool = False) -> list[str]:
         """
         Retrieve the class attributes as a list.
         :param alias: Check for alias in the schema
         :type alias: bool
         :return: class attributes
-        :rtype: list
+        :rtype: list[str]
         """
-        return list(cls.schema(alias).get("properties").keys())
+        properties = cls.schema(alias).get("properties")
+        if properties is None:
+            return []
+        return list(properties.keys())
 
     class Config:
         """
         Config class for Token Payload
         """
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "iss": "http://localhost:8000",
                 "sub": "username:63aefa38afda3a176c1e3562",

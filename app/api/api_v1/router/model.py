@@ -10,6 +10,7 @@ from app.core.security.exceptions import ServiceException
 from app.schemas.model import Model, ModelCreate
 from app.services.model import ServiceModel
 
+# pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/models", tags=["models"])
 
 

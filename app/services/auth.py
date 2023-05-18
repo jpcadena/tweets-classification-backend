@@ -3,6 +3,7 @@ Main script
 """
 import time
 import uuid
+from typing import Any
 
 from fastapi import Depends
 
@@ -17,7 +18,7 @@ class AuthService:
     """
 
     @staticmethod
-    def _build_payload(user: User, settings: config.Settings) -> dict[str, any]:
+    def _build_payload(user: User, settings: config.Settings) -> dict[str, Any]:
         """
         Build JWT payload for authentication
         :param user: User to authenticate
@@ -25,10 +26,10 @@ class AuthService:
         :param settings: Dependency method for cached setting object
         :type settings: config.Settings
         :return: Payload dictionary for JWT
-        :rtype: dict[str, any]
+        :rtype: dict[str, Any]
         """
         jti: uuid.UUID = uuid.uuid4()
-        payload: dict[str, any] = {
+        payload: dict[str, Any] = {
             "iss": settings.SERVER_HOST, "sub": "username:" + str(user.id),
             "aud": settings.AUDIENCE,
             "exp": int(time.time()) + int(settings.ACCESS_TOKEN_EXPIRE_MINUTES),
@@ -51,7 +52,7 @@ class AuthService:
         :return: Tuple with tokens and name for token
         :rtype: Tuple[str, str, str]
         """
-        payload: dict = AuthService._build_payload(user, settings)
+        payload: dict[str, Any] = AuthService._build_payload(user, settings)
         access_token: str = await create_access_token(
             payload=payload, settings=settings)
         refresh_token: str = await create_refresh_token(

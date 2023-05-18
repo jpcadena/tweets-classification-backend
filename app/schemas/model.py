@@ -2,7 +2,7 @@
 Machine Learning Model schema
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, Field, PositiveInt, NonNegativeFloat, \
     PositiveFloat
@@ -63,7 +63,7 @@ class ModelCreate(ModelCreatedAt, ModelBase):
         Config class for ModelCreate
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "tweet_id": 24578931,
                 "model_name": "Logistic Regression",
@@ -87,7 +87,7 @@ class Model(ModelCreate, ModelID):
         Config class for Model
         """
         orm_mode: bool = True
-        schema_extra: dict[str, dict] = {
+        schema_extra: dict[str, dict[str, Any]] = {
             "example": {
                 "id": 5,
                 "tweet_id": 24578931,

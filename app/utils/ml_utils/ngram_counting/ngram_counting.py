@@ -2,6 +2,7 @@
 A module for ngram counting in the app.utils.ml utils.ngram counting package.
 """
 import logging
+from typing import Any
 
 from fastapi import Depends
 from pydantic import NonNegativeInt
@@ -31,7 +32,7 @@ async def get_ngram_counts(
         stop_words=stop_words, ngram_range=(1, 3))
     try:
         doc_term_matrix = token_counts_matrix.fit_transform(tweet.split("\n"))
-        vocabulary: dict = token_counts_matrix.vocabulary_
+        vocabulary: dict[str, Any] = token_counts_matrix.vocabulary_
         ngrams_count = dict(zip(vocabulary.keys(),
                                 doc_term_matrix.sum(axis=0).tolist()[0]))
     except (FitFailedWarning, NotFittedError) as exc:

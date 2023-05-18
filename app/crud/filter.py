@@ -54,7 +54,7 @@ class IndexFilter(Filter):
     @benchmark
     async def filter(
             self, spec: IdSpecification, session: AsyncSession,
-            model: Union[User, Model, Analysis], field: str = None
+            model: Union[User, Model, Analysis], field: Optional[str] = None
     ) -> Optional[Union[User, Model, Analysis]]:
         _id: PositiveInt = spec.value
         async with session as async_session:

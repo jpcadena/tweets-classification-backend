@@ -15,6 +15,7 @@ from app.schemas.analysis import Analysis, AnalysisCreate
 from app.services.analysis import ServiceAnalysis
 from app.services.nlp_model import ServiceNLP
 
+# pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/analyses", tags=["analyses"])
 
 

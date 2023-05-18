@@ -10,6 +10,7 @@ from app.api.deps import CurrentUser
 from app.schemas.msg import Msg
 from app.utils.email_utils.email_utils import send_test_email
 
+# pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 
 

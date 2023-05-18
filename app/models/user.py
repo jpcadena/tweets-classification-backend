@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship, Mapped
 from app.core.config import settings
 from app.db.base_class import Base
 from app.models.analysis import Analysis
-from app.schemas import Gender
+from app.schemas.gender import Gender
 
 
 class User(Base):

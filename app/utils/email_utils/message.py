@@ -4,7 +4,7 @@ A module for message in the app.utils package.
 import logging
 import smtplib
 from email.mime.text import MIMEText
-from typing import Union
+from typing import Union, Any
 
 from fastapi import Depends
 from pydantic import EmailStr
@@ -76,8 +76,8 @@ async def send_message(
     :return: True if the email was sent; otherwise an error message
     :rtype: Union[bool, str]
     """
-    smtp_options: dict = {"host": settings.SMTP_HOST,
-                          "port": settings.SMTP_PORT}
+    smtp_options: dict[str, Any] = {
+        "host": settings.SMTP_HOST, "port": settings.SMTP_PORT}
     if settings.SMTP_TLS:
         smtp_options["starttls"] = True
     if settings.SMTP_USER:
@@ -92,7 +92,8 @@ async def send_message(
                 smtp_conn.starttls()
             await login_to_smtp(smtp_conn, settings)
             smtp_conn.sendmail(
-                settings.EMAILS_FROM_EMAIL, [email_to], message.as_string())
+                str(settings.EMAILS_FROM_EMAIL), [email_to],
+                message.as_string())
         logger.info("sent email to %s", email_to)
         return True
     except smtplib.SMTPException as exc:
