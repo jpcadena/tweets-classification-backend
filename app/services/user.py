@@ -1,6 +1,7 @@
 """
 User Service to handle business logic
 """
+import logging
 from datetime import datetime
 from typing import Annotated, Any, Optional, Type, Union
 
@@ -16,6 +17,8 @@ from app.models.user import User
 from app.schemas.user import UserSuperCreate, UserCreateResponse, \
     UserResponse, UserUpdateResponse, UserCreate, UserUpdate
 from app.services import model_to_response
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -40,10 +43,12 @@ class UserService:
             user: User = await self.user_repo.read_by_id(
                 IdSpecification(user_id))
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         if not user:
-            raise NotFoundException(
-                f"User with id {user_id} not found in the system.")
+            detail: str = f"User with id {user_id} not found in the system."
+            logger.error(detail)
+            raise NotFoundException(detail)
         user_response: UserResponse = await model_to_response(
             user, UserResponse)
         return user_response
@@ -60,6 +65,7 @@ class UserService:
             user: User = await self.user_repo.read_by_username(
                 UsernameSpecification(username))
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return user
 
@@ -74,6 +80,7 @@ class UserService:
         try:
             user: User = await self.get_login_user(username)
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
@@ -91,6 +98,7 @@ class UserService:
             user: User = await self.user_repo.read_by_email(
                 EmailSpecification(email))
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(user, UserResponse)
 
@@ -108,6 +116,7 @@ class UserService:
             user_id: PositiveInt = await self.user_repo.read_id_by_email(
                 EmailSpecification(email))
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return user_id
 
@@ -125,6 +134,7 @@ class UserService:
         try:
             created_user = await self.user_repo.create_user(user)
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(created_user, UserCreateResponse)
 
@@ -143,6 +153,7 @@ class UserService:
         try:
             users: list[User] = await self.user_repo.read_users(offset, limit)
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         found_users: list[UserResponse] = [
             await model_to_response(user, UserResponse) for user in users]
@@ -164,6 +175,7 @@ class UserService:
             updated_user: User = await self.user_repo.update_user(
                 IdSpecification(user_id), user)
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return await model_to_response(updated_user, UserUpdateResponse)
 
@@ -179,6 +191,7 @@ class UserService:
             deleted: bool = await self.user_repo.delete_user(
                 IdSpecification(user_id))
         except DatabaseException as db_exc:
+            logger.error(str(db_exc))
             raise ServiceException(str(db_exc)) from db_exc
         return {"ok": deleted, "deleted_at": datetime.now()}
 

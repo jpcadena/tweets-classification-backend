@@ -10,10 +10,13 @@ from fastapi import Depends
 from jinja2 import Template
 
 from app.core import config
+from app.core.decorators import with_logging, benchmark
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+@with_logging
+@benchmark
 async def render_template(template: str, environment: dict[str, Any]) -> str:
     """
     Renders the given template with the given environment variables
@@ -28,6 +31,8 @@ async def render_template(template: str, environment: dict[str, Any]) -> str:
     return Template(template).render(environment)
 
 
+@with_logging
+@benchmark
 async def read_template_file(
         template_path: Union[str, Path],
         settings: config.Settings = Depends(config.get_settings)

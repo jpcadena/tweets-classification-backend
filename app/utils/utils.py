@@ -34,6 +34,7 @@ async def update_json(
     logger.info("Updated OpenAPI JSON file")
 
 
+@with_logging
 async def hide_email(email: EmailStr) -> str:
     """
     Hide email using **** for some characters

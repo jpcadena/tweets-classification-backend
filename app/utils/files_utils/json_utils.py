@@ -2,14 +2,20 @@
 A module for json utils in the app.utils package.
 """
 import json
+import logging
 from typing import Any
 
 import aiofiles
 from fastapi import Depends
 
 from app.core import config
+from app.core.decorators import with_logging, benchmark
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
+@with_logging
+@benchmark
 async def read_json_file(
         settings: config.Settings = Depends(config.get_settings)
 ) -> dict[str, Any]:
@@ -24,10 +30,13 @@ async def read_json_file(
     async with aiofiles.open(
             file_path, mode="r", encoding=settings.ENCODING) as file:
         content: str = await file.read()
+        logger.info("Json file read: %s", settings.OPENAPI_FILE_PATH)
     data: dict[str, Any] = json.loads(content)
     return data
 
 
+@with_logging
+@benchmark
 async def write_json_file(
         data: dict[str, Any],
         settings: config.Settings = Depends(config.get_settings)
@@ -45,3 +54,4 @@ async def write_json_file(
     async with aiofiles.open(
             file_path, mode="w", encoding=settings.ENCODING) as out_file:
         await out_file.write(json.dumps(data, indent=4))
+    logger.info("Json file written: %s", settings.OPENAPI_FILE_PATH)

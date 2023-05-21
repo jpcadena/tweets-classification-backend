@@ -2,8 +2,11 @@
 This module handles password security functions such as hashing and
  verification.
 """
+import logging
+
 from passlib.context import CryptContext
 
+logger: logging.Logger = logging.getLogger(__name__)
 crypt_context: CryptContext = CryptContext(
     schemes=["bcrypt"], deprecated="auto")
 
@@ -17,7 +20,9 @@ async def get_password_hash(password: str) -> str:
     :rtype: str
     """
     if not password:
-        raise ValueError("Password cannot be empty or None")
+        error: str = "Password cannot be empty or None"
+        logger.error(error)
+        raise ValueError(error)
     return crypt_context.hash(password)
 
 
@@ -32,7 +37,11 @@ async def verify_password(hashed_password: str, plain_password: str) -> bool:
     :rtype: bool
     """
     if not plain_password:
-        raise ValueError("Plain password cannot be empty or None")
+        error: str = "Plain password cannot be empty or None"
+        logger.error(error)
+        raise ValueError(error)
     if not hashed_password:
-        raise ValueError("Hashed password cannot be empty or None")
+        hash_error: str = "Hashed password cannot be empty or None"
+        logger.error(hash_error)
+        raise ValueError(hash_error)
     return crypt_context.verify(plain_password, hashed_password)

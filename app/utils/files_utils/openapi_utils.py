@@ -1,7 +1,12 @@
 """
 Metadata script
 """
+import logging
 from typing import Any
+
+from app.core.decorators import with_logging
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 async def remove_tag_from_operation_id(tag: str, operation_id: str) -> str:
@@ -17,6 +22,7 @@ async def remove_tag_from_operation_id(tag: str, operation_id: str) -> str:
     return operation_id.removeprefix(f"{tag}-")
 
 
+@with_logging
 async def update_operation_id(operation: dict[str, Any]) -> None:
     """
     Update the operation ID of a single operation.
@@ -30,8 +36,10 @@ async def update_operation_id(operation: dict[str, Any]) -> None:
     new_operation_id: str = await remove_tag_from_operation_id(
         tag, operation_id)
     operation["operationId"] = new_operation_id
+    logger.info("Updated Operation ID")
 
 
+@with_logging
 async def modify_json_data(data: dict[str, Any]) -> dict[str, Any]:
     """
     Modify the JSON data

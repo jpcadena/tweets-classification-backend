@@ -7,6 +7,7 @@ from fastapi import Depends
 from pydantic import EmailStr
 
 from app.core import config
+from app.core.decorators import with_logging
 from app.utils.email_utils.notificaction import send_email
 from app.utils.email_utils.template import read_template_file
 
@@ -28,6 +29,7 @@ async def build_email_template(
     return template_str
 
 
+@with_logging
 async def send_test_email(
         email_to: EmailStr,
         settings: config.Settings = Depends(config.get_settings)
@@ -51,6 +53,7 @@ async def send_test_email(
     return is_sent
 
 
+@with_logging
 async def send_reset_password_email(
         email_to: EmailStr, username: str, token: str,
         settings: config.Settings = Depends(config.get_settings)
@@ -85,6 +88,7 @@ async def send_reset_password_email(
     return is_sent
 
 
+@with_logging
 async def send_new_account_email(
         email_to: EmailStr, username: str,
         settings: config.Settings = Depends(config.get_settings)

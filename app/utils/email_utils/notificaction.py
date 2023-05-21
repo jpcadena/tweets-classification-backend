@@ -9,12 +9,14 @@ from fastapi import Depends
 from pydantic import EmailStr
 
 from app.core import config
+from app.core.decorators import with_logging
 from app.utils.email_utils.message import create_message, send_message
 from app.utils.email_utils.template import render_template
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+@with_logging
 async def send_email(
         email_to: EmailStr, subject_template: str,
         html_template: str, environment: dict[str, Any],

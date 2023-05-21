@@ -3,6 +3,8 @@ User API Router
 This module provides CRUD (Create, Retrieve, Update, Delete) operations
  for users.
 """
+import logging
+
 from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, status, \
     Response
 from fastapi.params import Query, Path
@@ -16,6 +18,7 @@ from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
 from app.services.user import ServiceUser
 from app.utils.email_utils.email_utils import send_new_account_email
 
+logger: logging.Logger = logging.getLogger(__name__)
 # pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/users", tags=["users"])
 
@@ -50,6 +53,7 @@ async def get_users(
         found_users: list[UserResponse] = await user_service.get_users(
             skip, limit)
     except ServiceException as serv_exc:
+        logger.error(serv_exc)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=str(serv_exc)
         ) from serv_exc
@@ -81,11 +85,13 @@ async def create_user(
     :type user_service: ServiceUser
     """
     try:
-        new_user = await user_service.register_user(user)
+        new_user: UserCreateResponse = await user_service.register_user(user)
     except ServiceException as serv_exc:
+        detail: str = "Error at creating user."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error at creating user.\n{str(serv_exc)}") from serv_exc
+            status_code=status.HTTP_400_BAD_REQUEST, detail=detail
+        ) from serv_exc
     if new_user:
         if user.email:
             background_tasks.add_task(
@@ -114,10 +120,10 @@ async def get_user_me(
         user: UserResponse = await user_service.get_user_by_id(
             current_user.id)
     except ServiceException as serv_exc:
+        detail: str = "Can not found user information."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Can not found user information.\n{str(serv_exc)}"
-        ) from serv_exc
+            status_code=status.HTTP_404_NOT_FOUND, detail=detail) from serv_exc
     return user
 
 
@@ -146,11 +152,12 @@ async def get_user_by_id(
     try:
         user: UserResponse = await user_service.get_user_by_id(user_id)
     except ServiceException as serv_exc:
+        detail: str = f"User with id {user_id} not found in the system."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id {user_id} not found in the system."
-                   f"\n{str(serv_exc)}") from serv_exc
+            status_code=status.HTTP_404_NOT_FOUND, detail=detail) from serv_exc
     except NotFoundException as not_found_exc:
+        logger.error(not_found_exc)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(not_found_exc)) from not_found_exc
@@ -190,10 +197,11 @@ async def update_user(
         user: UserUpdateResponse = await user_service.update_user(
             user_id, user_in)
     except ServiceException as serv_exc:
+        detail: str = f"User with id {user_id} not found in the system."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"User with id {user_id} not found in the system."
-                   f"\n{str(serv_exc)}") from serv_exc
+            status_code=status.HTTP_400_BAD_REQUEST, detail=detail
+        ) from serv_exc
 
     return user
 
@@ -220,11 +228,10 @@ async def delete_user(
     try:
         data: dict = await user_service.delete_user(user_id)
     except SQLAlchemyError as sa_err:
+        detail: str = "The user with this username does not exist in the system"
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"The user with this username does not exist in the system"
-                   f"\n{str(sa_err)}",
-        ) from sa_err
+            status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from sa_err
     response: Response = Response(
         status_code=status.HTTP_204_NO_CONTENT,
         media_type="application/json")

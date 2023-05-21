@@ -10,6 +10,7 @@ from fastapi import Depends
 from gensim.utils import simple_preprocess
 
 from app.core import config
+from app.core.decorators import with_logging, benchmark
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -30,6 +31,8 @@ def remove_stopwords_and_tokenize(
             w not in stop_words and len(w) >= 3]
 
 
+@with_logging
+@benchmark
 async def get_stopwords(
         settings: config.Settings = Depends(config.get_settings)
 ) -> list[str]:

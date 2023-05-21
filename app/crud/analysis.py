@@ -42,6 +42,7 @@ class AnalysisRepository:
                 analysis: Analysis = await self.index_filter.filter(
                     _id, session, self.model)
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(
                     f"Error at reading analysis with id: {_id.value}."
                     f"\n{str(db_exc)}") from db_exc
@@ -99,6 +100,7 @@ class AnalysisRepository:
                     IdSpecification(
                         analysis_create.id))
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return created_analysis
 

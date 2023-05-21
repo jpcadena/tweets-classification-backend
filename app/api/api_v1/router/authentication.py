@@ -63,22 +63,24 @@ async def login(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Invalid credentials") from s_exc
     if not await verify_password(found_user.password, user.password):
-        logger.warning("Incorrect password")
+        detail: str = "Incorrect password"
+        logger.warning(detail)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Incorrect password")
+                            detail=detail)
     if not found_user.is_active:
-        logger.warning("Inactive user")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Inactive user")
+        user_detail: str = "Inactive user"
+        logger.warning(user_detail)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=user_detail)
     access_token, refresh_token, name = await AuthService.auth_token(
         found_user, settings)
     token: Token = Token(key=name, token=refresh_token)
     token_set: bool = await TokenService.create_token(token, settings, redis)
     if not token_set:
-        logger.warning("Could not insert data in Authentication database")
+        data_detail: str = "Could not insert data in Authentication database"
+        logger.warning(data_detail)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Could not insert data in Authentication database")
+            status_code=status.HTTP_400_BAD_REQUEST, detail=data_detail)
     return TokenResponse(access_token=access_token, token_type="bearer",
                          refresh_token=refresh_token)
 
@@ -130,9 +132,11 @@ async def recover_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There was an issue with the request") from s_exc
     if not user:
+        detail: str = "The user with this username does not exist in the" \
+                      " system."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="The user with this username does not exist in the system.")
+            status_code=status.HTTP_404_NOT_FOUND, detail=detail)
     password_reset_token: str = await generate_password_reset_token(
         email, settings)
     await send_reset_password_email(
@@ -162,8 +166,10 @@ async def reset_password(
     email: EmailStr = await verify_password_reset_token(
         token_reset_password.token)
     if not email:
+        invalid_token: str = "Invalid token"
+        logger.error(invalid_token)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token")
+            status_code=status.HTTP_400_BAD_REQUEST, detail=invalid_token)
     try:
         user_id: PositiveInt = await user_service.get_user_id_by_email(email)
     except ServiceException as s_exc:
@@ -172,10 +178,12 @@ async def reset_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There was an issue with the request") from s_exc
     if not user_id:
+        detail: str = f"The user with this email {email} does not exist in" \
+                      f" the system."
+        logger.error(detail)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"The user with this email {email} does not exist in the"
-                   f" system.")
+            detail=detail)
     user_update: UserUpdate = UserUpdate(**{
         "password": token_reset_password.password})
     user: UserUpdateResponse = await user_service.update_user(

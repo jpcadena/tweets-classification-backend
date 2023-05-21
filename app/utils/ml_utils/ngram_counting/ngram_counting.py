@@ -10,11 +10,13 @@ from sklearn.exceptions import FitFailedWarning, NotFittedError
 from sklearn.feature_extraction.text import CountVectorizer
 
 from app.core import config
+from app.core.decorators import with_logging
 from app.utils.ml_utils.text_preprocessing.tokenization import get_stopwords
 
 logger: logging.Logger = logging.getLogger(__name__)
 
 
+@with_logging
 async def get_ngram_counts(
         tweet: str, settings: config.Settings = Depends(config.get_settings)
 ) -> list[tuple[str, NonNegativeInt]]:

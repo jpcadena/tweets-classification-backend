@@ -44,6 +44,7 @@ class ModelRepository:
                 model: Model = await self.index_filter.filter(
                     _id, session, self.model)
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(
                     f"Error at reading model with id: {_id.value}") from db_exc
             return model
@@ -95,6 +96,7 @@ class ModelRepository:
                 created_model: Model = await self.read_by_id(IdSpecification(
                     model_create.id))
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return created_model
 

@@ -3,6 +3,8 @@ Model router module for API endpoints.
 This module handles the routing for model-related API endpoints,
  including creating, reading, and listing models.
 """
+import logging
+
 from fastapi import APIRouter, status, Path, Body, Query
 from fastapi.exceptions import HTTPException
 from pydantic import PositiveInt, NonNegativeInt
@@ -12,6 +14,7 @@ from app.core.security.exceptions import ServiceException
 from app.schemas.model import Model, ModelCreate
 from app.services.model import ServiceModel
 
+logger: logging.Logger = logging.getLogger(__name__)
 # pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/models", tags=["models"])
 
@@ -41,9 +44,10 @@ async def create_model(
     try:
         created_model: Model = await model_service.register_model(model)
     except ServiceException as serv_exc:
+        detail: str = f"Error at creating model.\n{str(serv_exc)}"
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error at creating model.\n{str(serv_exc)}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=detail
         ) from serv_exc
     return created_model
 
@@ -71,9 +75,10 @@ async def get_model(
     """
     found_model: Model = await model_service.get_model_by_id(model_id)
     if not found_model:
+        detail: str = f"Model with ID {model_id} not found in the system."
+        logger.error(detail)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Model with ID {model_id} not found in the system.")
+            status_code=status.HTTP_404_NOT_FOUND, detail=detail)
     return found_model
 
 
@@ -105,6 +110,8 @@ async def get_models(
     """
     models: list[Model] = await model_service.get_models(skip, limit)
     if not models:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="This user has no models in the system.")
+        detail: str = "This user has no models in the system."
+        logger.error(detail)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=detail)
     return models

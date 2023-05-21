@@ -35,7 +35,10 @@ async def _generate_expiration_time(
         return datetime.utcnow() + expires_delta
     if minutes is not None:
         return datetime.utcnow() + timedelta(minutes=minutes)
-    raise ValueError("Either 'expires_delta' or 'minutes' must be provided.")
+    value_error: ValueError = ValueError(
+        "Either 'expires_delta' or 'minutes' must be provided.")
+    logger.warning(value_error)
+    raise value_error
 
 
 @with_logging

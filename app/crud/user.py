@@ -53,6 +53,7 @@ class UserRepository:
                 user: User = await self.index_filter.filter(
                     _id, session, self.model)
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return user
 
@@ -70,6 +71,7 @@ class UserRepository:
                 user: User = await self.unique_filter.filter(
                     username, session, self.model, "username")
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return user
 
@@ -87,6 +89,7 @@ class UserRepository:
                 user: User = await self.unique_filter.filter(
                     email, session, self.model, "email")
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return user
 
@@ -107,6 +110,7 @@ class UserRepository:
                 result: Result = await session.execute(stmt)
                 user_id: PositiveInt = result.scalar()
             except SQLAlchemyError as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return user_id
 
@@ -162,6 +166,7 @@ class UserRepository:
                 created_user: User = await self.read_by_id(IdSpecification(
                     user_create.id))
             except DatabaseException as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return created_user
 
@@ -184,6 +189,7 @@ class UserRepository:
             try:
                 found_user: User = await self.read_by_id(user_id)
             except DatabaseException as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             obj_data: dict[str, Any] = jsonable_encoder(found_user)
             update_data: dict[str, Any] = user.dict(exclude_unset=True)
@@ -201,6 +207,7 @@ class UserRepository:
             try:
                 updated_user: User = await self.read_by_id(user_id)
             except DatabaseException as db_exc:
+                logger.error(db_exc)
                 raise DatabaseException(str(db_exc)) from db_exc
             return updated_user
 
