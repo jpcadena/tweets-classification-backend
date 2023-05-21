@@ -8,7 +8,7 @@ from main import app
 
 
 @pytest.mark.anyio
-async def test_welcome_message():
+async def test_welcome_message() -> None:
     """
     Test welcome_message path operation at main script
     ## Response:
