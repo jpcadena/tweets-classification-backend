@@ -1,6 +1,10 @@
 """
-API Dependencies script
+This module provides API dependencies that can be utilized across
+ multiple routes and modules.
+It includes authentication utilities, connection handlers for external
+ services like Redis, and factory functions for service classes.
 """
+import logging
 from abc import ABC
 from typing import Optional, Annotated, Type
 
@@ -15,6 +19,7 @@ from app.core.config import Settings, get_settings
 from app.schemas.user import UserAuth
 from app.services.user import UserService, get_user_service
 
+logger: logging.Logger = logging.getLogger(__name__)
 setting: Settings = get_settings()
 oauth2_scheme: OAuth2PasswordBearer = OAuth2PasswordBearer(
     tokenUrl=setting.TOKEN_URL, scheme_name="JWT")
@@ -24,12 +29,12 @@ detail: str = "Could not validate credentials"
 
 async def validate_token(token: str, settings: Settings) -> dict:
     """
-    Validate the token.
-    :param token: The token to validate
+    Validate the provided JWT token.
+    :param token: JWT token to be validated
     :type token: str
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: The token decoded
+    :return: Decoded payload of the valid JWT token
     :rtype: dict
     """
     try:
@@ -38,16 +43,19 @@ async def validate_token(token: str, settings: Settings) -> dict:
             algorithms=[settings.ALGORITHM], options={"verify_subject": False},
             audience=settings.AUDIENCE, issuer=settings.SERVER_HOST)
     except exceptions.ExpiredSignatureError as es_exc:
+        logger.error(es_exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired",
             headers=headers) from es_exc
     except exceptions.JWTClaimsError as c_exc:
+        logger.error(c_exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authorization claim is incorrect,"
                    " please check audience and issuer", headers=headers
         ) from c_exc
     except (exceptions.JWTError, ValidationError) as exc:
+        logger.error(exc)
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail, headers) from exc
 
@@ -58,14 +66,14 @@ async def get_current_user(
         user_service: UserService = Depends(get_user_service)
 ) -> UserAuth:
     """
-    Function to get current user
-    :param token: access token from OAuth2PasswordBearer
+    Fetches the current authenticated user based on the provided JWT token
+    :param token: Access token from OAuth2PasswordBearer
     :type token: str
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     :param user_service: Dependency method for User service object
     :type user_service: UserService
-    :return: current user from DB
+    :return: Authenticated user information
     :rtype: UserAuth
     """
     try:
@@ -79,16 +87,18 @@ async def get_current_user(
         user_auth = UserAuth(
             id=user.id, username=user.username, email=user.email)
         return user_auth
-    except HTTPException:
+    except HTTPException as h_exc:
+        logger.error(h_exc)
         raise
     except Exception as exc:
+        logger.error(exc)
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED, detail, headers) from exc
 
 
 class RedisDependency:
     """
-    FastAPI Dependency for Redis Connections
+    A class to handle Redis connections as a FastAPI dependency.
     """
 
     redis: Optional[ABC] = None
@@ -100,7 +110,7 @@ class RedisDependency:
 
     async def init(self) -> None:
         """
-        Initialises the Redis Dependency.
+        Initializes the Redis connection.
         :return: None
         :rtype: NoneType
         """

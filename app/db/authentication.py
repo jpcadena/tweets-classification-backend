@@ -1,5 +1,6 @@
 """
-Authentication database script
+This script provides functions for interacting with the authentication
+ (Redis) database.
 """
 import logging
 from typing import Callable, Any
@@ -22,7 +23,7 @@ async def init_auth_db(
         settings: config.Settings = Depends(config.get_settings)
 ) -> None:
     """
-    Init connection to Redis Database
+    Initialize connection to the Redis database for authentication
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: None
@@ -35,20 +36,23 @@ async def init_auth_db(
 
 def handle_redis_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
     """
-    Decorator for Redis Exceptions
-    :param func: function to be decorated
-    :return: return from func or exception raised
+    Decorator for handling Redis exceptions
+    :param func: The function to be decorated
+    :type func: Callable[..., Any]
+    :return: The decorated function.
+    :rtype: Callable[..., Any]
     """
 
     async def inner(*args: Any, **kwargs: Any) -> Any:
         """
-        Inner function to handle
-        :param args: Arguments to be decorated
+        Inner function to handle Redis exceptions.
+        :param args: The arguments to be decorated.
         :type args: Any
-        :param kwargs: Keyword arguments to be decorated
+        :param kwargs: The keyword arguments to be decorated.
         :type kwargs: Any
-        :return: Callable function return
-        :rtype: Callable
+        :return: The return value of the function or None if an
+         exception occurs.
+        :rtype: Any
         """
         try:
             return await func(*args, **kwargs)

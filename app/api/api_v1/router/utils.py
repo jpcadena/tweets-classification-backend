@@ -1,8 +1,9 @@
 """
 Utils API Router
+This module handles the routing for utility-related API endpoints,
+such as testing email functionality and tasks queueing.
 """
-from fastapi import APIRouter
-from fastapi import status
+from fastapi import APIRouter, Path, status
 from pydantic.networks import EmailStr
 
 from app.api.deps import CurrentUser
@@ -32,13 +33,18 @@ router: APIRouter = APIRouter(prefix="/utils", tags=["utils"])
 
 
 @router.post(
-    "/test-email/", response_model=Msg, status_code=status.HTTP_201_CREATED)
-async def test_email(email_to: EmailStr, current_user: CurrentUser) -> Msg:
+    "/test-email/{email_to}", response_model=Msg,
+    status_code=status.HTTP_201_CREATED)
+async def test_email(
+        current_user: CurrentUser, email_to: EmailStr = Path(
+            ..., title="Email to", description="The recipient's email address",
+            example=EmailStr("someone@example.com"))
+) -> Msg:
     """
-    Test emails.
-    - :param email_to: The email to send
+    Sends a test email.
+    - :param email_to: The recipient's email address
     - :type email_to: EmailStr
-    - :return: Msg object
+    - :return: A message confirming that the email has been sent
     - :rtype: Msg
     \f
     :param current_user: Dependency method for authentication by current user

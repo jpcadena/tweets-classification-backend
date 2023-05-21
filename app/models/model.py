@@ -14,8 +14,8 @@ from ..core.config import settings
 
 class Model(Base):
     """
-    Class for Machine Learning Model that inherits from SQLAlchemy
-     Declarative Base.
+    Model evaluation model representing the Machine Learning "model"
+     table
     """
     __tablename__ = "model"
 

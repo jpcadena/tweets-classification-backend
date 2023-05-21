@@ -1,5 +1,5 @@
 """
-Analysis CRUD script
+This script contains CRUD operations for the Analysis model.
 """
 import logging
 from typing import Optional
@@ -21,7 +21,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class AnalysisRepository:
     """
-    Analysis repository class
+    Repository class for performing CRUD operations on Analysis objects
     """
 
     def __init__(self, session: AsyncSession, index_filter: IndexFilter):
@@ -31,11 +31,11 @@ class AnalysisRepository:
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[Analysis]:
         """
-        Read the analysis by given id
-        :param _id:
+        Fetch an Analysis object by its ID
+        :param _id: The ID of the Analysis object to fetch
         :type _id: IdSpecification
-        :return:
-        :rtype: Analysis
+        :return: The Analysis object, if found. Otherwise, return None
+        :rtype: Optional[Analysis]
         """
         async with self.session as session:
             try:
@@ -51,13 +51,15 @@ class AnalysisRepository:
             self, offset: NonNegativeInt, limit: PositiveInt,
     ) -> Optional[list[Analysis]]:
         """
-        Read analyses information from table
-        :param offset: Offset from where to start returning analyses
+        Fetch a list of Analysis objects within a certain range
+        :param offset: The starting point from which to fetch the
+         Analysis objects
         :type offset: NonNegativeInt
-        :param limit: Limit the number of results from query
+        :param limit: The maximum number of Analysis objects to fetch
         :type limit: PositiveInt
-        :return: Analyses information
-        :rtype: list[Analysis]
+        :return: A list of Analysis objects within the range, if found.
+         Otherwise, return None
+        :rtype: Optional[list[Analysis]]
         """
         stmt: Select = select(self.model).offset(offset).limit(limit)
         async with self.session as session:
@@ -73,12 +75,14 @@ class AnalysisRepository:
     async def create_analysis(
             self, analysis: AnalysisCreate) -> Optional[Analysis]:
         """
-        Create analysis into the database
-        :param analysis: Request object representing the analysis
-        :type analysis: AnalysisCreate or AnalysisSuperCreate
-        :return: Response object representing the created analysis in the
+        Insert a new Analysis object into the database
+        :param analysis: A request object containing the details of the
+         Analysis object to be inserted
+        :type analysis: AnalysisCreate
+        :return: The inserted Analysis object, if successful.
+         Otherwise, return None.
          database
-        :rtype: Analysis
+        :rtype: Optional[Analysis]
         """
         analysis_create: Analysis = Analysis(**analysis.dict())
         async with self.session as session:
@@ -101,8 +105,10 @@ class AnalysisRepository:
 
 async def get_analysis_repository() -> AnalysisRepository:
     """
-    Get an instance of the analysis repository with the given session.
-    :return: AnalysisRepository instance with session associated
+    Factory function for creating an AnalysisRepository instance with
+     an associated session.
+    :return: An instance of the AnalysisRepository class with an
+     associated session
     :rtype: AnalysisRepository
     """
     return AnalysisRepository(await get_session(), await get_index_filter())

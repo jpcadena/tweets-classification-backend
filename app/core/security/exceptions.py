@@ -1,5 +1,6 @@
 """
-Exceptions script at Core Security package
+This module defines custom exception classes for the Core Security
+ package.
 """
 from sqlalchemy.exc import SQLAlchemyError
 

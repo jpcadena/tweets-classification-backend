@@ -24,7 +24,7 @@ class AnalysisService:
 
     async def get_analysis_by_id(self, analysis_id: PositiveInt) -> Analysis:
         """
-        Get analysis information with the correct schema for response
+        Get analysis information by the given id.
         :param analysis_id: Unique identifier of the analysis
         :type analysis_id: PositiveInt
         :return: Analysis information
@@ -39,12 +39,12 @@ class AnalysisService:
 
     async def register_analysis(self, analysis: AnalysisCreate) -> Analysis:
         """
-        Create analysis into the database
+        Register an analysis into the database
         :param analysis: Request object representing the analysis
-        :type analysis: AnalysisCreate or AnalysisSuperCreate
+        :type analysis: AnalysisCreate
         :return: Response object representing the created analysis in the
          database
-        :rtype: AnalysisCreateResponse or exception
+        :rtype: Analysis
         """
         try:
             created_analysis: AnalysisDB = await self.analysis_repo. \
@@ -57,13 +57,13 @@ class AnalysisService:
             self, offset: NonNegativeInt, limit: PositiveInt
     ) -> Optional[list[Analysis]]:
         """
-        Read analyses information from table
+        Retrieve  analyses information from the database
         :param offset: Offset from where to start returning analyses
         :type offset: NonNegativeInt
         :param limit: Limit the number of results from query
         :type limit: PositiveInt
-        :return: Analysis information
-        :rtype: AnalysisResponse
+        :return: Analyses information
+        :rtype: Optional[list[Analysis]]
         """
         try:
             analyses: list[

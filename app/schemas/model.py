@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field, PositiveInt, NonNegativeFloat, \
 
 class ModelID(BaseModel):
     """
-    Model ID class that inherits from Pydantic Base Model.
+    Schema for representing a Model's ID.
     """
     id: PositiveInt = Field(
         ..., title="Model ID", description="ID of the Model")
@@ -18,7 +18,7 @@ class ModelID(BaseModel):
 
 class ModelBase(BaseModel):
     """
-    Base Model class that inherits from Pydantic Base Model.
+    Base schema for representing a Model.
     """
     tweet_id: PositiveInt = Field(
         ..., title="Tweet ID", description="ID of the Tweet")
@@ -43,7 +43,7 @@ class ModelBase(BaseModel):
 
 class ModelCreatedAt(BaseModel):
     """
-    Model Created At class that inherits from Pydantic Base Model.
+    Schema for representing the creation timestamp of a Model.
     """
     created_at: Optional[datetime] = Field(
         default_factory=datetime.now, title="Created At",
@@ -52,7 +52,7 @@ class ModelCreatedAt(BaseModel):
 
 class ModelCreate(ModelCreatedAt, ModelBase):
     """
-    Class for creating Model that inherits from ModelBase.
+    Schema for creating a Model record
     """
     analysis_id: Optional[PositiveInt] = Field(
         default=None, title="Analysis ID",
@@ -78,8 +78,7 @@ class ModelCreate(ModelCreatedAt, ModelBase):
 
 class Model(ModelCreate, ModelID):
     """
-    Model class that inherits from ModelCreatedAt, ModelCreate and
-     ModelID.
+    Schema for representing a Model.
     """
 
     class Config:

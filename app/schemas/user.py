@@ -13,15 +13,15 @@ from app.schemas.gender import Gender
 
 class UserID(BaseModel):
     """
-    Core class for User based on Pydantic Base Model.
+    Schema for representing a User's ID.
     """
     id: PositiveInt = Field(..., title="ID", description="ID of the User")
 
 
 class UserRelationship(BaseModel):
     """
-    Relationship class for User with Analysis based on Pydantic Base
-     Model.
+    Schema for representing the relationship between a User and
+     Analyses.
     """
     analyses: Optional[list[Analysis]] = Field(
         default=[], title="Analyses", description="List of related analyses",
@@ -30,7 +30,7 @@ class UserRelationship(BaseModel):
 
 class UserUpdatedAt(BaseModel):
     """
-    UpdatedAt class for User based on Pydantic Base Model.
+    Schema for representing the update timestamp of a User.
     """
     updated_at: Optional[datetime] = Field(
         default=None, title="Updated at",
@@ -39,7 +39,8 @@ class UserUpdatedAt(BaseModel):
 
 class UserBaseAuth(BaseModel):
     """
-    User Base Auth class based on Pydantic Base Model
+    Schema for representing the basic authentication attributes of a
+     User.
     """
     username: str = Field(
         ..., title="Username", description="Username to identify the user",
@@ -50,13 +51,13 @@ class UserBaseAuth(BaseModel):
 
 class UserFilter(UserBaseAuth, UserID):
     """
-    User Filter class that inherits from UserBaseAuth and UserID.
+    Schema for filtering User records.
     """
 
 
 class UserName(BaseModel):
     """
-    User class for names attributes based on Pydantic Base Model.
+    Schema for representing the name attributes of a User.
     """
     first_name: str = Field(
         ..., title="First name", description="First name(s) of the User")
@@ -66,7 +67,7 @@ class UserName(BaseModel):
 
 class UserBase(UserName, UserBaseAuth):
     """
-    Base class for User that inherits from UserAuth.
+    Base schema for representing a User.
     """
 
 
@@ -88,7 +89,7 @@ class UserAuth(UserBaseAuth, UserID):
 
 class UserOptional(BaseModel):
     """
-    User class with optional attributes based on Pydantic Base Model.
+    Schema for representing a User with optional attributes.
     """
     middle_name: Optional[str] = Field(
         default=None, title="Middle Name",
@@ -111,8 +112,7 @@ class UserOptional(BaseModel):
 
 class UserCreate(UserOptional, UserBase):
     """
-    Request class for creating User that inherits from UserOptional
-     and UserBase.
+    Schema for creating a User record.
     """
     password: str = Field(
         ..., title="Password", description="Password of the User",
@@ -139,7 +139,7 @@ class UserCreate(UserOptional, UserBase):
 
 class UserSuperCreate(UserCreate):
     """
-    Class to create a super_user that inherits from UserCreate.
+    Schema for creating a superuser.
     """
     is_superuser: bool = Field(
         default=True, title="Is super user?",
@@ -167,8 +167,7 @@ class UserSuperCreate(UserCreate):
 
 class UserCreateResponse(UserBase, UserID):
     """
-    Response class for creating User that inherits from UserID and
-     UserBase.
+    Schema for the response when creating a User.
     """
 
     class Config:
@@ -187,7 +186,7 @@ class UserCreateResponse(UserBase, UserID):
 
 class UserUpdate(BaseModel):
     """
-    Request class for updating User based on Pydantic Base Model.
+    Schema for updating a User record.
     """
     username: Optional[str] = Field(
         default=None, title="Username",
@@ -242,8 +241,7 @@ class UserUpdate(BaseModel):
 
 class UserInDB(UserUpdatedAt, BaseModel):
     """
-    Class for User attributes that are automatically created in the
-     database based on Pydantic Base Model.
+    Schema for representing a User record in the database.
     """
     is_active: bool = Field(
         ..., title="Is active?",
@@ -258,7 +256,7 @@ class UserInDB(UserUpdatedAt, BaseModel):
 
 class UserPassword(BaseModel):
     """
-    User Password class that inherits from Pydantic Base Model.
+    Schema for representing a User's password.
     """
     password: str = Field(
         ..., title="Hashed Password", min_length=40,
@@ -268,8 +266,7 @@ class UserPassword(BaseModel):
 class UserUpdateResponse(UserInDB, UserOptional, UserPassword, UserName,
                          UserAuth):
     """
-    Response class for updating User that inherits from UserInDB,
-     UserOptional, UserPassword, UserName and UserAuth.
+    Schema for the response when updating a User.
     """
 
     class Config:
@@ -299,8 +296,7 @@ class UserUpdateResponse(UserInDB, UserOptional, UserPassword, UserName,
 
 class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
     """
-    User class that inherits from UserUpdatedAt, UserRelationship,
-     UserCreate and UserID.
+    Schema for representing a User.
     """
     password: str = Field(
         ..., title="Hashed Password", min_length=40,
@@ -343,8 +339,7 @@ class User(UserUpdatedAt, UserRelationship, UserOptional, UserBase):
 
 class UserResponse(UserRelationship, UserInDB, UserOptional, UserBase, UserID):
     """
-    Response for User class that inherits from UserRelationship,
-     UserInDB, UserOptional, UserCreateResponse.
+    Schema for the response when retrieving a User.
     """
 
     class Config:

@@ -1,5 +1,7 @@
 """
 User API Router
+This module provides CRUD (Create, Retrieve, Update, Delete) operations
+ for users.
 """
 from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, status, \
     Response
@@ -27,7 +29,8 @@ async def get_users(
             100, title="Limit", description="Limit pagination", example=100),
 ) -> list[UserResponse]:
     """
-    Get all Users basic information from the system using pagination.
+    Retrieve all users' basic information from the system using
+     pagination.
     - `:param skip:` **Offset from where to start returning users**
     - `:type skip:` **NonNegativeInt**
     - `:param limit:` **Limit the number of results from query**
@@ -71,7 +74,8 @@ async def create_user(
      and middle name.**
     - `:rtype:` **UserCreateResponse**
     \f
-    :param background_tasks: Send email to confirm registration
+    :param background_tasks: Used for sending an email to confirm
+     registration in the background
     :type background_tasks: BackgroundTasks
     :param user_service: Dependency method for user service layer
     :type user_service: ServiceUser
@@ -94,7 +98,7 @@ async def get_user_me(
         current_user: CurrentUser, user_service: ServiceUser
 ) -> UserResponse:
     """
-    Get current user.
+    Retrieve the current user's information.
     - `:return:` **Response object for current user with id, username,
      email, first_name, last_name, middle_name, gender, birthdate,
       phone_number, city, country, is_active, is_superuser, created_at,
@@ -125,8 +129,8 @@ async def get_user_by_id(
             example=1)
 ) -> UserResponse:
     """
-    Get an existing user from the system given an ID.
-    - `:param user_id:` **Unique identifier of the user**
+    Retrieve an existing user's information given their user ID.
+    - `:param user_id:` **Unique identifier of the user to be retrieved**
     - `:type user_id:` **PositiveInt**
     - `:return:` **Found user with the given ID including its username,
      email, first_name, last_name, middle_name, gender, birthdate,
@@ -163,8 +167,9 @@ async def update_user(
             ..., title="User data", description="New user data to update")
 ) -> UserUpdateResponse:
     """
-    Update an existing user from the system given an ID and new info.
-    - `:param user_id:` **Unique identifier of the user**
+    Update an existing user's information given their user ID and new
+     information.
+    - `:param user_id:` **Unique identifier of the user to be updated**
     - `:type user_id:` **PositiveInt**
     - `:param user_in:` **New user data to update that can include:
      username, email, first_name, middle_name, last_name, password,
@@ -201,8 +206,8 @@ async def delete_user(
             example=1)
 ) -> Response:
     """
-    Delete an existing user from the system given an ID and new info.
-    - `:param user_id:` **Unique identifier of the user**
+    Delete an existing user given their user ID.
+    - `:param user_id:` **Unique identifier of the user to be deleted**
     - `:type user_id:` **PositiveInt**
     - `:return:` **Json Response object with the deleted information**
     - `:rtype:` **Response**

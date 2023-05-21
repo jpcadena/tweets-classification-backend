@@ -1,5 +1,7 @@
 """
-Logging script for Core module
+This script sets up different logging handlers for the Core module.
+It provides console, file, and mail logging capabilities based on the
+ provided settings.
 """
 import logging
 import os
@@ -11,10 +13,10 @@ from app.core import config
 
 def _setup_console_handler(logger: logging.Logger, log_level: int) -> None:
     """
-    Setup console handler
-    :param logger: Logger instance
+    Configure a console handler for the given logger
+    :param logger: The logger instance to set up a console handler for
     :type logger: logging.Logger
-    :param log_level: The log level
+    :param log_level: The log level for the console handler
     :type log_level: int
     :return: None
     :rtype: NoneType
@@ -29,10 +31,10 @@ def _setup_mail_handler(
         settings: config.Settings = config.get_settings()
 ) -> None:
     """
-    Setup mail handler
-    :param logger: Logger instance
+    Configure a mail handler for the given logger
+    :param logger: The logger instance to set up a mail handler for
     :type logger: logging.Logger
-    :param log_level: The log level
+    :param log_level: The log level for the mail handler
     :type log_level: int
     :return: None
     :rtype: NoneType
@@ -60,10 +62,10 @@ def _setup_mail_handler(
 
 def _create_logs_folder(settings: config.Settings) -> str:
     """
-    Create a log folder
+    Create a logs folder if it doesn't already exist
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: The logs folder path
+    :return: The path to the logs folder
     :rtype: str
     """
     project_root: str = os.path.dirname(os.path.abspath(__file__))
@@ -77,10 +79,11 @@ def _create_logs_folder(settings: config.Settings) -> str:
 
 def _build_log_filename(settings: config.Settings) -> str:
     """
-    Build the log filename
+    Create a log filename using the current date and configured date
+     format.
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: The log filename
+    :return: The filename for the log file
     :rtype: str
     """
     return f"log-{datetime.today().strftime(settings.FILE_DATE_FORMAT)}.log"
@@ -90,14 +93,14 @@ def _configure_file_handler(
         log_filename: str, log_level: int, settings: config.Settings
 ) -> logging.FileHandler:
     """
-    Configure the file handler
-    :param log_filename: The log filename
+    Configure a file handler with the given filename and log level
+    :param log_filename: The filename for the log file
     :type log_filename: str
-    :param log_level: The log level
+    :param log_level: The log level for the file handler
     :type log_level: int
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: The logger file handler object
+    :return: A configured file handler
     :rtype: logging.FileHandle
     """
     formatter: logging.Formatter = logging.Formatter(
@@ -113,10 +116,10 @@ def _setup_file_handler(
         settings: config.Settings = config.get_settings()
 ) -> None:
     """
-    Setup file handler
-    :param logger: The logger instance
+    Configure a file handler for the given logger
+    :param logger: The logger instance to set up a file handler for
     :type logger: logging.Logger
-    :param log_level: The log level
+    :param log_level: The log level for the file handler
     :type log_level: int
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
@@ -136,8 +139,9 @@ def setup_logging(
         settings: config.Settings = config.get_settings()
 ) -> None:
     """
-    Setup logging
-    :param log_level: Level of logging
+    Initialize logging for the application
+    :param log_level: The log level to use for the application.
+     Defaults to DEBUG
     :type log_level: int
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings

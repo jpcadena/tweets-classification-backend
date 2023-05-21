@@ -1,5 +1,6 @@
 """
-JWT security script
+This module handles JSON Web Token (JWT) creation for authentication
+ and authorization.
 """
 import logging
 from datetime import datetime, timedelta
@@ -20,12 +21,14 @@ async def _generate_expiration_time(
         expires_delta: Optional[timedelta], minutes: Optional[float] = None
 ) -> datetime:
     """
-    Generates expiration time
-    :param expires_delta: The expiration delta
+    Generate an expiration time for JWT
+    :param expires_delta: The timedelta specifying when the token
+     should expire
     :type expires_delta: timedelta
-    :param minutes: The minutes to add
+    :param minutes: The minutes to add to the current time to get the
+     expiration time
     :type minutes: float
-    :return: The expiration time
+    :return: The calculated expiration time
     :rtype: datetime
     """
     if expires_delta:
@@ -43,16 +46,16 @@ async def create_access_token(
         settings: config.Settings = Depends(config.get_settings),
 ) -> str:
     """
-    Function to create a new access token
+    Create a new JWT access token
     :param scope: The token's scope.
     :type scope: Scope
-    :param payload: claims for token
+    :param payload: The payload or claims for the token
     :type payload: dict
-    :param expires_delta: time expiration
+    :param expires_delta: The timedelta specifying when the token should expire
     :type expires_delta: timedelta
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: encoded JWT
+    :return: The encoded JWT
     :rtype: str
     """
     expire_time: datetime = await _generate_expiration_time(
@@ -75,12 +78,12 @@ async def create_refresh_token(
         settings: config.Settings = Depends(config.get_settings)
 ) -> str:
     """
-    Create refresh token for authentication
-    :param payload: data to be used as payload in Token
+    Create a refresh token for authentication
+    :param payload: The data to be used as payload in the token
     :type payload: dict[str, Any]
     :param settings: Dependency method for cached setting object
     :type settings: Settings
-    :return: access token with refresh expiration time
+    :return: The access token with refresh expiration time
     :rtype: str
     """
     expires: timedelta = timedelta(

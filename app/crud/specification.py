@@ -1,5 +1,8 @@
 """
-Specification script
+This script contains abstract and concrete classes to represent
+ specification objects.
+These specification objects encapsulate the rules to filter or select
+ specific data.
 """
 from abc import ABC, abstractmethod
 from typing import Any
@@ -9,7 +12,7 @@ from pydantic import PositiveInt, EmailStr
 
 class Specification:
     """
-    Specification class
+    Abstract base class to define specifications
     """
 
     def __init__(self, value: Any):
@@ -18,7 +21,7 @@ class Specification:
 
 class IdSpecification(Specification):
     """
-    ID Specification class based on Specification
+    Specification subclass that encapsulates an ID
     """
 
     def __init__(self, obj_id: PositiveInt):
@@ -27,7 +30,7 @@ class IdSpecification(Specification):
 
 class EmailSpecification(Specification):
     """
-    Email Specification class based on Specification
+    Specification subclass that encapsulates an email address
     """
 
     def __init__(self, email: EmailStr):
@@ -36,7 +39,7 @@ class EmailSpecification(Specification):
 
 class UsernameSpecification(Specification):
     """
-    Username Specification class based on Specification
+    Specification subclass that encapsulates a username
     """
 
     def __init__(self, username: str):
@@ -45,24 +48,25 @@ class UsernameSpecification(Specification):
 
 class TwitterBaseSpecification(ABC):
     """
-    Base Specification class based on Abstract Base Class.
+    Abstract Base Class to define specifications for a Twitter query.
     """
 
     @abstractmethod
     def apply(self, query: str = "") -> str:
         """
-        Apply the query
-        :param query: Value of the query
+        Abstract method to apply the specification to a query
+        :param query: The current query to which the specification will
+         be applied
         :type query: str
-        :return: Query applied
+        :return: The modified query with the specification applied
         :rtype: str
         """
 
 
 class TwitterUsernameSpecification(TwitterBaseSpecification):
     """
-    Twitter Username Specification class that inherits from
-     TwitterBaseSpecification.
+    TwitterBaseSpecification subclass that encapsulates a Twitter
+     username and language.
     """
 
     def __init__(self, username: str, lang: str = "es"):

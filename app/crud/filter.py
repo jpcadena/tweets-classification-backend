@@ -1,5 +1,6 @@
 """
-Filter script
+This script contains abstract and concrete filter classes for data
+ models.
 """
 import logging
 from abc import ABC, abstractmethod
@@ -22,7 +23,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class Filter(ABC):
     """
-    Filter class
+    Abstract Base Class for creating filters on data models
     """
 
     @abstractmethod
@@ -31,23 +32,24 @@ class Filter(ABC):
             model: Union[User, Model, Analysis], field: str
     ) -> Optional[Union[User, Model, Analysis]]:
         """
-        Filter method
-        :param spec: specification to filter by
+        Filter method to be implemented by subclasses
+        :param spec: Specification to filter by
         :type spec: Specification
         :param session: Async Session for Database
         :type session: AsyncSession
-        :param model: Datatable model
+        :param model: The data model to be filtered
         :type model: User, Model or Analysis
         :param field: The field for UniqueFilter
         :type field: str
-        :return: Datatable model instance
-        :rtype: User, Model or Analysis
+        :return: An instance of the data model that matches the filter.
+         Returns None if no match is found
+        :rtype: Optional[Union[User, Model, Analysis]]
         """
 
 
 class IndexFilter(Filter):
     """
-    User Filter class based on Filter for ID.
+    Filter subclass that filters data models by their ID.
     """
 
     @with_logging
@@ -60,16 +62,17 @@ class IndexFilter(Filter):
         async with session as async_session:
             try:
                 db_obj = await async_session.get(model, _id)
+                logger.info("Retrieving row with id: %s", _id)
+                return db_obj
             except SQLAlchemyError as sa_exc:
                 logger.error(sa_exc)
                 raise sa_exc
-            logger.info("Retrieving row with id: %s", _id)
-            return db_obj
 
 
 class UniqueFilter(Filter):
     """
-    Unique Filter class based on Filter for Username and Email.
+    Filter subclass that filters data models by a unique field, such as
+     username or email.
     """
 
     @with_logging
@@ -97,8 +100,8 @@ class UniqueFilter(Filter):
 
 async def get_index_filter() -> IndexFilter:
     """
-    Get an IndexFilter instance
-    :return: IndexFilter instance
+    Factory function that returns an instance of the IndexFilter class
+    :return: An instance of the IndexFilter class
     :rtype: IndexFilter
     """
     return IndexFilter()
@@ -106,8 +109,8 @@ async def get_index_filter() -> IndexFilter:
 
 async def get_unique_filter() -> UniqueFilter:
     """
-    Get an UniqueFilter instance
-    :return: UniqueFilter instance
+    Factory function that returns an instance of the UniqueFilter class
+    :return: An instance of the UniqueFilter class
     :rtype: UniqueFilter
     """
     return UniqueFilter()

@@ -1,10 +1,10 @@
 """
 Model Service to handle business logic
 """
-from typing import Optional, Annotated, Type
+from typing import Annotated, Optional, Type
 
 from fastapi import Depends
-from pydantic import PositiveInt, NonNegativeInt
+from pydantic import NonNegativeInt, PositiveInt
 
 from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.model import ModelRepository, get_model_repository
@@ -24,7 +24,7 @@ class ModelService:
 
     async def get_model_by_id(self, model_id: PositiveInt) -> ModelResponse:
         """
-        Get model information with the correct schema for response
+        Get model information by model ID.
         :param model_id: Unique identifier of the model
         :type model_id: PositiveInt
         :return: Model information
@@ -39,12 +39,12 @@ class ModelService:
 
     async def register_model(self, model: ModelCreate) -> ModelResponse:
         """
-        Create model into the database
+        Register a model into the database
         :param model: Request object representing the model
-        :type model: ModelCreate or ModelSuperCreate
+        :type model: ModelCreate
         :return: Response object representing the created model in the
          database
-        :rtype: ModelCreateResponse or exception
+        :rtype: ModelResponse
         """
         try:
             created_model: Model = await self.model_repo.create_model(model)
@@ -56,13 +56,13 @@ class ModelService:
             self, offset: NonNegativeInt, limit: PositiveInt
     ) -> Optional[list[ModelResponse]]:
         """
-        Read models information from table
+        Retrieve models information from the database
         :param offset: Offset from where to start returning models
         :type offset: NonNegativeInt
         :param limit: Limit the number of results from query
         :type limit: PositiveInt
-        :return: Model information
-        :rtype: ModelResponse
+        :return: Models information
+        :rtype: Optional[list[ModelResponse]]
         """
         try:
             models: list[Model] = await self.model_repo.read_models(

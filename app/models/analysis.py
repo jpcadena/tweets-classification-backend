@@ -16,7 +16,7 @@ from ..core.config import settings
 
 class Analysis(Base):
     """
-    Analysis class model as a table
+    Analysis model class representing the "analysis" table
     """
     __tablename__ = "analysis"
 

@@ -15,7 +15,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 
 def remove_stopwords_and_tokenize(
-        text: str, stop_words: list[str]) -> list[str]:
+        text: str, stop_words: list[str]
+) -> list[str]:
     """
     Removes stopwords from a string of text and tokenizes it
     :param text: The text to process
@@ -43,6 +44,8 @@ async def get_stopwords(
             settings.STOP_WORDS_FILE_PATH, encoding=settings.ENCODING) as file:
         content: str = await file.read()
         exclude_words: list[str] = json.loads(content).get("spanish")
+        logger.info(
+            "Stop words from %s retrieved", settings.STOP_WORDS_FILE_PATH)
     stop_words: list[str] = nltk.corpus.stopwords.words("spanish")
     stop_words.extend(exclude_words)
     return list(set(stop_words))

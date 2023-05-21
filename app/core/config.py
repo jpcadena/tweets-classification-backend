@@ -12,10 +12,10 @@ from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
 
 def get_image_b64(image_path: str) -> str:
     """
-    Get the image in 64-bytes format
-    :param image_path: The path to the image
+    Converts an image to base64 format
+    :param image_path: Path to the image file
     :type image_path: str
-    :return: The image in 64-bytes format
+    :return: The image file in base64 format
     :rtype: str
     """
     return base64.b64encode(Path(image_path).read_bytes()).decode("utf")
@@ -61,8 +61,8 @@ class Settings(BaseSettings):
             cls, v: Union[str, list[str]]
     ) -> Union[list[str], str]:
         """
-        Assemble Backend CORS origins validator.
-        :param v:
+        Assemble a list of allowed CORS origins.
+        :param v: Provided CORS origins, either a string or a list of strings
         :type v: Union[str, list[str]]
         :return: List of Backend CORS origins to be accepted
         :rtype: Union[list[str], str]

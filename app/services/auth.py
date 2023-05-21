@@ -1,5 +1,5 @@
 """
-Main script
+Authentication Service
 """
 import time
 import uuid
@@ -14,7 +14,7 @@ from app.models.user import User
 
 class AuthService:
     """
-    Authentication Service class.
+    Service class for user authentication.
     """
 
     @staticmethod
@@ -44,12 +44,13 @@ class AuthService:
             settings: config.Settings = Depends(config.get_settings)
     ) -> tuple[str, str, str]:
         """
-        Authentication function for JWT
+        Authenticate a user and generate access and refresh tokens
         :param user: User to authenticate
         :type user: User
         :param settings: Dependency method for cached setting object
         :type settings: config.Settings
-        :return: Tuple with tokens and name for token
+        :return: Tuple containing the access token, refresh token, and
+         token name
         :rtype: Tuple[str, str, str]
         """
         payload: dict[str, Any] = AuthService._build_payload(user, settings)

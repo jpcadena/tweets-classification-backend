@@ -1,5 +1,5 @@
 """
-Init DB script
+Initialization of the database (PostgreSQL) script
 """
 import logging
 
@@ -25,7 +25,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 @benchmark
 async def create_db_and_tables() -> None:
     """
-    Create database and tables without duplicating them.
+    Create the database and tables if they don't exist
     :return: None
     :rtype: NoneType
     """
@@ -63,8 +63,8 @@ async def init_db(
         user_repo: UserRepository = Depends(get_user_repository),
         settings: config.Settings = Depends(config.get_settings)) -> None:
     """
-    Initialization of the database connection
-    :param user_repo: Dependency injection for user repository
+    Initialize the database connection and create the necessary tables.
+    :param user_repo: The user repository dependency.
     :type user_repo: UserRepository
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings

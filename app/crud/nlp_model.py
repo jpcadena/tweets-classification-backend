@@ -1,5 +1,6 @@
 """
-NLP Model CRUD script
+This script provides the data access layer to perform CRUD operations
+ on the NLP Model entity
 """
 import json
 import logging
@@ -16,7 +17,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class NLPModelRepository:
     """
-    NLP Model repository class
+    Repository class for NLP Model
     """
 
     @with_logging
@@ -24,9 +25,9 @@ class NLPModelRepository:
     async def get_single_tweet(self, tweet_id: PositiveInt) -> dict[str, Any]:
         """
         Retrieve a single tweet by its id
-        :param tweet_id: Unique identifier of the tweet
+        :param tweet_id: The unique identifier of the tweet
         :type tweet_id: PositiveInt
-        :return: Tweet information as a dictionary
+        :return: A dictionary containing the tweet information
         :rtype: dict[str, Any]
         """
         tweet_scraper: sn_twitter.TwitterTweetScraper = \
@@ -44,15 +45,16 @@ class NLPModelRepository:
             limit: PositiveInt = 10, func: Optional[Callable[[Any], Any]] = None
     ) -> list[dict[str, Any]]:
         """
-        Get certain number of recent tweets from Username based on its
-        specification.
-        :param twitter_specification: Specification to use as filter
+        Retrieve a certain number of recent tweets based on a Twitter
+         specification
+        :param twitter_specification: The specification to use as
+         filter
         :type twitter_specification: TwitterBaseSpecification
-        :param limit: number of tweets to search
+        :param limit: The number of tweets to search
         :type limit: PositiveInt
-        :param func: Function to apply as default for decode json
+        :param func: A function to apply as default for decode json
         :type func: Callable[[Any], Any]
-        :return: list of raw tweets as dictionaries
+        :return: A list of raw tweets as dictionaries
         :rtype: list[dict[str, Any]]
         """
         return [
@@ -64,8 +66,8 @@ class NLPModelRepository:
 
 async def get_nlp_model_repository() -> NLPModelRepository:
     """
-    Get an instance of the NLP model repository.
-    :return: NLP Model Repository instance
+    Create an instance of the NLP model repository.
+    :return: A NLPModelRepository instance
     :rtype: NLPModelRepository
     """
     return NLPModelRepository()

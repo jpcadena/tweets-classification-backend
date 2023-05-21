@@ -2,10 +2,10 @@
 User Service to handle business logic
 """
 from datetime import datetime
-from typing import Optional, Union, Type, Annotated, Any
+from typing import Annotated, Any, Optional, Type, Union
 
 from fastapi import Depends
-from pydantic import EmailStr, PositiveInt, NonNegativeInt
+from pydantic import EmailStr, NonNegativeInt, PositiveInt
 
 from app.core.security.exceptions import DatabaseException, ServiceException, \
     NotFoundException
@@ -20,7 +20,7 @@ from app.services import model_to_response
 
 class UserService:
     """
-    User service class
+    Service class for user-related business logic.
     """
 
     def __init__(self, user_repo: UserRepository):
@@ -30,11 +30,11 @@ class UserService:
             self, user_id: PositiveInt
     ) -> Optional[UserResponse]:
         """
-        Get user information with the correct schema for response
+        Retrieve user information by its unique identifier
         :param user_id: Unique identifier of the user
         :type user_id: PositiveInt
         :return: User information
-        :rtype: UserResponse
+        :rtype: Optional[UserResponse]
         """
         try:
             user: User = await self.user_repo.read_by_id(
@@ -50,11 +50,11 @@ class UserService:
 
     async def get_login_user(self, username: str) -> User:
         """
-        Get user information with the correct schema for response
-        :param username: username to retrieve User from
+        Retrieve user information for login purposes by its username
+        :param username: The username to retrieve User from
         :type username: str
         :return: User information
-        :rtype: UserResponse
+        :rtype: User
         """
         try:
             user: User = await self.user_repo.read_by_username(
@@ -65,8 +65,8 @@ class UserService:
 
     async def get_user_by_username(self, username: str) -> UserResponse:
         """
-        Get user information with the correct schema for response
-        :param username: username to retrieve User from
+        Retrieve user information by its username
+        :param username: The username to retrieve User from
         :type username: str
         :return: User information
         :rtype: UserResponse
@@ -81,11 +81,11 @@ class UserService:
             self, email: EmailStr
     ) -> Optional[UserResponse]:
         """
-        Read the user from the database with unique email.
-        :param email: Email to retrieve User from
+        Retrieve user information by its unique email.
+        :param email: The email to retrieve User from
         :type email: EmailStr
         :return: User found in database
-        :rtype: UserResponse
+        :rtype: Optional[UserResponse]
         """
         try:
             user: User = await self.user_repo.read_by_email(
@@ -115,12 +115,12 @@ class UserService:
             self, user: Union[UserCreate, UserSuperCreate]
     ) -> UserCreateResponse:
         """
-        Create user into the database
+        Register a new user in the database
         :param user: Request object representing the user
-        :type user: UserCreate or UserSuperCreate
+        :type user: Union[UserCreate, UserSuperCreate]
         :return: Response object representing the created user in the
          database
-        :rtype: UserCreateResponse or exception
+        :rtype: UserCreateResponse
         """
         try:
             created_user = await self.user_repo.create_user(user)
@@ -132,13 +132,13 @@ class UserService:
             self, offset: NonNegativeInt, limit: PositiveInt
     ) -> list[UserResponse]:
         """
-        Read users information from table
+        Retrieve users' information from the table
         :param offset: Offset from where to start returning users
         :type offset: NonNegativeInt
         :param limit: Limit the number of results from query
         :type limit: PositiveInt
         :return: User information
-        :rtype: UserResponse
+        :rtype: list[UserResponse]
         """
         try:
             users: list[User] = await self.user_repo.read_users(offset, limit)
@@ -158,7 +158,7 @@ class UserService:
         :param user: Requested user information to update
         :type user: UserUpdate
         :return: User information
-        :rtype: UserUpdateResponse
+        :rtype: Optional[UserUpdateResponse]
         """
         try:
             updated_user: User = await self.user_repo.update_user(

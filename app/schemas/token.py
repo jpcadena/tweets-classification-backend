@@ -4,7 +4,7 @@ Token schema
 from typing import Any
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, EmailStr, AnyUrl
+from pydantic import AnyUrl, BaseModel, EmailStr, Field
 
 from app.core import config
 from app.core.config import settings

@@ -1,5 +1,6 @@
 """
-Password security script
+This module handles password security functions such as hashing and
+ verification.
 """
 from passlib.context import CryptContext
 
@@ -9,10 +10,10 @@ crypt_context: CryptContext = CryptContext(
 
 async def get_password_hash(password: str) -> str:
     """
-    Hashes a password using the bcrypt algorithm
-    :param password: the password to hash
+    Hash a password using the bcrypt algorithm
+    :param password: The password to hash
     :type password: str
-    :return: the hashed password
+    :return: The hashed password
     :rtype: str
     """
     if not password:
@@ -22,10 +23,10 @@ async def get_password_hash(password: str) -> str:
 
 async def verify_password(hashed_password: str, plain_password: str) -> bool:
     """
-    Verifies if a plain password matches a hashed password
-    :param plain_password: the plain text password to check
+    Verifies if a plain text password matches a hashed password
+    :param plain_password: The plain text password to verify
     :type plain_password: str
-    :param hashed_password: the hashed password to compare against
+    :param hashed_password: The hashed password to compare against
     :type hashed_password: str
     :return: True if the passwords match, False otherwise
     :rtype: bool

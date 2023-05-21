@@ -1,5 +1,6 @@
 """
-Login API Router
+Authentication API Router.
+This module provides login and password recovery functionality.
 """
 import logging
 from typing import Annotated
@@ -38,10 +39,10 @@ async def login(
         redis: Redis = Depends(redis_dependency)
 ) -> TokenResponse:
     """
-    Login with OAuth2 authentication using request form.
+    Endpoint to handle user login with OAuth2 authentication using
+     request form.
     ## Parameter:
-    - `user:` **Object from request body with username and
-     password**
+    - `user:` **Request body with username and password**
     - `type:` **OAuth2PasswordRequestForm**
     ## Response:
     - `return:` **Token information with access token, its type and
@@ -86,9 +87,9 @@ async def login(
 async def test_token(
         current_user: CurrentUser) -> UserAuth:
     """
-    Test access token.
+    Endpoint to test the validity of an access token.
     ## Response:
-    - `return:` **User instance**
+    - `return:` **The authenticated user instance**
     - `rtype:` **UserAuth**
     \f
     :param current_user: The current user
@@ -107,7 +108,7 @@ async def recover_password(
             example="someone@example.com")
 ) -> Msg:
     """
-    Recover password.
+    Endpoint to handle password recovery.
     ## Parameter:
     - `email:` **Path parameter that references the email used to recover
      the password**
@@ -147,7 +148,7 @@ async def reset_password(
             description="Object with access token and new password")
 ) -> Msg:
     """
-    Reset password.
+    Endpoint to handle password reset.
     ## Parameter:
     - `token_reset_password:` **Body Object with token and new password**
     - `type:` **TokenResetPassword**

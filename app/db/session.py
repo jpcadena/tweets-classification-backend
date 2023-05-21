@@ -1,5 +1,5 @@
 """
-DB Session script
+Database session script
 """
 from typing import Any, AsyncGenerator
 
@@ -18,7 +18,7 @@ async_engine: AsyncEngine = create_async_engine(
 @with_logging
 async def get_db() -> AsyncGenerator[AsyncSession, Any]:
     """
-    Get connection session to the database as a generator
+    Get an asynchronous session to the database as a generator
     :return session: Async session for database connection
     :rtype session: AsyncSession
     """
@@ -36,7 +36,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, Any]:
 @benchmark
 async def get_session() -> AsyncSession:
     """
-    Get connection session to the database
+    Get an asynchronous session to the database
     :return session: Async session for database connection
     :rtype session: AsyncSession
     """

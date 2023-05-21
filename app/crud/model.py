@@ -1,5 +1,6 @@
 """
-Model CRUD script
+This script provides the data access layer to perform CRUD operations
+ on the Model entity in the database
 """
 import logging
 from typing import Optional
@@ -21,7 +22,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class ModelRepository:
     """
-    Model repository class
+    Repository class for Model
     """
 
     def __init__(self, session: AsyncSession, index_filter: IndexFilter):
@@ -31,11 +32,12 @@ class ModelRepository:
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[Model]:
         """
-        Read a model by its id
-        :param _id:
+        Retrieve a model from the database by its id
+        :param _id: The id of the model
         :type _id: IdSpecification
-        :return:
-        :rtype: Model
+        :return: The model with the specified id, or None if no such
+         model exists
+        :rtype: Optional[Model]
         """
         async with self.session as session:
             try:
@@ -50,13 +52,14 @@ class ModelRepository:
             self, offset: NonNegativeInt, limit: PositiveInt,
     ) -> Optional[list[Model]]:
         """
-        Read models information from table
-        :param offset: Offset from where to start returning models
+        Retrieve a list of models from the database, with pagination
+        :param offset: The number of models to skip before starting to
+         return models
         :type offset: NonNegativeInt
-        :param limit: Limit the number of results from query
+        :param limit: The maximum number of models to return
         :type limit: PositiveInt
-        :return: Model information
-        :rtype: Model
+        :return: A list of models
+        :rtype: Optional[list[Model]]
         """
         stmt: Select = select(self.model).offset(offset).limit(limit)
         async with self.session as session:
@@ -71,12 +74,12 @@ class ModelRepository:
 
     async def create_model(self, model: ModelCreate) -> Optional[Model]:
         """
-        Create model into the database
-        :param model: Request object representing the model
+        Create a new model in the database
+        :param model: An object containing the information of the model
+         to create
         :type model: ModelCreate
-        :return: Response object representing the created model in the
-         database
-        :rtype: Model
+        :return: The created model
+        :rtype: Optional[Model]
         """
         model_create: Model = Model(**model.dict())
         async with self.session as session:
@@ -98,8 +101,9 @@ class ModelRepository:
 
 async def get_model_repository() -> ModelRepository:
     """
-    Get an instance of the model repository with the given session.
-    :return: ModelRepository instance with session associated
+    Create a ModelRepository with an async database session and an
+     index filter
+    :return: A ModelRepository instance
     :rtype: ModelRepository
     """
     return ModelRepository(await get_session(), await get_index_filter())

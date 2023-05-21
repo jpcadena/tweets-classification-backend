@@ -4,7 +4,7 @@ A module for message in the app.utils package.
 import logging
 import smtplib
 from email.mime.text import MIMEText
-from typing import Union, Any
+from typing import Any, Union
 
 from fastapi import Depends
 from pydantic import EmailStr

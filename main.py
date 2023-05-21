@@ -1,5 +1,7 @@
 """
-Main script
+The main script that initiates and runs the FastAPI application.
+This module sets up the application configuration including logging,
+ CORS, database connection, static files routing and API routes.
 """
 import logging
 
@@ -59,7 +61,9 @@ app.mount(
 @app.on_event("startup")
 async def startup_event() -> None:
     """
-    Startup API.
+    Event that runs at the startup of the API application.
+    This function initiates the database, updates the JSON settings,
+     and logs the API start-up message.
     :return: None
     :rtype: NoneType
     """
@@ -72,7 +76,7 @@ async def startup_event() -> None:
 @app.get("/", response_model=Msg)
 async def welcome_message() -> Msg:
     """
-    Function to retrieve homepage.
+    Endpoint function for the base URL ('/') of the API application.
     ## Response:
     - `return:` **Welcome message**
     - `rtype:` **Msg**

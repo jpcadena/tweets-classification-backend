@@ -1,5 +1,6 @@
 """
-User CRUD script
+This script handles CRUD (Create, Read, Update, Delete) operations for
+ User objects in the database.
 """
 import logging
 from datetime import datetime
@@ -27,7 +28,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class UserRepository:
     """
-    Repository class for User.
+    This class handles all operations (CRUD) related to a User in the
+     database.
     """
 
     def __init__(self, session: AsyncSession, index_filter: IndexFilter,
@@ -39,11 +41,12 @@ class UserRepository:
 
     async def read_by_id(self, _id: IdSpecification) -> Optional[User]:
         """
-        Reads the user by its id
-        :param _id:
+        Retrieve a user from the database by its id
+        :param _id: The id of the user
         :type _id: IdSpecification
-        :return: User instance
-        :rtype: User
+        :return: The user with the specified id, or None if no such
+         user exists
+        :rtype: Optional[User]
         """
         async with self.session as session:
             try:
@@ -56,10 +59,10 @@ class UserRepository:
     async def read_by_username(
             self, username: UsernameSpecification) -> User:
         """
-        Read the user by its username
-        :param username: The username to search
+        Retrieve a user from the database by its username
+        :param username: The username of the user
         :type username: UsernameSpecification
-        :return: User instance
+        :return: The user with the specified username
         :rtype: User
         """
         async with self.session as session:
@@ -72,11 +75,12 @@ class UserRepository:
 
     async def read_by_email(self, email: EmailSpecification) -> Optional[User]:
         """
-        Read the user by its email
-        :param email: The email to search
+        Retrieve a user from the database by its email
+        :param email: The email of the user
         :type email: EmailSpecification
-        :return: User instance
-        :rtype: User
+        :return: The user with the specified email, or None if no such
+         user exists
+        :rtype: Optional[User]
         """
         async with self.session as session:
             try:
@@ -89,11 +93,12 @@ class UserRepository:
     async def read_id_by_email(
             self, email: EmailSpecification) -> Optional[PositiveInt]:
         """
-        Read the user by its email
-        :param email: The email to search
+        Retrieve a user's id from the database by the user's email
+        :param email: The email of the user
         :type email: EmailSpecification
-        :return: User instance
-        :rtype: PositiveInt
+        :return: The id of the user with the specified email, or None
+         if no such user exists
+        :rtype: Optional[PositiveInt]
         """
         async with self.session as session:
             try:
@@ -111,13 +116,14 @@ class UserRepository:
             self, offset: NonNegativeInt, limit: PositiveInt,
     ) -> list[User]:
         """
-        Read users information from table
-        :param offset: Offset from where to start returning users
+        Retrieve a list of users from the database, with pagination
+        :param offset: The number of users to skip before starting to
+         return users
         :type offset: NonNegativeInt
-        :param limit: Limit the number of results from query
+        :param limit: The maximum number of users to return
         :type limit: PositiveInt
-        :return: User information
-        :rtype: User
+        :return: A list of users
+        :rtype: list[User]
         """
         stmt: Select = select(User).offset(offset).limit(limit)
         async with self.session as session:
@@ -135,11 +141,11 @@ class UserRepository:
             self, user: Union[UserCreate, UserSuperCreate],
     ) -> User:
         """
-        Create user into the database
-        :param user: Request object representing the user
-        :type user: UserCreate or UserSuperCreate
-        :return: Response object representing the created user in the
-         database
+        Create a new user in the database.
+        :param user: An object containing the information of the user
+         to create
+        :type user: Union[UserCreate, UserSuperCreate]
+        :return: The created user object
         :rtype: User
         """
         hashed_password = await get_password_hash(user.password)
@@ -165,13 +171,14 @@ class UserRepository:
             self, user_id: IdSpecification, user: UserUpdate
     ) -> Optional[User]:
         """
-        Update user information from table
-        :param user_id: Unique identifier of the user
+        Update the information of a user in the database
+        :param user_id: The id of the user to update
         :type user_id: IdSpecification
-        :param user: Requested user information to update
+        :param user: An object containing the new information of the
+         user
         :type user: UserUpdate
-        :return: User information
-        :rtype: User
+        :return: The updated user, or None if no such user exists
+        :rtype: Optional[User]
         """
         async with self.session as session:
             try:
@@ -201,8 +208,8 @@ class UserRepository:
     @benchmark
     async def delete_user(self, user_id: IdSpecification) -> bool:
         """
-        Deletes a user by its id
-        :param user_id: Unique identifier of the user
+        Delete a user from the database
+        :param user_id: The id of the user to delete
         :type user_id: IdSpecification
         :return: True if the user is deleted; otherwise False
         :rtype: bool
@@ -224,8 +231,9 @@ class UserRepository:
 
 async def get_user_repository() -> UserRepository:
     """
-    Get an instance of the user repository with the given session.
-    :return: UserRepository instance with session associated
+    Create a UserRepository with an async database session, an index
+     filter, and a unique filter.
+    :return: A UserRepository instance
     :rtype: UserRepository
     """
     return UserRepository(await get_session(), await get_index_filter(),

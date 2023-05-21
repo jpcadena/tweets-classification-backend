@@ -19,7 +19,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 @benchmark
 async def preprocess_tweet_text(
         tweet_text: str,
-        settings: config.Settings = Depends(config.get_settings)) -> str:
+        settings: config.Settings = Depends(config.get_settings)
+) -> str:
     """
     Preprocess a tweet text
     :param tweet_text: Raw text to preprocess

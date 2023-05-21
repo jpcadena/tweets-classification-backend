@@ -1,14 +1,17 @@
 """
 A module for password in the app.utils package.
 """
-from datetime import timedelta, datetime
-from typing import Optional, Any
+import logging
+from datetime import datetime, timedelta
+from typing import Any, Optional
 
 from fastapi import Depends
 from pydantic import EmailStr
 
 from app.core import config
 from app.utils.security.jwt import encode_jwt, decode_jwt
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 async def generate_password_reset_payload(
@@ -28,6 +31,7 @@ async def generate_password_reset_payload(
         hours=settings.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
     exp: float = expires.timestamp()
     payload: dict[str, Any] = {"exp": exp, "nbf": now, "sub": email}
+    logger.info("Payload generated for password")
     return payload
 
 

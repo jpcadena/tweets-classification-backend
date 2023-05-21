@@ -1,5 +1,7 @@
 """
-API script
+Centralized API routing script.
+This module integrates the individual routers from the different
+ modules of the API.
 """
 from fastapi import APIRouter
 

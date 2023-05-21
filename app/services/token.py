@@ -17,7 +17,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 class TokenService:
     """
-    Token services for authentication database
+    Service class for token operations in the authentication database
     """
 
     @staticmethod
@@ -28,7 +28,7 @@ class TokenService:
             redis: Redis = Depends(redis_dependency)
     ) -> bool:
         """
-        Create token in authentication database
+        Create a token in authentication database
         :param token: Token object with key and value
         :type token: Token
         :param settings: Dependency method for cached setting object
@@ -52,12 +52,12 @@ class TokenService:
             key: str,
             redis: Redis = Depends(redis_dependency)) -> Optional[str]:
         """
-        Read token from authentication database
-        :param key: key to search for
+        Read token from the authentication database
+        :param key: The key to search for
         :type key: str
         :param redis: Dependency method for async Redis connection
         :type redis: Redis
-        :return: Refresh token
+        :return: The refresh token
         :rtype: str
         """
         try:

@@ -18,7 +18,7 @@ from app.schemas.gender import Gender
 
 class User(Base):
     """
-    User class model as a table
+    User model class representing the "users" table
     """
     __tablename__ = "users"
 

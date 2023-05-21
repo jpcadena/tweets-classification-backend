@@ -29,6 +29,7 @@ def remove_emoji(text: str) -> str:
         + "\U0001fcd0-\U0001fcd9"  # Unicode 14.0 emojis
         + "\U0001fdd0-\U0001fdd9"  # Unicode 15.0 emojis
           "]+", flags=re.UNICODE)
+    logger.info("Emojis removed from %s", text)
     return emoji_pattern.sub("", text)
 
 

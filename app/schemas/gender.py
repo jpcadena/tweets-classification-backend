@@ -6,7 +6,7 @@ from enum import Enum
 
 class Gender(str, Enum):
     """
-    Gender class that inherits from built-in Enum
+    Enum representing different gender options
     """
     MALE: str = "male"
     FEMALE: str = "female"

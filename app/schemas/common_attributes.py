@@ -1,5 +1,5 @@
 """
-A module for common attributes in the app.schemas package.
+Module for common attributes in the schemas package
 """
 from datetime import datetime
 from typing import Optional

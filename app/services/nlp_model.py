@@ -3,7 +3,7 @@ NLP Model Service to execute the model at the Data Science Project
 """
 import logging
 from datetime import datetime
-from typing import Type, Annotated
+from typing import Annotated, Type
 
 import joblib
 import pandas as pd
@@ -77,11 +77,12 @@ class NLPService:
     @benchmark
     async def classify_tweet(self, data: dict) -> bool:
         """
-        Classify tweet as if its content is about national insecurity or not.
+        Classify a tweet based on its content.
         :param data: Analysis object as dictionary
         :type data: dict
-        :return: Target classified
-        :rtype:bool
+        :return: True if the tweet's content is about national
+         insecurity, False otherwise
+        :rtype: bool
         """
         analysis_df: pd.DataFrame = pd.DataFrame.from_dict(data)
         predicted_sentiment: NonNegativeInt = self.model.predict(

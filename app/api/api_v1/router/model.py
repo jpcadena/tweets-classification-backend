@@ -1,5 +1,7 @@
 """
 Model router module for API endpoints.
+This module handles the routing for model-related API endpoints,
+ including creating, reading, and listing models.
 """
 from fastapi import APIRouter, status, Path, Body, Query
 from fastapi.exceptions import HTTPException
@@ -54,8 +56,8 @@ async def get_model(
             example=1)
 ) -> Model:
     """
-    Search for specific Model by ID from the system.
-    - `:param model_id:` **Path Parameter of Model ID to search**
+    Retrieves a specific Model by its ID.
+    - `:param model_id:` **Path Parameter of Model ID to be retrieved**
     - `:type model_id:` **PositiveInt**
     - `:return:` **Found Model from logged-in user with id, tweet_id,
      model_name, accuracy, precision, recall, f1_score, roc_auc,
@@ -79,16 +81,17 @@ async def get_model(
 async def get_models(
         model_service: ServiceModel, current_user: CurrentUser,
         skip: NonNegativeInt = Query(
-            default=0, title="Skip", description="Skip users", example=0),
+            default=0, title="Skip", description="Number of models to skip",
+            example=0),
         limit: PositiveInt = Query(
-            default=100, title="Limit", description="Limit pagination",
-            example=100)
+            default=100, title="Limit",
+            description="Maximum number of models to return", example=100)
 ) -> list[Model]:
     """
-    Retrieve all models from the system.
-    - `:param skip:` **Offset from where to start returning models**
+    Retrieves all Models, with pagination.
+    - `:param skip:` **Number of models to skip**
     - `:type skip:` **NonNegativeInt**
-    - `:param limit:` **Limit the number of results from query**
+    - `:param limit:` **Maximum number of models to return**
     - `:type limit:` **PositiveInt**
     - `:return:` **All models from logged-in user with id, tweet_id,
      model_name, accuracy, precision, recall, f1_score, roc_auc,

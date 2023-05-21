@@ -22,8 +22,6 @@ async def send_email(
 ) -> bool:
     """
     Send an e-mail to a recipient.
-    :param settings:
-    :type settings:
     :param email_to: The email address of the recipient
     :type email_to: EmailStr
     :param subject_template: The subject of the email

@@ -35,7 +35,7 @@ async def read_template_file(
     """
     Read the template file
     :param template_path: Path to the template
-    :type template_path: str
+    :type template_path: Union[str, Path]
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: Template string

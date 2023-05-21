@@ -21,7 +21,7 @@ async def update_operation_id(operation: dict[str, Any]) -> None:
     """
     Update the operation ID of a single operation.
     :param operation: Operation object
-    :type operation: dict
+    :type operation: dict[str, Any]
     :return: None
     :rtype: NoneType
     """
@@ -36,9 +36,9 @@ async def modify_json_data(data: dict[str, Any]) -> dict[str, Any]:
     """
     Modify the JSON data
     :param data: JSON data to modify
-    :type data: dict
+    :type data: dict[str, Any]
     :return: Modified JSON data
-    :rtype: dict
+    :rtype: dict[str, Any]
     """
     for key, path_data in data["paths"].items():
         if key == "/":

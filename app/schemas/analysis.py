@@ -2,7 +2,7 @@
 Analysis of Tweet schema
 """
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field, PositiveInt
 
@@ -11,7 +11,7 @@ from app.schemas.model import Model
 
 class AnalysisId(BaseModel):
     """
-    Analysis ID class that inherits from Pydantic Base Model.
+    Schema for representing an Analysis's ID.
     """
     id: PositiveInt = Field(
         ..., title="Analysis ID", description="ID of the Analysis")
@@ -19,7 +19,7 @@ class AnalysisId(BaseModel):
 
 class AnalysisTarget(BaseModel):
     """
-    Analysis Target class that inherits from Pydantic Base Model.
+    Schema for representing the Analysis's Target.
     """
     target: bool = Field(
         ..., title="Target (Insecurity)",
@@ -28,7 +28,7 @@ class AnalysisTarget(BaseModel):
 
 class AnalysisBase(BaseModel):
     """
-    Base Analysis class that inherits from AnalysisTarget.
+    Base schema for representing an Analysis.
     """
     tweet_id: PositiveInt = Field(
         ..., title="Tweet ID", description="ID of the Tweet")
@@ -53,7 +53,7 @@ class AnalysisBase(BaseModel):
 
 class AnalysisCreate(AnalysisTarget, AnalysisBase):
     """
-    Class for created Analysis that inherits from AnalysisBase
+    Schema for creating an Analysis record
     """
 
     class Config:
@@ -74,8 +74,7 @@ class AnalysisCreate(AnalysisTarget, AnalysisBase):
 
 class Analysis(AnalysisTarget, AnalysisBase, AnalysisId):
     """
-    Analysis class that inherits from AnalysisId, AnalysisBase and
-    AnalysisTarget.
+    Schema for representing an Analysis.
     """
 
     class Config:

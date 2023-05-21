@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class Msg(BaseModel):
     """
-    Base class for Messages.
+    Schema for representing a message.
     """
     msg: str = Field(..., title="Message", description="Message to display")
 

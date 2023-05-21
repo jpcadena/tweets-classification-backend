@@ -20,7 +20,7 @@ async def build_email_template(
     :type template_file: str
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
-    :return: The template read
+    :return: The template read as a string
     :rtype: str
     """
     template_path: Path = Path(settings.EMAIL_TEMPLATES_DIR) / template_file

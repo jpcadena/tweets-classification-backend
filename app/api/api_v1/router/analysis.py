@@ -1,6 +1,9 @@
 """
 Analysis router module for API endpoints.
+This module handles the routing for analysis-related API endpoints,
+ including creating, reading, and updating analyses.
 """
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, Path, Query
@@ -15,6 +18,7 @@ from app.schemas.analysis import Analysis, AnalysisCreate
 from app.services.analysis import ServiceAnalysis
 from app.services.nlp_model import ServiceNLP
 
+logger: logging.Logger = logging.getLogger(__name__)
 # pylint: disable=unused-argument
 router: APIRouter = APIRouter(prefix="/analyses", tags=["analyses"])
 
@@ -28,11 +32,11 @@ async def create_analysis(
         settings: Annotated[config.Settings, Depends(config.get_settings)],
         tweet_id: PositiveInt = Path(
             ..., title="Tweet ID",
-            description="Tweet ID to predict sentiment",
+            description="ID of the tweet to be analysed",
             example=1627759518904885248)
 ) -> Analysis:
     """
-    Create a new analysis into the system.
+    Creates a sentiment analysis for a tweet specified by its ID.
     - `:param tweet_id:` **Path Parameter that identifies the tweet to be
      analyzed**
     - `:type tweet_id:` **PositiveInt**
@@ -70,6 +74,7 @@ async def create_analysis(
         created_analysis: Analysis = await analysis_service.register_analysis(
             analysis)
     except ServiceException as serv_exc:
+        logger.error(serv_exc)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error at creating analysis.\n{str(serv_exc)}"
@@ -86,17 +91,18 @@ async def create_multiple_analysis(
         settings: Annotated[config.Settings, Depends(config.get_settings)],
         username: str = Path(
             ..., title="Twitter username",
-            description="Username to fetch tweets for analysis", min_length=4,
-            max_length=15, example="LassoGuillermo"),
+            description="Username whose tweets are to be analysed",
+            min_length=4, max_length=15, example="LassoGuillermo"),
         number_tweets: PositiveInt = Query(
             ..., title="Number of tweets",
             description=
-            "Quantity of recent tweets to analyse for the given user")
+            "Number of recent tweets to be analysed for the user")
 ) -> list[Analysis]:
     """
-    Create multiple analyses into the system.
-    - `:param username:` **Path Parameter that identifies username to fetch
-     tweets**
+    Creates sentiment analyses for multiple tweets of a specified
+     Twitter user.
+    - `:param username:` **Path Parameter that identifies Twitter
+     username whose tweets are to be analysed**
     - `:param number_tweets:` **Query parameter for the quantity of recent
     tweets to analyse for the given user**
     - `:type number_tweets:` **PositiveInt**
@@ -131,6 +137,7 @@ async def create_multiple_analysis(
             created_analysis: Analysis = await analysis_service. \
                 register_analysis(analysis)
         except ServiceException as serv_exc:
+            logger.error(serv_exc)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Error at creating analysis.\n{str(serv_exc)}"
@@ -145,10 +152,10 @@ async def get_analysis(
         current_user: CurrentUser,
         analysis_id: PositiveInt = Path(
             ..., title="AnalysisCreate ID",
-            description="ID of the AnalysisCreate to searched", example=1)
+            description="ID of the Analysis to be retrieved", example=1)
 ) -> Analysis:
     """
-    Search for specific Analysis by ID from the system.
+    Retrieves a specific Analysis by its ID.
     - `:param analysis_id:` **Path Parameter of Analysis ID to search**
     - `:type analysis_id:` **PydanticObjectId**
     - `:return:` **Found Analysis from logged-in user with id, tweet_id,
@@ -164,9 +171,10 @@ async def get_analysis(
     found_analysis: Analysis = await analysis_service. \
         get_analysis_by_id(analysis_id)
     if not found_analysis:
+        error_msg = f"Analysis with ID {analysis_id} not found in the system."
+        logger.error(error_msg)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Analysis with ID {analysis_id} not found in the system.")
+            status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
     return found_analysis
 
 
@@ -174,16 +182,17 @@ async def get_analysis(
 async def get_analyses(
         analysis_service: ServiceAnalysis, current_user: CurrentUser,
         skip: NonNegativeInt = Query(
-            default=0, title="Skip", description="Skip users", example=0),
+            default=0, title="Skip", description="Number of analyses to skip",
+            example=0),
         limit: PositiveInt = Query(
-            default=100, title="Limit", description="Limit pagination",
-            example=100)
+            default=100, title="Limit",
+            description="Maximum number of analyses to return", example=100)
 ) -> list[Analysis]:
     """
-    Retrieve all analyses from the system.
-    - `:param skip:` **Offset from where to start returning analyses**
+    Retrieves all Analyses, with pagination.
+    - `:param skip:` **Number of analyses to skip**
     - `:type skip:` **NonNegativeInt**
-    - `:param limit:` **Limit the number of results from query**
+    - `:param limit:` **Maximum number of analyses to return**
     - `:type limit:` **PositiveInt**
     - `:return:` **All analyses from logged-in user with id, tweet_id,
      analysis_name, accuracy, precision, recall, f1_score, roc_auc,
@@ -197,6 +206,8 @@ async def get_analyses(
     """
     analyses: list[Analysis] = await analysis_service.get_analyses(skip, limit)
     if not analyses:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="This user has no analyses in the system.")
+        error_msg = "This user has no analyses in the system."
+        logger.error(error_msg)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
     return analyses

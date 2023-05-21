@@ -1,12 +1,15 @@
 """
 A module for jwt in the app.utils package.
 """
-from typing import Optional, Any
+import logging
+from typing import Any, Optional
 
 from fastapi import Depends
 from jose import jwt, exceptions
 
 from app.core import config
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 async def encode_jwt(
@@ -37,11 +40,12 @@ async def decode_jwt(
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: The payload
-    :rtype: dict
+    :rtype: Optional[dict[str, Any]]
     """
     try:
         decoded_token: dict[str, Any] = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return decoded_token
-    except exceptions.JWTError:
+    except exceptions.JWTError as exc:
+        logger.error(exc)
         return None
