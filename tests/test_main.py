@@ -1,23 +1,49 @@
 """
-Test main script
+The test main.py script using Pytest
 """
+from typing import AsyncGenerator
+
 import pytest
+from fastapi.testclient import TestClient
 from httpx import AsyncClient, Response
 
 from main import app
 
 
-@pytest.mark.anyio
-async def test_welcome_message() -> None:
+@pytest.fixture(scope="module")
+def test_app() -> TestClient:
     """
-    Test welcome_message path operation at main script
-    ## Response:
-    - `return:` **Welcome message**
-    - `rtype:` **Msg**
+    Fixture for the FastAPI TestClient.
+    :return: FastAPI TestClient instance
+    :rtype: TestClient
     """
-    async with AsyncClient(app=app, base_url="http://test") as async_client:
-        response: Response = await async_client.get("/")
+    return TestClient(app)
+
+
+@pytest.fixture(scope="module")
+async def async_client(
+        test_app: TestClient
+) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Fixture for the HTTPX AsyncClient.
+    :param test_app: FastAPI TestClient instance
+    :type test_app: TestClient
+    :return: HTTPX AsyncClient instance
+    :rtype: AsyncGenerator[AsyncClient, None]
+    """
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        yield client
+
+
+@pytest.mark.asyncio
+async def test_welcome_message_async(async_client: AsyncClient) -> None:
+    """
+    Test for the welcome_message endpoint (async variant).
+    :param async_client: AsyncClient instance
+    :type async_client: AsyncClient
+    :return: None
+    :rtype: NoneType
+    """
+    response: Response = await async_client.get("/")
     assert response.status_code == 200
     assert response.json() == {"msg": "Hello, world!"}
-
-# TODO: Add tests for the whole packages.
