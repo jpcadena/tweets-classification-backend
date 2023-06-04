@@ -3,12 +3,13 @@ This script provides functions for interacting with the authentication
  (Redis) database.
 """
 import logging
-from typing import Callable, Any
+from typing import Any, Callable
 
 import aioredis
-from aioredis.exceptions import DataError, AuthenticationError, \
-    NoPermissionError, TimeoutError as RedisTimeoutError, \
-    ConnectionError as RedisConnectionError
+from aioredis.exceptions import AuthenticationError
+from aioredis.exceptions import ConnectionError as RedisConnectionError
+from aioredis.exceptions import DataError, NoPermissionError
+from aioredis.exceptions import TimeoutError as RedisTimeoutError
 from fastapi import Depends
 
 from app.core import config

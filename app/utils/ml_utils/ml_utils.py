@@ -6,11 +6,16 @@ import logging
 from fastapi import Depends
 
 from app.core import config
-from app.core.decorators import with_logging, benchmark
-from app.utils.ml_utils.text_preprocessing.cleaning import remove_emoji, \
-    twitter_text_cleaning, remove_punc
-from app.utils.ml_utils.text_preprocessing.tokenization import get_stopwords, \
-    remove_stopwords_and_tokenize
+from app.core.decorators import benchmark, with_logging
+from app.utils.ml_utils.text_preprocessing.cleaning import (
+    remove_emoji,
+    remove_punc,
+    twitter_text_cleaning,
+)
+from app.utils.ml_utils.text_preprocessing.tokenization import (
+    get_stopwords,
+    remove_stopwords_and_tokenize,
+)
 
 logger: logging.Logger = logging.getLogger(__name__)
 

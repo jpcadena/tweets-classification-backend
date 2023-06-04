@@ -5,11 +5,14 @@ import logging
 from typing import Any, AsyncGenerator
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, \
-    AsyncEngine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    create_async_engine,
+)
 
 from app.core.config import settings
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 
 logger: logging.Logger = logging.getLogger(__name__)
 async_engine: AsyncEngine = create_async_engine(

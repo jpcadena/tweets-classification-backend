@@ -9,7 +9,7 @@ from fastapi import Depends
 from pydantic import EmailStr
 
 from app.core import config
-from app.utils.security.jwt import encode_jwt, decode_jwt
+from app.utils.security.jwt import decode_jwt, encode_jwt
 
 logger: logging.Logger = logging.getLogger(__name__)
 

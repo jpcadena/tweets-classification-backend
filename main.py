@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from app.api.api_v1.api import api_router
 from app.core import logging_config
 from app.core.config import settings
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 from app.crud.user import get_user_repository
 from app.db.authentication import init_auth_db
 from app.db.init_db import init_db

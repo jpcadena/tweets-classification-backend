@@ -5,7 +5,7 @@ This module integrates the individual routers from the different
 """
 from fastapi import APIRouter
 
-from app.api.api_v1.router import authentication, user, model, analysis
+from app.api.api_v1.router import analysis, authentication, model, user
 
 api_router: APIRouter = APIRouter()
 api_router.include_router(authentication.router)

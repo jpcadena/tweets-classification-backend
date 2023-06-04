@@ -6,12 +6,12 @@ It includes authentication utilities, connection handlers for external
 """
 import logging
 from abc import ABC
-from typing import Optional, Annotated, Type
+from typing import Annotated, Optional, Type
 
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, exceptions
+from jose import exceptions, jwt
 from pydantic import ValidationError
 
 from app.core import config

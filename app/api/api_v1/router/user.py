@@ -5,16 +5,27 @@ This module provides CRUD (Create, Retrieve, Update, Delete) operations
 """
 import logging
 
-from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, status, \
-    Response
-from fastapi.params import Query, Path
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Body,
+    HTTPException,
+    Response,
+    status,
+)
+from fastapi.params import Path, Query
 from pydantic import NonNegativeInt, PositiveInt
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.deps import CurrentUser
-from app.core.security.exceptions import ServiceException, NotFoundException
-from app.schemas.user import UserResponse, UserCreateResponse, UserCreate, \
-    UserUpdate, UserUpdateResponse
+from app.core.security.exceptions import NotFoundException, ServiceException
+from app.schemas.user import (
+    UserCreate,
+    UserCreateResponse,
+    UserResponse,
+    UserUpdate,
+    UserUpdateResponse,
+)
 from app.services.user import ServiceUser
 from app.utils.email_utils.email_utils import send_new_account_email
 

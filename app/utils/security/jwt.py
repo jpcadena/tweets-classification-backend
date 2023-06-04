@@ -5,7 +5,7 @@ import logging
 from typing import Any, Optional
 
 from fastapi import Depends
-from jose import jwt, exceptions
+from jose import exceptions, jwt
 
 from app.core import config
 

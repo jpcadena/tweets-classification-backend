@@ -10,7 +10,8 @@ from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.model import ModelRepository, get_model_repository
 from app.crud.specification import IdSpecification
 from app.models.model import Model
-from app.schemas.model import ModelCreate, Model as ModelResponse
+from app.schemas.model import Model as ModelResponse
+from app.schemas.model import ModelCreate
 from app.services import model_to_response
 
 

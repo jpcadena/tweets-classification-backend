@@ -4,14 +4,14 @@ This module handles JSON Web Token (JWT) creation for authentication
 """
 import logging
 from datetime import datetime, timedelta
-from typing import Optional, Any
+from typing import Any, Optional
 
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from jose import jwt
 
 from app.core import config
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 from app.schemas.scope import Scope
 
 logger: logging.Logger = logging.getLogger(__name__)

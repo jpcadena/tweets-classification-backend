@@ -7,7 +7,7 @@ These specification objects encapsulate the rules to filter or select
 from abc import ABC, abstractmethod
 from typing import Any
 
-from pydantic import PositiveInt, EmailStr
+from pydantic import EmailStr, PositiveInt
 
 
 class Specification:

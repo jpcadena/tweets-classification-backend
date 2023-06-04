@@ -7,13 +7,17 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union
 
 from pydantic import PositiveInt
-from sqlalchemy import select, Select
+from sqlalchemy import Select, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.decorators import with_logging, benchmark
-from app.crud.specification import Specification, IdSpecification, \
-    UsernameSpecification, EmailSpecification
+from app.core.decorators import benchmark, with_logging
+from app.crud.specification import (
+    EmailSpecification,
+    IdSpecification,
+    Specification,
+    UsernameSpecification,
+)
 from app.models.analysis import Analysis
 from app.models.model import Model
 from app.models.user import User

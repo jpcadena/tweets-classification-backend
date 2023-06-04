@@ -5,8 +5,8 @@ This script provides the data access layer to perform CRUD operations
 import logging
 from typing import Optional
 
-from pydantic import PositiveInt, NonNegativeInt
-from sqlalchemy import select, Select, ScalarResult
+from pydantic import NonNegativeInt, PositiveInt
+from sqlalchemy import ScalarResult, Select, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 

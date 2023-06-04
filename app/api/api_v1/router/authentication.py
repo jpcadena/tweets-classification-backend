@@ -6,26 +6,32 @@ import logging
 from typing import Annotated
 
 from aioredis import Redis
-from fastapi import APIRouter, Depends, HTTPException, status, Body, Path
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr, PositiveInt
 
-from app.api.deps import redis_dependency, CurrentUser
+from app.api.deps import CurrentUser, redis_dependency
 from app.core import config
 from app.core.security.exceptions import ServiceException
 from app.core.security.password import verify_password
 from app.models.token import Token
 from app.models.user import User
 from app.schemas.msg import Msg
-from app.schemas.token import TokenResponse, TokenResetPassword
-from app.schemas.user import UserAuth, UserResponse, UserUpdate, \
-    UserUpdateResponse
+from app.schemas.token import TokenResetPassword, TokenResponse
+from app.schemas.user import (
+    UserAuth,
+    UserResponse,
+    UserUpdate,
+    UserUpdateResponse,
+)
 from app.services.auth import AuthService
 from app.services.token import TokenService
 from app.services.user import ServiceUser
 from app.utils.email_utils.email_utils import send_reset_password_email
-from app.utils.security.password import generate_password_reset_token, \
-    verify_password_reset_token
+from app.utils.security.password import (
+    generate_password_reset_token,
+    verify_password_reset_token,
+)
 
 logger: logging.Logger = logging.getLogger(__name__)
 router: APIRouter = APIRouter(prefix="/auth", tags=["auth"])

@@ -5,9 +5,9 @@ This module handles the routing for model-related API endpoints,
 """
 import logging
 
-from fastapi import APIRouter, status, Path, Body, Query
+from fastapi import APIRouter, Body, Path, Query, status
 from fastapi.exceptions import HTTPException
-from pydantic import PositiveInt, NonNegativeInt
+from pydantic import NonNegativeInt, PositiveInt
 
 from app.api.deps import CurrentUser
 from app.core.security.exceptions import ServiceException

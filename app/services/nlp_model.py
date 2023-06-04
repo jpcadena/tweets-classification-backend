@@ -11,8 +11,8 @@ from fastapi import Depends
 from pydantic import NonNegativeInt
 
 from app.core import config
-from app.core.decorators import with_logging, benchmark
-from app.crud.nlp_model import get_nlp_model_repository, NLPModelRepository
+from app.core.decorators import benchmark, with_logging
+from app.crud.nlp_model import NLPModelRepository, get_nlp_model_repository
 from app.utils.ml_utils.ml_utils import preprocess_tweet_text
 from app.utils.ml_utils.ngram_counting.ngram_counting import get_ngram_counts
 

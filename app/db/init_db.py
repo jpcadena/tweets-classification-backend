@@ -4,9 +4,17 @@ Initialization of the database (PostgreSQL) script
 import logging
 
 from fastapi import Depends
-from sqlalchemy.exc import CompileError, DataError, DatabaseError, \
-    DisconnectionError, IntegrityError, InternalError, InvalidatePoolError, \
-    PendingRollbackError, TimeoutError as SATimeoutError
+from sqlalchemy.exc import (
+    CompileError,
+    DatabaseError,
+    DataError,
+    DisconnectionError,
+    IntegrityError,
+    InternalError,
+    InvalidatePoolError,
+    PendingRollbackError,
+)
+from sqlalchemy.exc import TimeoutError as SATimeoutError
 from sqlalchemy.ext.asyncio import AsyncTransaction
 
 from app.core import config

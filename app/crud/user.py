@@ -4,21 +4,28 @@ This script handles CRUD (Create, Read, Update, Delete) operations for
 """
 import logging
 from datetime import datetime
-from typing import Optional, Union, Any
+from typing import Any, Optional, Union
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import NonNegativeInt, PositiveInt
-from sqlalchemy import ScalarResult, Select, select, Result
+from sqlalchemy import Result, ScalarResult, Select, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 from app.core.security.exceptions import DatabaseException
 from app.core.security.password import get_password_hash
-from app.crud.filter import IndexFilter, UniqueFilter, get_index_filter, \
-    get_unique_filter
-from app.crud.specification import EmailSpecification, IdSpecification, \
-    UsernameSpecification
+from app.crud.filter import (
+    IndexFilter,
+    UniqueFilter,
+    get_index_filter,
+    get_unique_filter,
+)
+from app.crud.specification import (
+    EmailSpecification,
+    IdSpecification,
+    UsernameSpecification,
+)
 from app.db.session import get_session
 from app.models.user import User
 from app.schemas.user import UserCreate, UserSuperCreate, UserUpdate

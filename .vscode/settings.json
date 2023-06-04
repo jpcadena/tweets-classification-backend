@@ -1,17 +1,11 @@
 {
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
-  "python.linting.pylintArgs": [
-    "--rcfile=.pylintrc"
-  ],
+  "python.linting.pylintArgs": ["--rcfile=.pylintrc"],
   "python.linting.mypyEnabled": true,
-  "python.linting.mypyArgs": [
-    "--config-file=pyproject.toml"
-  ],
+  "python.linting.mypyArgs": ["--config-file=pyproject.toml"],
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": [
-    "--config=pyproject.toml"
-  ],
+  "python.formatting.blackArgs": ["--config=pyproject.toml"],
   "python.formatting.blackPath": "${workspaceFolder}/venv/bin/black",
   "editor.formatOnSave": true,
   "[python]": {
@@ -23,8 +17,5 @@
   },
   "python.languageServer": "Pylance",
   "python.analysis.typeCheckingMode": "strict",
-  "isort.args": [
-    "--profile",
-    "black"
-  ]
+  "isort.args": ["--profile", "black"]
 }

@@ -1,11 +1,54 @@
-[BASIC]
-extension-pkg-whitelist=pydantic
-
 [MASTER]
-# A comma-separated list of package or module names from where C extensions may
-# be loaded. Extensions are loading into the active Python interpreter and may
-# run arbitrary code.
-# extension-pkg-whitelist=
+# When enabled, pylint would attempt to guess common misconfiguration and emit
+# user-friendly hints instead of false-positive error messages.
+suggestion-mode=yes
+
+# Minimum supported python version
+py-version = 3.8.0
+
+# Clear in-memory caches upon conclusion of linting. Useful if running pylint in
+# a server-like mode.
+clear-cache-post-run=no
+
+[REPORTS]
+# Set the output format. Available formats are text, parseable, colorized, msvs
+# (visual studio) and html. You can also give a reporter class, eg
+# mypackage.mymodule.MyReporterClass.
+output-format=text
+
+# Tells whether to display a full report or only the messages
+reports=no
+
+# Python expression which should return a note less than 10 (10 is the highest
+# note). You have access to the variables 'fatal', 'error', 'warning', 'refactor', 'convention'
+# and 'info', which contain the number of messages in each category, as
+# well as 'statement', which is the total number of statements analyzed. This
+# score is used by the global evaluation report (RP0004).
+evaluation=max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))
+
+# Template used to display messages. This is a python new-style format string
+# used to format the message information. See doc for all details
+#msg-template=
+
+# Activate the evaluation score.
+score=yes
+
+[LOGGING]
+# Logging modules to check that the string format arguments are in logging
+# function parameter format
+logging-modules=logging
+
+# The type of string formatting that logging methods do. `old` means using %
+# formatting, `new` is for `{}` formatting.
+logging-format-style=old
+
+[MISCELLANEOUS]
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME,XXX,TODO
+
+[SIMILARITIES]
+# Minimum lines number of a similarity.
+min-similarity-lines=6
 
 [FORMAT]
 # Maximum number of characters on a single line.
@@ -23,22 +66,72 @@ max-line-length=80
 disable = too-few-public-methods,
           no-name-in-module,
           abstract-class-instantiated,
-          bad-continuation
+          fixme,
 
-[DESIGN]
-# Maximum number of parents for a class (see R0901).
-max-parents=10
+[BASIC]
+extension-pkg-whitelist=pydantic
 
-[SIMILARITIES]
-# Minimum lines number of a similarity.
-min-similarity-lines=4
+# Naming style matching correct function names.
+function-naming-style=snake_case
 
-[MISCELLANEOUS]
-# List of note tags to take in consideration, separated by a comma.
-notes=FIXME,XXX,TODO
+# Regular expression matching correct function names
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Naming style matching correct variable names.
+variable-naming-style=snake_case
+
+# Regular expression matching correct variable names
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Naming style matching correct constant names.
+const-naming-style=UPPER_CASE
+
+# Regular expression matching correct constant names
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+# Naming style matching correct attribute names.
+attr-naming-style=snake_case
+
+# Regular expression matching correct attribute names
+attr-rgx=[a-z_][a-z0-9_]{2,}$
+
+# Naming style matching correct argument names.
+argument-naming-style=snake_case
+
+# Regular expression matching correct argument names
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression matching correct class attribute names
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+
+# Naming style matching correct class constant names.
+class-const-naming-style=UPPER_CASE
+
+# Naming style matching correct class names.
+class-naming-style=PascalCase
+
+# Regular expression matching correct class names
+class-rgx=[A-Z_][a-zA-Z0-9]+$
+
+# Naming style matching correct module names.
+module-naming-style=snake_case
+
+# Regular expression matching correct module names
+module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
+
+# Naming style matching correct method names.
+method-naming-style=snake_case
 
 [TYPECHECK]
 # List of decorators that produce context managers, such as
 # contextlib.contextmanager. Add to this list to register other decorators that
 # produce valid context managers.
 contextmanager-decorators=contextlib.contextmanager
+
+# Show a hint with possible names when a member name was not found. The aspect
+# of finding the hint is based on edit distance.
+missing-member-hint=yes
+
+[DESIGN]
+# Maximum number of parents for a class (see R0901).
+max-parents=10

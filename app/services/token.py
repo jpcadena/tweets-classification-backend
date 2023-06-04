@@ -4,7 +4,7 @@ Token Service
 import logging
 from typing import Optional
 
-from aioredis import RedisError, Redis
+from aioredis import Redis, RedisError
 from fastapi import Depends
 
 from app.api.deps import redis_dependency

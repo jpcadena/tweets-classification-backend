@@ -6,8 +6,15 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional, Union
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, \
-    validator, RedisDsn, root_validator
+from pydantic import (
+    AnyHttpUrl,
+    BaseSettings,
+    EmailStr,
+    PostgresDsn,
+    RedisDsn,
+    root_validator,
+    validator,
+)
 
 
 def get_image_b64(image_path: str) -> str:

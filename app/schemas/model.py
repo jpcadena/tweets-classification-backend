@@ -2,10 +2,15 @@
 Machine Learning Model schema
 """
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
-from pydantic import BaseModel, Field, PositiveInt, NonNegativeFloat, \
-    PositiveFloat
+from pydantic import (
+    BaseModel,
+    Field,
+    NonNegativeFloat,
+    PositiveFloat,
+    PositiveInt,
+)
 
 
 class ModelID(BaseModel):

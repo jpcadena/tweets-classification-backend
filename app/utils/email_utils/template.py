@@ -10,7 +10,7 @@ from fastapi import Depends
 from jinja2 import Template
 
 from app.core import config
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 
 logger: logging.Logger = logging.getLogger(__name__)
 

@@ -1,16 +1,16 @@
 """
 Analysis Service to handle business logic
 """
-from typing import Optional, Annotated, Type
+from typing import Annotated, Optional, Type
 
 from fastapi import Depends
-from pydantic import PositiveInt, NonNegativeInt
+from pydantic import NonNegativeInt, PositiveInt
 
 from app.core.security.exceptions import DatabaseException, ServiceException
 from app.crud.analysis import AnalysisRepository, get_analysis_repository
 from app.crud.specification import IdSpecification
 from app.models.analysis import Analysis as AnalysisDB
-from app.schemas.analysis import AnalysisCreate, Analysis
+from app.schemas.analysis import Analysis, AnalysisCreate
 from app.services import model_to_response
 
 

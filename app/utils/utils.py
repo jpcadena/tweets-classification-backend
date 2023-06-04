@@ -9,7 +9,7 @@ from fastapi import Depends
 from pydantic import EmailStr
 
 from app.core import config
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 from app.utils.files_utils.json_utils import read_json_file, write_json_file
 from app.utils.files_utils.openapi_utils import modify_json_data
 

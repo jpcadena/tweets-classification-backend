@@ -4,12 +4,12 @@ This script provides the data access layer to perform CRUD operations
 """
 import json
 import logging
-from typing import Callable, Any, Optional
+from typing import Any, Callable, Optional
 
 import snscrape.modules.twitter as sn_twitter
 from pydantic import PositiveInt
 
-from app.core.decorators import with_logging, benchmark
+from app.core.decorators import benchmark, with_logging
 from app.crud.specification import TwitterBaseSpecification
 
 logger: logging.Logger = logging.getLogger(__name__)

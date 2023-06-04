@@ -8,14 +8,26 @@ from typing import Annotated, Any, Optional, Type, Union
 from fastapi import Depends
 from pydantic import EmailStr, NonNegativeInt, PositiveInt
 
-from app.core.security.exceptions import DatabaseException, ServiceException, \
-    NotFoundException
-from app.crud.specification import IdSpecification, UsernameSpecification, \
-    EmailSpecification
+from app.core.security.exceptions import (
+    DatabaseException,
+    NotFoundException,
+    ServiceException,
+)
+from app.crud.specification import (
+    EmailSpecification,
+    IdSpecification,
+    UsernameSpecification,
+)
 from app.crud.user import UserRepository, get_user_repository
 from app.models.user import User
-from app.schemas.user import UserSuperCreate, UserCreateResponse, \
-    UserResponse, UserUpdateResponse, UserCreate, UserUpdate
+from app.schemas.user import (
+    UserCreate,
+    UserCreateResponse,
+    UserResponse,
+    UserSuperCreate,
+    UserUpdate,
+    UserUpdateResponse,
+)
 from app.services import model_to_response
 
 logger: logging.Logger = logging.getLogger(__name__)
