@@ -1,4 +1,8 @@
 [MASTER]
+# Files or directories to be skipped. They should be base names, not
+# paths.
+ignore = */tests/*
+
 # When enabled, pylint would attempt to guess common misconfiguration and emit
 # user-friendly hints instead of false-positive error messages.
 suggestion-mode=yes
@@ -55,10 +59,6 @@ min-similarity-lines=6
 max-line-length=80
 
 [MESSAGE CONTROL]
-# Enable the message, report, category or checker with the given id(s). You can
-# either give multiple identifier separated by comma (,) or put this option
-# multiple time.
-
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
@@ -74,9 +74,6 @@ extension-pkg-whitelist=pydantic
 # Naming style matching correct function names.
 function-naming-style=snake_case
 
-# Regular expression matching correct function names
-function-rgx=[a-z_][a-z0-9_]{2,30}$
-
 # Naming style matching correct variable names.
 variable-naming-style=snake_case
 
@@ -89,26 +86,14 @@ const-naming-style=UPPER_CASE
 # Regular expression matching correct constant names
 const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 
-# Naming style matching correct attribute names.
-attr-naming-style=snake_case
-
-# Regular expression matching correct attribute names
-attr-rgx=[a-z_][a-z0-9_]{2,}$
-
 # Naming style matching correct argument names.
 argument-naming-style=snake_case
 
 # Regular expression matching correct argument names
 argument-rgx=[a-z_][a-z0-9_]{2,30}$
 
-# Regular expression matching correct class attribute names
-class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
-
 # Naming style matching correct class constant names.
 class-const-naming-style=UPPER_CASE
-
-# Naming style matching correct class names.
-class-naming-style=PascalCase
 
 # Regular expression matching correct class names
 class-rgx=[A-Z_][a-zA-Z0-9]+$

@@ -120,6 +120,7 @@ async def create_multiple_analysis(
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
+    # pylint: disable=too-many-arguments
     tweets: list[dict] = await nlp_service.nlp_model_repo.get_tweets(
         TwitterUsernameSpecification(username), number_tweets)
     analyses: list[Analysis] = []
