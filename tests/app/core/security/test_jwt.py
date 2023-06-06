@@ -25,6 +25,7 @@ def client() -> Generator[TestClient, Any, None]:
         yield test_client
 
 
+# pylint: disable=W0621
 @pytest.fixture(scope="module")
 async def async_client(client: TestClient) -> AsyncClient:
     """
@@ -37,7 +38,7 @@ async def async_client(client: TestClient) -> AsyncClient:
     return AsyncClient(app=client.app, base_url="http://test")
 
 
-def test_create_access_token(client: TestClient) -> None:
+def test_create_access_token() -> None:
     """
     Test for create_access_token function.
     """
@@ -47,7 +48,7 @@ def test_create_access_token(client: TestClient) -> None:
     assert isinstance(token, str)
 
 
-def test_create_refresh_token(client: TestClient) -> None:
+def test_create_refresh_token() -> None:
     """
     Test for create_refresh_token function.
     """

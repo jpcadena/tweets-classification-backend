@@ -21,13 +21,9 @@ def test_app() -> TestClient:
 
 
 @pytest.fixture(scope="module")
-async def async_client(
-        test_app: TestClient
-) -> AsyncGenerator[AsyncClient, None]:
+async def async_client() -> AsyncGenerator[AsyncClient, None]:
     """
     Fixture for the HTTPX AsyncClient.
-    :param test_app: FastAPI TestClient instance
-    :type test_app: TestClient
     :return: HTTPX AsyncClient instance
     :rtype: AsyncGenerator[AsyncClient, None]
     """
@@ -35,6 +31,7 @@ async def async_client(
         yield client
 
 
+# pylint: disable=W0621
 @pytest.mark.asyncio
 async def test_welcome_message_async(async_client: AsyncClient) -> None:
     """
