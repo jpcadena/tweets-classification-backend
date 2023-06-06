@@ -1,14 +1,15 @@
 [MASTER]
+init-hook='import sys; sys.path.append(r"C:\Users\juanp\PycharmProjects\tweets-classification-backend")'
 # Files or directories to be skipped. They should be base names, not
 # paths.
-ignore = */tests/*
+ignore=venv,tests
 
 # When enabled, pylint would attempt to guess common misconfiguration and emit
 # user-friendly hints instead of false-positive error messages.
 suggestion-mode=yes
 
 # Minimum supported python version
-py-version = 3.8.0
+py-version=3.8.0
 
 # Clear in-memory caches upon conclusion of linting. Useful if running pylint in
 # a server-like mode.
@@ -63,12 +64,15 @@ max-line-length=80
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-disable = too-few-public-methods,
+disable=too-few-public-methods,
           no-name-in-module,
           abstract-class-instantiated,
           fixme,
+          invalid-name,
 
 [BASIC]
+good-names=_abcdefghijklmnopqrstuvwxyz
+bad-names=tweets-classification-backend
 extension-pkg-whitelist=pydantic
 
 # Naming style matching correct function names.
