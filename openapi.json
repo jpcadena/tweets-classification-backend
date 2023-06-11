@@ -17,7 +17,9 @@
   "paths": {
     "/api/v1/auth/login": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "Login",
         "description": "Endpoint to handle user login with OAuth2 authentication using\n request form.\n## Parameter:\n- `user:` **Request body with username and password**\n- `type:` **OAuth2PasswordRequestForm**\n## Response:\n- `return:` **Token information with access token, its type and\n refresh token**\n- `rtype:` **TokenResponse**",
         "operationId": "login",
@@ -57,7 +59,9 @@
     },
     "/api/v1/auth/login/test-token": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "Test Token",
         "description": "Endpoint to test the validity of an access token.\n## Response:\n- `return:` **The authenticated user instance**\n- `rtype:` **UserAuth**",
         "operationId": "test_token",
@@ -82,7 +86,9 @@
     },
     "/api/v1/auth/password-recovery/{email}": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "Recover Password",
         "description": "Endpoint to handle password recovery.\n## Parameter:\n- `email:` **Path parameter that references the email used to recover\n the password**\n- `type:` **EmailStr**\n## Response:\n- `return:` **Message object**\n- `rtype:` **Msg**",
         "operationId": "recover_password",
@@ -127,7 +133,9 @@
     },
     "/api/v1/auth/reset-password/": {
       "post": {
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "summary": "Reset Password",
         "description": "Endpoint to handle password reset.\n## Parameter:\n- `token_reset_password:` **Body Object with token and new password**\n- `type:` **TokenResetPassword**\n## Response:\n- `return:` **Message object**\n- `rtype:` **Msg**",
         "operationId": "reset_password",
@@ -173,7 +181,9 @@
     },
     "/api/v1/users": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Get Users",
         "description": "Retrieve all users' basic information from the system using\n pagination.\n- `:param skip:` **Offset from where to start returning users**\n- `:type skip:` **NonNegativeInt**\n- `:param limit:` **Limit the number of results from query**\n- `:type limit:` **PositiveInt**\n- `:return:` **List of Users retrieved from database with id, username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.**\n- `:rtype:` **list[UserResponse]**",
         "operationId": "get_users",
@@ -240,7 +250,9 @@
         ]
       },
       "post": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Create User",
         "description": "Register new user into the system.\n- `:param user:` **Body Object with username, email, first name,\nmiddle name [OPTIONAL], last name, password, gender [OPTIONAL],\nbirthdate [OPTIONAL], phone_number [OPTIONAL], address [OPTIONAL],\ncity [OPTIONAL], state [OPTIONAL] and country [OPTIONAL].**\n- `:type user:` **UserCreate**\n- `:return:` **User created with its id, username, email, first name\n and middle name.**\n- `:rtype:` **UserCreateResponse**",
         "operationId": "create_user",
@@ -286,7 +298,9 @@
     },
     "/api/v1/users/me": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Get User Me",
         "description": "Retrieve the current user's information.\n- `:return:` **Response object for current user with id, username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.**\n- `:rtype:` **UserResponse**",
         "operationId": "get_user_me",
@@ -311,7 +325,9 @@
     },
     "/api/v1/users/{user_id}": {
       "get": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Get User By Id",
         "description": "Retrieve an existing user's information given their user ID.\n- `:param user_id:` **Unique identifier of the user to be retrieved**\n- `:type user_id:` **PositiveInt**\n- `:return:` **Found user with the given ID including its username,\n email, first_name, last_name, middle_name, gender, birthdate,\n  phone_number, city, country, is_active, is_superuser, created_at,\n   updated_at and analyses relationship.**\n- `:rtype:` **UserResponse**",
         "operationId": "get_user_by_id",
@@ -359,7 +375,9 @@
         ]
       },
       "put": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Update User",
         "description": "Update an existing user's information given their user ID and new\n information.\n- `:param user_id:` **Unique identifier of the user to be updated**\n- `:type user_id:` **PositiveInt**\n- `:param user_in:` **New user data to update that can include:\n username, email, first_name, middle_name, last_name, password,\n  gender, birthdate, phone_number, city and country.**\n- `:type user_in:` **UserUpdate**\n- `:return:` **Updated user with the given ID and its username, email,\n first_name, last_name, middle_name, hashed password, gender,\n  birthdate, phone_number, city, country, is_active, is_superuser,\n   created_at and updated_at.**\n- `:rtype:` **UserUpdateResponse**",
         "operationId": "update_user",
@@ -423,7 +441,9 @@
         ]
       },
       "delete": {
-        "tags": ["users"],
+        "tags": [
+          "users"
+        ],
         "summary": "Delete User",
         "description": "Delete an existing user given their user ID.\n- `:param user_id:` **Unique identifier of the user to be deleted**\n- `:type user_id:` **PositiveInt**\n- `:return:` **Json Response object with the deleted information**\n- `:rtype:` **Response**",
         "operationId": "delete_user",
@@ -466,7 +486,9 @@
     },
     "/api/v1/models": {
       "get": {
-        "tags": ["models"],
+        "tags": [
+          "models"
+        ],
         "summary": "Get Models",
         "description": "Retrieves all Models, with pagination.\n- `:param skip:` **Number of models to skip**\n- `:type skip:` **NonNegativeInt**\n- `:param limit:` **Maximum number of models to return**\n- `:type limit:` **PositiveInt**\n- `:return:` **All models from logged-in user with id, tweet_id,\n model_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp**\n- `:rtype:` **list[Model]**",
         "operationId": "get_models",
@@ -533,7 +555,9 @@
         ]
       },
       "post": {
-        "tags": ["models"],
+        "tags": [
+          "models"
+        ],
         "summary": "Create Model",
         "description": "Create a new model into the system.\n- `:param model:` **Body Object with tweet_id, model_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time and\n  relationship with Analysis: analysis_id (OPTIONAL)**\n- `:type model:` **ModelCreate**\n- `:return:` **Model created with id, tweet_id, model_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time, relationship\n  with Analysis: analysis_id and its creation timestamp**\n- `:rtype:` **Model**",
         "operationId": "create_model",
@@ -584,7 +608,9 @@
     },
     "/api/v1/models/{model_id}": {
       "get": {
-        "tags": ["models"],
+        "tags": [
+          "models"
+        ],
         "summary": "Get Model",
         "description": "Retrieves a specific Model by its ID.\n- `:param model_id:` **Path Parameter of Model ID to be retrieved**\n- `:type model_id:` **PositiveInt**\n- `:return:` **Found Model from logged-in user with id, tweet_id,\n model_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp**\n- `:rtype:` **Model**",
         "operationId": "get_model",
@@ -634,7 +660,9 @@
     },
     "/api/v1/analyses/{tweet_id}": {
       "post": {
-        "tags": ["analyses"],
+        "tags": [
+          "analyses"
+        ],
         "summary": "Create Analysis",
         "description": "Creates a sentiment analysis for a tweet specified by its ID.\n- `:param tweet_id:` **Path Parameter that identifies the tweet to be\n analyzed**\n- `:type tweet_id:` **PositiveInt**\n- `:return:` **Analysis created with id, tweet_id, analysis_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time, relationship\n  with Analysis: analysis_id and its creation timestamp**\n- `:rtype:` **Analysis**",
         "operationId": "create_analysis",
@@ -684,7 +712,9 @@
     },
     "/api/v1/analyses/batch/{username}": {
       "post": {
-        "tags": ["analyses"],
+        "tags": [
+          "analyses"
+        ],
         "summary": "Create Multiple Analysis",
         "description": "Creates sentiment analyses for multiple tweets of a specified\n Twitter user.\n- `:param username:` **Path Parameter that identifies Twitter\n username whose tweets are to be analysed**\n- `:param number_tweets:` **Query parameter for the quantity of recent\ntweets to analyse for the given user**\n- `:type number_tweets:` **PositiveInt**\n- `:return:` **Analysis created with id, tweet_id, analysis_name, accuracy,\n precision, recall, f1_score, roc_auc, computing_time, relationship\n  with Analysis: analysis_id and its creation timestamp**\n- `:rtype:` **list[Analysis]**",
         "operationId": "create_multiple_analysis",
@@ -751,7 +781,9 @@
     },
     "/api/v1/analyses/{analysis_id}": {
       "get": {
-        "tags": ["analyses"],
+        "tags": [
+          "analyses"
+        ],
         "summary": "Get Analysis",
         "description": "Retrieves a specific Analysis by its ID.\n- `:param analysis_id:` **Path Parameter of Analysis ID to search**\n- `:type analysis_id:` **PydanticObjectId**\n- `:return:` **Found Analysis from logged-in user with id, tweet_id,\n analysis_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp**\n- `:rtype:` **Analysis**",
         "operationId": "get_analysis",
@@ -801,7 +833,9 @@
     },
     "/api/v1/analyses": {
       "get": {
-        "tags": ["analyses"],
+        "tags": [
+          "analyses"
+        ],
         "summary": "Get Analyses",
         "description": "Retrieves all Analyses, with pagination.\n- `:param skip:` **Number of analyses to skip**\n- `:type skip:` **NonNegativeInt**\n- `:param limit:` **Maximum number of analyses to return**\n- `:type limit:` **PositiveInt**\n- `:return:` **All analyses from logged-in user with id, tweet_id,\n analysis_name, accuracy, precision, recall, f1_score, roc_auc,\n  computing_time, analysis_id and its creation timestamp**\n- `:rtype:` **list[Analysis]**",
         "operationId": "get_analyses",
@@ -968,7 +1002,10 @@
       },
       "Body_auth-login": {
         "title": "Body_auth-login",
-        "required": ["username", "password"],
+        "required": [
+          "username",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "grant_type": {
@@ -1001,7 +1038,11 @@
       },
       "Gender": {
         "title": "Gender",
-        "enum": ["male", "female", "other"],
+        "enum": [
+          "male",
+          "female",
+          "other"
+        ],
         "type": "string",
         "description": "Enum representing different gender options"
       },
@@ -1203,7 +1244,9 @@
       },
       "Msg": {
         "title": "Msg",
-        "required": ["msg"],
+        "required": [
+          "msg"
+        ],
         "type": "object",
         "properties": {
           "msg": {
@@ -1219,7 +1262,10 @@
       },
       "TokenResetPassword": {
         "title": "TokenResetPassword",
-        "required": ["token", "password"],
+        "required": [
+          "token",
+          "password"
+        ],
         "type": "object",
         "properties": {
           "token": {
@@ -1245,7 +1291,11 @@
       },
       "TokenResponse": {
         "title": "TokenResponse",
-        "required": ["access_token", "token_type", "refresh_token"],
+        "required": [
+          "access_token",
+          "token_type",
+          "refresh_token"
+        ],
         "type": "object",
         "properties": {
           "access_token": {
@@ -1273,7 +1323,11 @@
       },
       "UserAuth": {
         "title": "UserAuth",
-        "required": ["id", "username", "email"],
+        "required": [
+          "id",
+          "username",
+          "email"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1401,7 +1455,13 @@
       },
       "UserCreateResponse": {
         "title": "UserCreateResponse",
-        "required": ["id", "username", "email", "first_name", "last_name"],
+        "required": [
+          "id",
+          "username",
+          "email",
+          "first_name",
+          "last_name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1794,7 +1854,11 @@
       },
       "ValidationError": {
         "title": "ValidationError",
-        "required": ["loc", "msg", "type"],
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
         "type": "object",
         "properties": {
           "loc": {
