@@ -1,7 +1,7 @@
 """
 Test module for app/core/security/jwt.py
 """
-from typing import Any, Dict, Generator
+from typing import Any, Generator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -73,7 +73,7 @@ async def test_create_access_token_async(
     token_data = response.json()
     assert "access_token" in token_data
     access_token = token_data["access_token"]
-    decoded_token: Dict[str, Any] = jwt.decode(
+    decoded_token: dict[str, Any] = jwt.decode(
         access_token, app_settings.SECRET_KEY,
         algorithms=[app_settings.ALGORITHM])
     assert decoded_token["sub"] == payload["sub"]
@@ -94,7 +94,7 @@ async def test_create_refresh_token_async(
     token_data = response.json()
     assert "access_token" in token_data
     access_token = token_data["access_token"]
-    decoded_token: Dict[str, Any] = jwt.decode(
+    decoded_token: dict[str, Any] = jwt.decode(
         access_token, app_settings.SECRET_KEY,
         algorithms=[app_settings.ALGORITHM])
     assert decoded_token["sub"] == payload["sub"]

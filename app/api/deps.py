@@ -6,7 +6,7 @@ It includes authentication utilities, connection handlers for external
 """
 import logging
 from abc import ABC
-from typing import Annotated, Optional, Type
+from typing import Annotated, Any, Optional, Type
 
 from aioredis import Redis
 from fastapi import Depends, HTTPException, status
@@ -27,7 +27,7 @@ headers: dict[str, str] = {"WWW-Authenticate": "Bearer"}
 detail: str = "Could not validate credentials"
 
 
-async def validate_token(token: str, settings: Settings) -> dict:
+async def validate_token(token: str, settings: Settings) -> dict[str, Any]:
     """
     Validate the provided JWT token.
     :param token: JWT token to be validated
@@ -35,7 +35,7 @@ async def validate_token(token: str, settings: Settings) -> dict:
     :param settings: Dependency method for cached setting object
     :type settings: config.Settings
     :return: Decoded payload of the valid JWT token
-    :rtype: dict
+    :rtype: dict[str, Any]
     """
     try:
         return jwt.decode(

@@ -3,7 +3,7 @@ NLP Model Service to execute the model at the Data Science Project
 """
 import logging
 from datetime import datetime
-from typing import Annotated, Type
+from typing import Annotated, Any, Type
 
 import joblib
 import pandas as pd
@@ -46,17 +46,17 @@ class NLPService:
         return self.model
 
     async def create_analysis_dict(
-            self, tweet: dict,
+            self, tweet: dict[str, Any],
             settings: config.Settings = Depends(config.get_settings)
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Create the analysis dictionary base object
         :param tweet: The Tweet object from Twitter
-        :type tweet: dict
+        :type tweet: dict[str, Any]
         :param settings: Dependency method for cached setting object
         :type settings: config.Settings
         :return: The Analysis base object
-        :rtype: dict
+        :rtype: dict[str, Any]
         """
         preprocessed_text: str = await preprocess_tweet_text(
             tweet.get("raw_content"), settings)
@@ -75,11 +75,11 @@ class NLPService:
 
     @with_logging
     @benchmark
-    async def classify_tweet(self, data: dict) -> bool:
+    async def classify_tweet(self, data: dict[str, Any]) -> bool:
         """
         Classify a tweet based on its content.
         :param data: Analysis object as dictionary
-        :type data: dict
+        :type data: dict[str, Any]
         :return: True if the tweet's content is about national
          insecurity, False otherwise
         :rtype: bool

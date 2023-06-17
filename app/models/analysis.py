@@ -4,10 +4,18 @@ Tweet model script
 from datetime import datetime
 
 from pydantic import PositiveInt
-from sqlalchemy import Column, ForeignKey, Integer, String, BIGINT, Boolean, \
-    text, CheckConstraint
+from sqlalchemy import (
+    BIGINT,
+    Boolean,
+    CheckConstraint,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    text,
+)
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base_class import Base
 from .model import Model

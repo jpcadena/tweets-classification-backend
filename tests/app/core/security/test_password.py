@@ -1,7 +1,7 @@
 """
 Test module for app/core/security/password.py
 """
-from typing import Generator, Any
+from typing import Any, Generator
 
 import pytest
 from fastapi.testclient import TestClient

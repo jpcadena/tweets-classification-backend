@@ -92,8 +92,7 @@ async def login(
 
 
 @router.post("/login/test-token", response_model=UserAuth)
-async def test_token(
-        current_user: CurrentUser) -> UserAuth:
+async def test_token(current_user: CurrentUser) -> UserAuth:
     """
     Endpoint to test the validity of an access token.
     ## Response:

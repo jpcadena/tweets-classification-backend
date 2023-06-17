@@ -50,7 +50,8 @@ class TokenService:
     @handle_redis_exceptions
     async def get_token(
             key: str,
-            redis: Redis = Depends(redis_dependency)) -> Optional[str]:
+            redis: Redis = Depends(redis_dependency)
+    ) -> Optional[str]:
         """
         Read token from the authentication database
         :param key: The key to search for

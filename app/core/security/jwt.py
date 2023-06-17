@@ -53,7 +53,7 @@ async def create_access_token(
     :param scope: The token's scope.
     :type scope: Scope
     :param payload: The payload or claims for the token
-    :type payload: dict
+    :type payload: dict[str, Any]
     :param expires_delta: The timedelta specifying when the token should expire
     :type expires_delta: timedelta
     :param settings: Dependency method for cached setting object

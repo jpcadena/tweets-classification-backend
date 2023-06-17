@@ -65,7 +65,8 @@ class UserRepository:
             return user
 
     async def read_by_username(
-            self, username: UsernameSpecification) -> User:
+            self, username: UsernameSpecification
+    ) -> User:
         """
         Retrieve a user from the database by its username
         :param username: The username of the user
@@ -101,7 +102,8 @@ class UserRepository:
             return user
 
     async def read_id_by_email(
-            self, email: EmailSpecification) -> Optional[PositiveInt]:
+            self, email: EmailSpecification
+    ) -> Optional[PositiveInt]:
         """
         Retrieve a user's id from the database by the user's email
         :param email: The email of the user

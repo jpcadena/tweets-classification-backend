@@ -3,8 +3,8 @@ Model evaluation model script
 """
 from datetime import datetime
 
-from pydantic import PositiveInt, NonNegativeFloat, PositiveFloat
-from sqlalchemy import Column, ForeignKey, Integer, String, BIGINT, Float, text
+from pydantic import NonNegativeFloat, PositiveFloat, PositiveInt
+from sqlalchemy import BIGINT, Column, Float, ForeignKey, Integer, String, text
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column
 

@@ -74,7 +74,8 @@ class AnalysisRepository:
             return analyses
 
     async def create_analysis(
-            self, analysis: AnalysisCreate) -> Optional[Analysis]:
+            self, analysis: AnalysisCreate
+    ) -> Optional[Analysis]:
         """
         Insert a new Analysis object into the database
         :param analysis: A request object containing the details of the

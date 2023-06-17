@@ -4,6 +4,7 @@ This module provides CRUD (Create, Retrieve, Update, Delete) operations
  for users.
 """
 import logging
+from typing import Any
 
 from fastapi import (
     APIRouter,
@@ -237,7 +238,7 @@ async def delete_user(
     :type current_user: CurrentUser
     """
     try:
-        data: dict = await user_service.delete_user(user_id)
+        data: dict[str, Any] = await user_service.delete_user(user_id)
     except SQLAlchemyError as sa_err:
         detail: str = "The user with this username does not exist in the system"
         logger.error(detail)

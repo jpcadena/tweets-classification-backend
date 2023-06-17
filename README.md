@@ -78,9 +78,11 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
 - [![numpy][NumPy]][numpy-url]
 - [![scikit-learn][Scikit-Learn]][scikit-learn-url]
 - [![Pytest][Pytest]][pytest-url]
-- [![Pylint][Pylint]][pylint-url]
 - [![DigitalOcean][DigitalOcean]][DigitalOcean-url]
 - [![Nginx][Nginx]][Nginx-url]
+- [![Ruff][ruff]][ruff-url]
+- [![Black][Black]][Black-url]
+- [![MyPy][MyPy]][MyPy-url]
 - [![Pycharm][PyCharm]][Pycharm-url]
 - [![visual-studio-code][visual-studio-code]][visual-studio-code-url]
 - [![Markdown][Markdown]][Markdown-url]
@@ -108,17 +110,13 @@ Learning project developed using FastAPI, PostgreSQL and Redis.
    ```
 3. Create a **virtual environment** _venv_
    ```
-   python3 -m venv venv
+   python -m venv venv
    ```
 4. Activate **environment** in Windows
    ```
    .\venv\Scripts\activate
    ```
-5. Or with Unix/Mac OS X
-   ```
-   source venv/bin/activate
-   ```
-6. Install requirements with PIP
+5. Install requirements with PIP
    ```
    pip install -r requirements.txt
    ```
@@ -228,13 +226,35 @@ Distributed under the MIT License.
 [pandas-url]: https://pandas.pydata.org/docs/
 [numpy-url]: https://numpy.org/
 [scikit-learn-url]: https://scikit-learn.org/stable/
+
 [html5-url]: https://developer.mozilla.org/en-US/docs/Glossary/HTML5
+
 [jwt-url]: https://jwt.io/
+
 [DigitalOcean-url]: https://www.digitalocean.com/
+
 [Pycharm-url]: https://www.jetbrains.com/pycharm/
+
 [Nginx-url]: https://www.nginx.com/
+
 [Markdown-url]: https://daringfireball.net/projects/markdown/
+
 [Swagger-url]: https://swagger.io/
+
 [visual-studio-code-url]: https://code.visualstudio.com/
+
 [GitHub]: https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white
+
 [GitHub-url]: https://github.com/jpcadena/tweets-classification-backend
+
+[ruff]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json
+
+[ruff-url]: https://beta.ruff.rs/docs/
+
+[Black]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge&logo=appveyor
+
+[Black-url]: https://github.com/psf/black
+
+[MyPy]: https://img.shields.io/badge/mypy-checked-2A6DB2.svg?style=for-the-badge&logo=appveyor
+
+[MyPy-url]: http://mypy-lang.org/

@@ -4,7 +4,7 @@ This module handles the routing for analysis-related API endpoints,
  including creating, reading, and updating analyses.
 """
 import logging
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Path, Query, status
 from fastapi.exceptions import HTTPException
@@ -54,17 +54,18 @@ async def create_analysis(
     :param settings: Dependency method for cached setting object
     :type settings: Settings
     """
-    analysis_performed: dict = {
+    analysis_performed: dict[str, Any] = {
         "tweet_id": tweet_id,
         "content": "text for tweet",
         "tweet_username": current_user.username,
         "user_id": current_user.id, "target": 1}
     # TODO: Use the following commented code for analysis_performed
-    # tweet: dict = await nlp_service.nlp_model_repo.get_single_tweet(tweet_id)
-    # analysis_obj: dict = await nlp_service.create_analysis_dict(
+    # tweet: dict[str, Any] = await nlp_service.nlp_model_repo.get_single_tweet(
+    #     tweet_id)
+    # analysis_obj: dict[str, Any] = await nlp_service.create_analysis_dict(
     #     tweet, settings)
     # target: bool = await nlp_service.classify_tweet(analysis_obj)
-    # analysis_performed: dict = {
+    # analysis_performed: dict[str, Any] = {
     #     "tweet_id": analysis_obj.get("tweet_id"),
     #     "content": analysis_obj.get("preprocessed_text"),
     #     "tweet_username": tweet.get("user").get("username"),
@@ -121,14 +122,14 @@ async def create_multiple_analysis(
     :type settings: Settings
     """
     # pylint: disable=too-many-arguments
-    tweets: list[dict] = await nlp_service.nlp_model_repo.get_tweets(
+    tweets: list[dict[str, Any]] = await nlp_service.nlp_model_repo.get_tweets(
         TwitterUsernameSpecification(username), number_tweets)
     analyses: list[Analysis] = []
     for tweet in tweets:
-        analysis_obj: dict = await nlp_service.create_analysis_dict(
+        analysis_obj: dict[str, Any] = await nlp_service.create_analysis_dict(
             tweet, settings)
         target: bool = await nlp_service.classify_tweet(analysis_obj)
-        analysis_performed: dict = {
+        analysis_performed: dict[str, Any] = {
             "tweet_id": analysis_obj.get("tweet_id"),
             "content": analysis_obj.get("preprocessed_text"),
             "tweet_username": tweet.get("user").get("username"),

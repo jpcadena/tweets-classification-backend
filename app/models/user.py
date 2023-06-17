@@ -1,14 +1,22 @@
 """
 User model script
 """
-from datetime import datetime, date
+from datetime import date, datetime
 from typing import Optional
 
 from pydantic import EmailStr, PositiveInt
-from sqlalchemy import Boolean, Column, Integer, String, CheckConstraint, \
-    Date, text, Enum
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    Date,
+    Enum,
+    Integer,
+    String,
+    text,
+)
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import Mapped, relationship
 
 from app.core.config import settings
 from app.db.base_class import Base

@@ -69,7 +69,8 @@ async def create_db_and_tables() -> None:
 @benchmark
 async def init_db(
         user_repo: UserRepository = Depends(get_user_repository),
-        settings: config.Settings = Depends(config.get_settings)) -> None:
+        settings: config.Settings = Depends(config.get_settings)
+) -> None:
     """
     Initialize the database connection and create the necessary tables.
     :param user_repo: The user repository dependency.
